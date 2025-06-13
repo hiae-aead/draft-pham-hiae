@@ -10,7 +10,7 @@
 <meta content="Lucas Prabel" name="author">
 <meta content="Sun Shuzhou" name="author">
 <meta content="
-       This document describes the high throughput authenticated encryption algorithm HiAE designed for new wireless generation 6G and data transimission applications. 
+       This document describes the high throughput authenticated encryption algorithm HiAE designed for new wireless generation 6G and data transmission applications. 
     " name="description">
 <meta content="xml2rfc 3.28.1" name="generator">
 <meta content="Internet-Draft" name="keyword">
@@ -1059,7 +1059,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <div id="internal-metadata" class="document-information">
 <dl id="identifiers">
 <dt class="label-workgroup">Workgroup:</dt>
-<dd class="workgroup">Crypto Forum</dd>
+<dd class="workgroup">Network Working Group</dd>
 <dt class="label-internet-draft">Internet-Draft:</dt>
 <dd class="internet-draft">draft-pham-hiae-latest</dd>
 <dt class="label-published">Published:</dt>
@@ -1094,7 +1094,15 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">The Fast Software Authenticated Encryption HiAE</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document describes the high throughput authenticated encryption algorithm HiAE designed for new wireless generation 6G and data transimission applications.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document describes the high throughput authenticated encryption algorithm HiAE designed for new wireless generation 6G and data transmission applications.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note rfcEditorRemove" id="section-note.1">
+      <h2 id="name-discussion-venues">
+<a href="#name-discussion-venues" class="section-name selfRef">Discussion Venues</a>
+      </h2>
+<p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">Source for this draft and an issue tracker can be found at
+    <span><a href="https://github.com/hiae-aead/draft-pham-hiae">https://github.com/hiae-aead/draft-pham-hiae</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
 </section>
 <div id="status-of-memo">
 <section id="section-boilerplate.1">
@@ -1389,13 +1397,13 @@ Snew[0] = S[1]
             <p id="section-3.1-2.3.1"><code>A_MAX</code> (maximum length of the associated data): <code>2^61 - 1</code> bytes (<code>2^64 - 8</code> bits).<a href="#section-3.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-3.1-2.4">
-            <p id="section-3.1-2.4.1"><code>N_MIN</code> (minimum nonce lentgh) = <code>N_MAX</code> (maximum nonce length) = <code>16</code> bytes (<code>128</code> bits).<a href="#section-3.1-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-3.1-2.4.1"><code>N_MIN</code> (minimum nonce length) = <code>N_MAX</code> (maximum nonce length) = <code>16</code> bytes (<code>128</code> bits).<a href="#section-3.1-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-3.1-2.5">
             <p id="section-3.1-2.5.1"><code>C_MAX</code> (maximum ciphertext length) = <code>P_MAX + tag length = (2^61 - 1) + 16 bytes</code> (<code>2^64 - 8 + 128</code> bits).<a href="#section-3.1-2.5.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-3.1-3">In more details, HiAE takes as input a <code>256</code>-bit key <code>K = K_0||K_1</code>, a <code>128</code>-bit nounce <code>N</code>, the associated data <code>AD</code>, and the message <code>M</code>.
+<p id="section-3.1-3">In more details, HiAE takes as input a <code>256</code>-bit key <code>K = K_0||K_1</code>, a <code>128</code>-bit nonce <code>N</code>, the associated data <code>AD</code>, and the message <code>M</code>.
 The output includes the ciphertext <code>C</code> where <code>|C| = |M|</code> and a <code>128</code>-bit tag <code>T</code>. Initially, <code>AD</code> and <code>M</code> are padded with <code>0</code> to ensure their lengths are multiples of <code>128</code> as  <code>Pad(AD) = AD||0* = AD_0|| ... || AD_{|AD|/128-1}</code> and <code>Pad(M) = M||0* = M_0|| ... || M_{|M|/128-1}</code>.
 The encryption and authentication process are described below.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
 <div id="initialization">
@@ -1805,7 +1813,7 @@ Finally, we claim that HiAE is secure in the key-commiting attacks, and we do no
         <h3 id="name-quantum-setting">
 <a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-quantum-setting" class="section-name selfRef">Quantum Setting</a>
         </h3>
-<p id="section-7.2-1">HiAE targets a secuirty strength of <code>128</code> bits against key recovery attacks and forgery attacks in quantum setting. We do not claim security against online superposition queries to the cryptographic oracle attacks, as such attacks are highly impractical in real-world applications.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<p id="section-7.2-1">HiAE targets a security strength of <code>128</code> bits against key recovery attacks and forgery attacks in quantum setting. We do not claim security against online superposition queries to the cryptographic oracle attacks, as such attacks are highly impractical in real-world applications.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="attacks-considerations">
@@ -1829,7 +1837,7 @@ Finally, we claim that HiAE is secure in the key-commiting attacks, and we do no
   8. Everything-committing attacks: We do not claim the security of HiAE in CMT3 model.
 </pre><a href="#section-7.3-2" class="pilcrow">¶</a>
 </div>
-<p id="section-7.3-3">The details of the crytanalysis can be found in the paper <span>[<a href="#HiAE" class="cite xref">HiAE</a>]</span>.<a href="#section-7.3-3" class="pilcrow">¶</a></p>
+<p id="section-7.3-3">The details of the cryptanalysis can be found in the paper <span>[<a href="#HiAE" class="cite xref">HiAE</a>]</span>.<a href="#section-7.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
