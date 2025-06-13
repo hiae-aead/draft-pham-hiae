@@ -6,7 +6,7 @@ category: std
 
 ipr: trust200902
 keyword: Internet-Draft
-workgroup: Crypto Forum
+# workgroup: Crypto Forum
 submissionType: IETF
 
 stand_alone: yes
