@@ -1,116 +1,165 @@
 ---
-
-###
 title: "The Fast Software Authenticated Encryption HiAE"
 abbrev: "HiAE"
+docname: draft-pham-hiae-latest
 category: std
 
-docname: draft-pham-cfrg-hiae-00
-submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
-number:
-date:
-consensus: true
-v: 3
-area: Security
-workgroup: Cryptography Forum
-keyword:
- - HiAE
- - AES
- - Authentication
- - Encryption
- - High-throughput
-venue:
-  group: Cryptography Forum
-  type: Working Group
-  mail: jose@ietf.org
-  arch: https://mailarchive.ietf.org/arch/browse/jose/
-  github: USER/REPO
-  latest: https://example.com/LATEST
+ipr: trust200902
+keyword: Internet-Draft
+workgroup: Crypto Forum
+submissionType: IETF
+
+stand_alone: yes
+smart_quotes: yes
+pi: [toc, sortrefs, symrefs]
 
 author:
- -  ins: P. Pham
-    fullname: Phuong Pham
+ -
+    ins: F. Denis
+    name: Frank Denis
+    organization: Fastly Inc.
+    email: fd@00f.net
+ -
+    ins: P. Pham
+    name: Phuong Pham
     organization: Huawei
     email: pham.phuong@huawei.com
- -  ins: L. Prabel
-    fullname: Lucas Prabel
+ -
+    ins: L. Prabel
+    name: Lucas Prabel
     organization: Huawei
     email: lucas.prabel@huawei.com
- -  ins: S. Sun
-    fullname: Sun Shuzhou
+ -
+    ins: S. Sun
+    name: Sun Shuzhou
     organization: Huawei
     email: sunshuzhou@huawei.com
- 
 
 normative:
- RFC2119:
- RFC8174:
- RFC5116:
- FIPS-AES:
+
+  FIPS-AES:
     title: "Advanced encryption standard (AES)"
-    date: November 2001
-    author:
-      org: "National Institute of Standards and Technology (NIST)"
+    rc: "Federal Information Processing Standards Publication 197"
     target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf
+    author:
+      -
+        org: National Institute of Standards and Technology (NIST)
+    date: 2001-11
 
 informative:
- AEGIS:
+
+  AEGIS:
     title: "AEGIS: A Fast Authenticated Encryption Algorithm (v1.1)"
-    date: 2016
-    author:
-      fullname: Hongjun Wu
-      fullname: Bart Preneel
-      org: "Nanyang Technological University"
+    venue: CAESAR Competition
     target: https://competitions.cr.yp.to/round3/aegisv11.pdf
- ROCCA-S:
-    title: "An Ultra-High Throughput AES-Based Authenticated Encryption Scheme for 6G: Design and Implementation"
-    date: 2024
     author:
-      fullname: Ravi Anand
-      fullname: Subhadeep Banik
-      fullname: Andrea Caforio
-      fullname: Kazuhide Fukushima
-      fullname: Takanori Isobe
-      fullname: Shisaku Kiyomoto
-      fullname: Fukang Liu
-      fullname: Yuto Nakano
-      fullname: Kosei Sakamoto
-      fullname: Nobuyuki Takeuchi
-      org:
-    target: https://doi.org/10.1007/978-3-031-50594-2_12
- SNOW-V:
+      -
+        ins: H. Wu
+        name: Hongjun Wu
+        org: Nanyang Technological University
+      -
+        ins: B. Preneel
+        name: Bart Preneel
+        org: KU Leuven
+    date: 2016
+  ROCCA-S:
     title: "An Ultra-High Throughput AES-Based Authenticated Encryption Scheme for 6G: Design and Implementation"
-    date: 2024
+    rc: "Cryptology and Network Security (CANS 2023)"
+    seriesinfo:
+      DOI: 10.1007/978-3-031-50594-2_12
     author:
-      fullname: Patrik Ekdahl
-      fullname: Thomas Johansson
-      fullname: Alexander Maximov
-      fullname: Jing Yang
-      org:
-    target: https://doi.org/10.13154/tosc.v2019.i3.1-42
- AES-NI:
+      -
+        ins: R. Anand
+        name: Ravi Anand
+      -
+        ins: S. Banik
+        name: Subhadeep Banik
+      -
+        ins: A. Caforio
+        name: Andrea Caforio
+      -
+        ins: K. Fukushima
+        name: Kazuhide Fukushima
+      -
+        ins: T. Isobe
+        name: Takanori Isobe
+      -
+        ins: S. Kiyomoto
+        name: Shisaku Kiyomoto
+      -
+        ins: F. Liu
+        name: Fukang Liu
+      -
+        ins: Y. Nakano
+        name: Yuto Nakano
+      -
+        ins: K. Sakamoto
+        name: Kosei Sakamoto
+      -
+        ins: N. Takeuchi
+        name: Nobuyuki Takeuchi
+    date: 2024
+  SNOW-V:
+    title: "SNOW-V: an AES-based Stream Cipher for 5G and 6G Communication Systems"
+    rc: "IACR Transactions on Symmetric Cryptology, 2019(3)"
+    seriesinfo:
+      DOI: 10.13154/tosc.v2019.i3.1-42
+    author:
+      -
+        ins: P. Ekdahl
+        name: Patrik Ekdahl
+        org: Ericsson Research
+      -
+        ins: T. Johansson
+        name: Thomas Johansson
+        org: Lund University
+      -
+        ins: A. Maximov
+        name: Alexander Maximov
+        org: Ericsson Research
+      -
+        ins: J. Yang
+        name: Jing Yang
+        org: Ericsson Research
+    date: 2019
+  AES-NI:
     title: "Intel Advanced Encryption Standard (AES) New Instructions Set"
-    date: 2010
-    author:
-      fullname: Shay Gueron
-      org: Intel Corporation
     target: https://www.intel.com/content/dam/doc/white-paper/advanced-encryption-standard-new-instructions-set-paper.pdf
- HiAE:
+    author:
+      -
+        ins: S. Gueron
+        name: Shay Gueron
+        org: Intel Corporation
+    date: 2010
+  HiAE:
     title: "HiAE: A High-Throughput Authenticated Encryption Algorithm for Cross-Platform Efficiency"
-    date: 2025
+    rc: "Cryptology ePrint Archive, Paper 2025/377"
+    target: https://eprint.iacr.org/2025/377
     author:
-      fullname: Han Chen
-      fullname: Tao Huang
-      fullname: Phuong Pham
-      fullname: Shuang Wu
-      org: Huawei International Pte., Ltd.
-    target: https://eprint.iacr.org/2025/377.pdf
- NIST-LWC:
+      -
+        ins: H. Chen
+        name: Han Chen
+        org: Huawei International Pte., Ltd.
+      -
+        ins: T. Huang
+        name: Tao Huang
+        org: Huawei International Pte., Ltd.
+      -
+        ins: P. Pham
+        name: Phuong Pham
+        org: Huawei International Pte., Ltd.
+      -
+        ins: S. Wu
+        name: Shuang Wu
+        org: Huawei International Pte., Ltd.
+    date: 2025
+  NIST-LWC:
     title: "NIST Lightweight Cryptography (LWC)"
-    date: 2025
-    author:
-      org: National Institute of Standards and Technology (NIST)
     target: https://csrc.nist.gov/projects/lightweight-cryptography
+    author:
+      -
+        org: National Institute of Standards and Technology (NIST)
+    date: 2025
 
 --- abstract
 
@@ -128,46 +177,22 @@ Addressing this challenge requires rethinking cryptographic design to leverage t
 
 # Conventions and Definitions
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
-NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
-"MAY", and "OPTIONAL" in this document are to be interpreted as
-described in BCP 14 {{!RFC2119}} {{!RFC8174}} when, and only when, they
-appear in all capitals, as shown here.
-
-*[MUST]: <bcp14>
-*[MUST NOT]: <bcp14>
-*[REQUIRED]: <bcp14>
-*[SHALL]: <bcp14>
-*[SHALL NOT]: <bcp14>
-*[SHOULD]: <bcp14>
-*[SHOULD NOT]: <bcp14>
-*[RECOMMENDED]: <bcp14>
-*[NOT RECOMMENDED]: <bcp14>
-*[MAY]: <bcp14>
-*[OPTIONAL]: <bcp14>
-<?line -18?>
-
-
-The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL
-NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “NOT RECOMMENDED”,
-“MAY”, and “OPTIONAL” in this document are to be interpreted as
-described in BCP 14 {{RFC2119}} {{RFC8174}} when, and only when, they
-appear in all capitals, as shown here.
+{::boilerplate bcp14-tagged}
 
 ## Notations
 
- `AESL(x)`: `AESL(x) = MixColumns o SubBytes o ShiftRows(x)`, of AES operations {{FIPS-AES}}.  
- `a ^ b`: The bitwise exclusive OR operation between a and b.  
- `S`: The internal state, composed of 16 blocks, i.e. `S = (S[0], S[1], ..., S[15])`, where `S[i] (0 <= i <= 15)` are blocks and `S[0]` is the first block. The `i`-th state block at round `r` is defined as `S^r[i]`.  
-  `N`: A `128`-bit nonce.  
-  `AD_i`: A `128`-bit associated data block.  
- `M_i`: A `128`-bit message block.  
- `C_i`: A `128`-bit ciphertext block.  
- `const_0`: A `128`-bit constant, represented in hexadecimal as `0x3243f6a8885a308d313198a2e0370734`.  
- `const_1`: A `128`-bit constant, represented in hexadecimal as `0x4a4093822299f31d0082efa98ec4e6c8`.  
- `X || 0^*`: A `128`-bit block string of the concatenation of `X` and the complement of zeros.  
-`|M|`: the length in bit of the string `M`.  
-`Truncate(x, l)`: Output the upper bits of `x` with length `l`.
+- `AESL(x)`: `AESL(x) = MixColumns o SubBytes o ShiftRows(x)`, of AES operations {{FIPS-AES}}.
+- `a ^ b`: The bitwise exclusive OR operation between a and b.
+- `S`: The internal state, composed of 16 blocks, i.e. `S = (S[0], S[1], ..., S[15])`, where `S[i] (0 <= i <= 15)` are blocks and `S[0]` is the first block. The `i`-th state block at round `r` is defined as `S^r[i]`.
+- `N`: A `128`-bit nonce.
+- `AD_i`: A `128`-bit associated data block.
+- `M_i`: A `128`-bit message block.
+- `C_i`: A `128`-bit ciphertext block.
+- `const_0`: A `128`-bit constant, represented in hexadecimal as `0x3243f6a8885a308d313198a2e0370734`.
+- `const_1`: A `128`-bit constant, represented in hexadecimal as `0x4a4093822299f31d0082efa98ec4e6c8`.
+- `X || 0^*`: A `128`-bit block string of the concatenation of `X` and the complement of zeros.
+-`|M|`: the length in bit of the string `M`.
+- `Truncate(x, l)`: Output the upper bits of `x` with length `l`.
 
 ## The Round Function
 
@@ -175,21 +200,21 @@ The input of the round function `UpdateFunction(S,X)` of HiAE consists of the st
 If denoting the output by `Snew`, `Snew:=UpdateFunction(S,X)` can be defined as follows:
 
 ~~~
-Snew[15] = AESL(S[0] ^ S[1]) ^ AESL(S[13]) ^ X,  
-Snew[14] = S[15],  
-Snew[13] = S[14],  
-Snew[12] = S[13] ^ X,  
-Snew[11] = S[12],  
-Snew[10] = S[11],  
-Snew[9] = S[10],  
-Snew[8] = S[9],  
-Snew[7] = S[8],  
-Snew[6] = S[7],  
-Snew[5] = S[6],  
-Snew[4] = S[5],  
-Snew[3] = S[4],  
-Snew[2] = S[3] ^ X,  
-Snew[1] = S[2],  
+Snew[15] = AESL(S[0] ^ S[1]) ^ AESL(S[13]) ^ X,
+Snew[14] = S[15],
+Snew[13] = S[14],
+Snew[12] = S[13] ^ X,
+Snew[11] = S[12],
+Snew[10] = S[11],
+Snew[9] = S[10],
+Snew[8] = S[9],
+Snew[7] = S[8],
+Snew[6] = S[7],
+Snew[5] = S[6],
+Snew[4] = S[5],
+Snew[3] = S[4],
+Snew[2] = S[3] ^ X,
+Snew[1] = S[2],
 Snew[0] = S[1]
 ~~~
 
@@ -207,8 +232,8 @@ HiAE is structured into four phases: initialization, processing of associated da
 - `N_MIN` (minimum nonce lentgh) = `N_MAX` (maximum nonce length) = `16` bytes (`128` bits).
 - `C_MAX` (maximum ciphertext length) = `P_MAX + tag length = (2^61 - 1) + 16 bytes` (`2^64 - 8 + 128` bits).
 
-In more details, HiAE takes as input a `256`-bit key `K = K_0||K_1`, a `128`-bit nounce `N`, the associated data `AD`, and the message `M`.  
-The output includes the ciphertext `C` where `|C| = |M|` and a `128`-bit tag `T`. Initially, `AD` and `M` are padded with `0` to ensure their lengths are multiples of `128` as  `Pad(AD) = AD||0* = AD_0|| ... || AD_{|AD|/128-1}` and `Pad(M) = M||0* = M_0|| ... || M_{|M|/128-1}`.  
+In more details, HiAE takes as input a `256`-bit key `K = K_0||K_1`, a `128`-bit nounce `N`, the associated data `AD`, and the message `M`.
+The output includes the ciphertext `C` where `|C| = |M|` and a `128`-bit tag `T`. Initially, `AD` and `M` are padded with `0` to ensure their lengths are multiples of `128` as  `Pad(AD) = AD||0* = AD_0|| ... || AD_{|AD|/128-1}` and `Pad(M) = M||0* = M_0|| ... || M_{|M|/128-1}`.
 The encryption and authentication process are described below.
 
 ### Initialization
@@ -216,28 +241,28 @@ The encryption and authentication process are described below.
 First, the state is loaded with `(N, K_0, K_1)` as follow:
 
 ~~~
-  S[0] = const_0,  
-  S[1] = K_1,  
-  S[2] = N,  
-  S[3] = const_0,  
-  S[4] = ZERO(128),  
-  S[5] = N ^ K_0,  
-  S[6] = ZERO(128),  
-  S[7] = const_1,  
-  S[8] = N ^ K_1,  
-  S[9] = ZERO(128),  
-  S[10] = K_1,  
-  S[11] = const_0,  
-  S[12] = const_1,  
-  S[13] = K_1,  
-  S[14] = ZERO(128),  
+  S[0] = const_0,
+  S[1] = K_1,
+  S[2] = N,
+  S[3] = const_0,
+  S[4] = ZERO(128),
+  S[5] = N ^ K_0,
+  S[6] = ZERO(128),
+  S[7] = const_1,
+  S[8] = N ^ K_1,
+  S[9] = ZERO(128),
+  S[10] = K_1,
+  S[11] = const_0,
+  S[12] = const_1,
+  S[13] = K_1,
+  S[14] = ZERO(128),
   S[15] = const_0 ^ const_1.
 ~~~
 
 Next, the state is updated with `32 UpdateFunction(S, const_0)`, then XORed with the key one more:
 
 ~~~
-  S[9] = S[9] ^ K_0,  
+  S[9] = S[9] ^ K_0,
   S[13] = S[13] ^ K_1.
 ~~~
 
@@ -246,9 +271,9 @@ Next, the state is updated with `32 UpdateFunction(S, const_0)`, then XORed with
 Following initialization, the associated data `AD` is used to update the state as:
 
 ~~~
-   for i = 0 to |AD|/128 - 1:  
-      S = UpdateFunction(S, AD_i)  
-   end for  
+   for i = 0 to |AD|/128 - 1:
+      S = UpdateFunction(S, AD_i)
+   end for
 ~~~
 
 This phase is skipped if the associated data is empty.
@@ -258,9 +283,9 @@ This phase is skipped if the associated data is empty.
 At each step of the encryption, a `128`-bit message block is used to update the state, and `M_i` is then encrypted to produce `C_i` following, and skipped the phase if the message is empty.
 
 ~~~
-   for i = 0 to |M|/128 - 1:  
-      C_i = AESL(S[0] ^ S[1]) ^ S[9] ^ M_i  
-      S = UpdateFunction(S, M_i)  
+   for i = 0 to |M|/128 - 1:
+      C_i = AESL(S[0] ^ S[1]) ^ S[9] ^ M_i
+      S = UpdateFunction(S, M_i)
    end for
 ~~~
 
@@ -269,14 +294,14 @@ At each step of the encryption, a `128`-bit message block is used to update the 
 After encrypting all the message blocks, the state is updated again with the lengths of associated data and message as:
 
 ~~~
-   for i = 0 to 31:  
-      S = UpdateFunction(S, |AD||||M|)  
+   for i = 0 to 31:
+      S = UpdateFunction(S, |AD||||M|)
    end for
 ~~~
 
 then the authentication tag is generated as:
 
-~~~  
+~~~
    T = S[0] ^ S[1] ^ ... ^ S[15].
 ~~~
 
@@ -287,62 +312,62 @@ A pseudo algorithm of HiAE is described in the following.
 ~~~
 HiAE Algorithm. The internal structures of HiAE are:
 
-   procedure Initialization(N, K_0, K_1)  
-      S[0] = const_0,  
-      S[1] = K_1,  
-      S[2] = N,  
-      S[3] = const_0,  
-      S[4] = ZERO(128),  
-      S[5] = N ^ K_0,  
-      S[6] = ZERO(128),  
-      S[7] = const_1,  
-      S[8] = N ^ K_1,  
-      S[9] = ZERO(128),  
-      S[10] = K_1,  
-      S[11] = const_0,  
-      S[12] = const_1,  
-      S[13] = K_1,  
-      S[14] = ZERO(128),  
-      S[15] = const_0 ^ const_1.  
-      for i = 0 to 31 do  
-         S <-- UpdateFunction(S, const_0)  
-      end for  
-      S[9] = S[9] ^ K_0,  
-      S[13] = S[13] ^ K_1  
+   procedure Initialization(N, K_0, K_1)
+      S[0] = const_0,
+      S[1] = K_1,
+      S[2] = N,
+      S[3] = const_0,
+      S[4] = ZERO(128),
+      S[5] = N ^ K_0,
+      S[6] = ZERO(128),
+      S[7] = const_1,
+      S[8] = N ^ K_1,
+      S[9] = ZERO(128),
+      S[10] = K_1,
+      S[11] = const_0,
+      S[12] = const_1,
+      S[13] = K_1,
+      S[14] = ZERO(128),
+      S[15] = const_0 ^ const_1.
+      for i = 0 to 31 do
+         S <-- UpdateFunction(S, const_0)
+      end for
+      S[9] = S[9] ^ K_0,
+      S[13] = S[13] ^ K_1
       return S
 
-   procedure ProcessAD(S, Pad(AD))  
-      d = |AD|/128  
-      for i = 0 to d - 1 do  
-         S <-- UpdateFunction(S, AD_i)  
-      end for  
+   procedure ProcessAD(S, Pad(AD))
+      d = |AD|/128
+      for i = 0 to d - 1 do
+         S <-- UpdateFunction(S, AD_i)
+      end for
       return S
 
-   procedure Encryption(S, Pad(M), C)  
-      m = |M|/128  
-      for i = 0 to m - 1 do  
-         C_i <-- AESL(S[0] ^ S[1]) ^ S[9] ^ M_i  
-         S <-- UpdateFunction(S, M_i)  
-      end for  
+   procedure Encryption(S, Pad(M), C)
+      m = |M|/128
+      for i = 0 to m - 1 do
+         C_i <-- AESL(S[0] ^ S[1]) ^ S[9] ^ M_i
+         S <-- UpdateFunction(S, M_i)
+      end for
       return S
 
-   procedure Decryption(S, Pad(C), M)  
-      c = |C|/128  
-      for i = 0 to c - 1 do  
-         M_i <-- AESL(S[0] ^ S[1]) ^ S[9] ^ C_i  
-         S <-- UpdateFunction(S, M_i)  
-      end for  
+   procedure Decryption(S, Pad(C), M)
+      c = |C|/128
+      for i = 0 to c - 1 do
+         M_i <-- AESL(S[0] ^ S[1]) ^ S[9] ^ C_i
+         S <-- UpdateFunction(S, M_i)
+      end for
       return S
 
-   procedure Finalization(S, |AD|, |M|)  
-      for i = 0 to 31 do  
-         S <-- UpdateFunction(S, |AD|, |M|)  
-      end for  
-      T = 0  
-      for i = 0 to 15 do  
-         T = T ^ S[i]  
-      end for  
-      return T 
+   procedure Finalization(S, |AD|, |M|)
+      for i = 0 to 31 do
+         S <-- UpdateFunction(S, |AD|, |M|)
+      end for
+      T = 0
+      for i = 0 to 15 do
+         T = T ^ S[i]
+      end for
+      return T
 ~~~
 
 # Settings Specifications
@@ -388,7 +413,7 @@ S = ProcessAD(S, Pad(AD))
 S = Encryption(S, Pad(msg), ct)
 ct = Truncate(ct, |msg|)
 tag = Finalization(S, |ad|, |msg|)
-return ct and tag 
+return ct and tag
 ~~~
 
 ## Authenticated Decryption
@@ -463,7 +488,7 @@ Process:
 ~~~
 if len == 0:
    return {}
-else: 
+else:
    K = K_1||K_2
    S = 0
    keystream = {}
@@ -521,8 +546,8 @@ return tag
 HiAE provides `256`-bit security against key recovery and state recovery attacks,
 along with `128`-bit security for integrity against forgery attempts. It is important to
 note that the encryption security assumes the attacker cannot successfully forge messages
-through repeated trials.  
-Related to the keystream bias attacks, our analysis shows that at least `150`-bit security is guaranteed by HiAE.  
+through repeated trials.
+Related to the keystream bias attacks, our analysis shows that at least `150`-bit security is guaranteed by HiAE.
 Finally, we claim that HiAE is secure in the key-commiting attacks, and we do not claim its security in the everything-commiting setting.
 
 ## Quantum Setting
@@ -534,17 +559,17 @@ HiAE targets a secuirty strength of `128` bits against key recovery attacks and 
 HiAE is secure against the following attacks:
 
 ~~~
-  1. Key-Recovery Attack: 256-bit security against key-recovery attacks.  
-  2. Differential Attack: 256-bit security against differential attacks in the initialization phase.  
-  3. Forgery Attack: 128-bit security against forgery attacks.  
-  4. Integral Attack: Secure against integral attacks.  
+  1. Key-Recovery Attack: 256-bit security against key-recovery attacks.
+  2. Differential Attack: 256-bit security against differential attacks in the initialization phase.
+  3. Forgery Attack: 128-bit security against forgery attacks.
+  4. Integral Attack: Secure against integral attacks.
   5. State-recovery Attack:
-      * Guess-and-Determine Attack: The time complexity of the guess-and-determine attack cannot be lower than 2^{256}.  
+      * Guess-and-Determine Attack: The time complexity of the guess-and-determine attack cannot be lower than 2^{256}.
       * Algebraic Attack: The system of equations to recover HiAE states cannot be solved with time complexity 2^{256}.
-    
-  6. The Linear Bias: at least 150-bit security against a statistical attack.  
-  7. Key-committing attacks: Secure in the FROB, CMT1, and CMT2 models.  
-  8. Everything-committing attacks: We do not claim the security of HiAE in CMT3 model.  
+
+  6. The Linear Bias: at least 150-bit security against a statistical attack.
+  7. Key-committing attacks: Secure in the FROB, CMT1, and CMT2 models.
+  8. Everything-committing attacks: We do not claim the security of HiAE in CMT3 model.
 ~~~
 
 The details of the crytanalysis can be found in the paper {{HiAE}}.
@@ -563,44 +588,38 @@ TBD.
 
 ## Test Vector 1
 
-~~~
-key = 
-90bbc6ec798423365146306759d6812e
-37c3740df539834052bd1f46f57d5785
+~~~ test-vectors
+key   : 90bbc6ec798423365146306759d6812e
+        37c3740df539834052bd1f46f57d5785
 
-nonce =
-381d72b1a195e7f3dc185a35eedb6326
+nonce : 381d72b1a195e7f3dc185a35eedb6326
 
-associated data =
-9fd7339411b6d56373f4a9697200eeaa
-1d605cbff643b2d25b0c074ae76a7086
-42a31b5359f0b6cde45f36566024017d
-855d3c7ba0ee4dfcfa5446e2beb66800
-598353b273097f5869b5aec9daaf465f
-0c83daad7127a96c7bef4e39a5b63afe
+ad    : 9fd7339411b6d56373f4a9697200eeaa
+        1d605cbff643b2d25b0c074ae76a7086
+        42a31b5359f0b6cde45f36566024017d
+        855d3c7ba0ee4dfcfa5446e2beb66800
+        598353b273097f5869b5aec9daaf465f
+        0c83daad7127a96c7bef4e39a5b63afe
 
-plaintext =
-3a8db0ad97300500e5b4c9bf630f1e70
-92f81d041fc6709ab5bed45a740e58ae
-9b085c323861321e15fbdd790bfce99d
-f406a114cc11ae81cf82db449033f22c
-3b4e5e74b09192c58c6f3e976b273560
-2dd674f9e8227ab7a555fb3588ee61c4
-3cc038ec51cab2dd39f075a518aa0545
-80793f689bb920400f1b769709d75b46
+msg   : 3a8db0ad97300500e5b4c9bf630f1e70
+        92f81d041fc6709ab5bed45a740e58ae
+        9b085c323861321e15fbdd790bfce99d
+        f406a114cc11ae81cf82db449033f22c
+        3b4e5e74b09192c58c6f3e976b273560
+        2dd674f9e8227ab7a555fb3588ee61c4
+        3cc038ec51cab2dd39f075a518aa0545
+        80793f689bb920400f1b769709d75b46
 
-ciphertext =
-ff9fcccf03188954a27c74821b76332b
-d2490761f9d3e3be14613e91ab0af720
-cc63177cc72a63eea503bed4cb70b0c4
-2d38551b47b7bbda52f23374a4feea06
-b8b9c9d3c888935e4a78de02ec329bc8
-66053c77fdabe930f273adc0175802ca
-31b645d1958afc28806843a671347301
-130d23a94f3adee985fb2e60f0d5d024
+ct    : ff9fcccf03188954a27c74821b76332b
+        d2490761f9d3e3be14613e91ab0af720
+        cc63177cc72a63eea503bed4cb70b0c4
+        2d38551b47b7bbda52f23374a4feea06
+        b8b9c9d3c888935e4a78de02ec329bc8
+        66053c77fdabe930f273adc0175802ca
+        31b645d1958afc28806843a671347301
+        130d23a94f3adee985fb2e60f0d5d024
 
-tag =
-66346519818b4cb2919e61b5f6c28a9b
+tag   : 66346519818b4cb2919e61b5f6c28a9b
 ~~~
 
 ## Test Vector 2
