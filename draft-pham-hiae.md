@@ -224,7 +224,7 @@ In this section, we describe the specification of our design.
 
 ## Specification
 
-HiAE is structured into four phases: initialization, processing of associated data, encryption, and finalization. HiAE has a 2048-bit state, made of sixteen 128-bit blocks `S_0||S_1||...||S_{15}`. The parameters for this algorithm, that are consistent with the definition in {{RFC5116}}, Section 4, are defined as:
+HiAE is structured into four phases: initialization, processing of associated data, encryption, and finalization. HiAE has a 2048-bit state, made of sixteen 128-bit blocks `S_0||S_1||...||S_{15}`. The parameters for this algorithm, that are consistent with the definition in {{!RFC5116, Section 4}}, are defined as:
 
 - `K_LEN` (key length): 32 bytes (256 bits).
 - `P_MAX` (maximum length of the plaintext): `2^61 - 1` bytes (`2^64 - 8` bits).
