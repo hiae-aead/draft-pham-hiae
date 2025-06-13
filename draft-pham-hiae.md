@@ -163,7 +163,7 @@ informative:
 
 --- abstract
 
-This document describes the high throughput authenticated encryption algorithm HiAE designed for new wireless generation 6G and data transimission applications.
+This document describes the high throughput authenticated encryption algorithm HiAE designed for new wireless generation 6G and data transmission applications.
 
 --- middle
 
@@ -229,10 +229,10 @@ HiAE is structured into four phases: initialization, processing of associated da
 - `K_LEN` (key length): 32 bytes (256 bits).
 - `P_MAX` (maximum length of the plaintext): `2^61 - 1` bytes (`2^64 - 8` bits).
 - `A_MAX` (maximum length of the associated data): `2^61 - 1` bytes (`2^64 - 8` bits).
-- `N_MIN` (minimum nonce lentgh) = `N_MAX` (maximum nonce length) = `16` bytes (`128` bits).
+- `N_MIN` (minimum nonce length) = `N_MAX` (maximum nonce length) = `16` bytes (`128` bits).
 - `C_MAX` (maximum ciphertext length) = `P_MAX + tag length = (2^61 - 1) + 16 bytes` (`2^64 - 8 + 128` bits).
 
-In more details, HiAE takes as input a `256`-bit key `K = K_0||K_1`, a `128`-bit nounce `N`, the associated data `AD`, and the message `M`.
+In more details, HiAE takes as input a `256`-bit key `K = K_0||K_1`, a `128`-bit nonce `N`, the associated data `AD`, and the message `M`.
 The output includes the ciphertext `C` where `|C| = |M|` and a `128`-bit tag `T`. Initially, `AD` and `M` are padded with `0` to ensure their lengths are multiples of `128` as  `Pad(AD) = AD||0* = AD_0|| ... || AD_{|AD|/128-1}` and `Pad(M) = M||0* = M_0|| ... || M_{|M|/128-1}`.
 The encryption and authentication process are described below.
 
@@ -552,7 +552,7 @@ Finally, we claim that HiAE is secure in the key-commiting attacks, and we do no
 
 ## Quantum Setting
 
-HiAE targets a secuirty strength of `128` bits against key recovery attacks and forgery attacks in quantum setting. We do not claim security against online superposition queries to the cryptographic oracle attacks, as such attacks are highly impractical in real-world applications.
+HiAE targets a security strength of `128` bits against key recovery attacks and forgery attacks in quantum setting. We do not claim security against online superposition queries to the cryptographic oracle attacks, as such attacks are highly impractical in real-world applications.
 
 ## Attacks Considerations
 
@@ -572,7 +572,7 @@ HiAE is secure against the following attacks:
   8. Everything-committing attacks: We do not claim the security of HiAE in CMT3 model.
 ~~~
 
-The details of the crytanalysis can be found in the paper {{HiAE}}.
+The details of the cryptanalysis can be found in the paper {{HiAE}}.
 
 # Implementation Consideration
 
