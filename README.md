@@ -1,14 +1,28 @@
-<!-- regenerate: on (set to off if you edit this file) -->
+<!-- regenerate: off -->
 
-# The Fast Software Authenticated Encryption HiAE
+# HiAE: A High-Throughput Authenticated Encryption Algorithm for Cross-Platform Efficiency
 
-This is the working area for the individual Internet-Draft, "The Fast Software Authenticated Encryption HiAE".
+This is the working area for the individual Internet-Draft, "HiAE: A High-Throughput Authenticated Encryption Algorithm for Cross-Platform Efficiency".
 
 * [Editor's Copy](https://hiae-aead.github.io/draft-pham-hiae/#go.draft-pham-hiae.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-pham-hiae)
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-pham-hiae)
 * [Compare Editor's Copy to Individual Draft](https://hiae-aead.github.io/draft-pham-hiae/#go.draft-pham-hiae.diff)
 
+## Overview
+
+HiAE is an AES-based AEAD cipher optimized for cross-platform efficiency (ARM and x86), achieving top speeds on the latest ARM and x86 architectures.
+
+![XAXX structure](https://raw.github.com/hiae-aead/draft-pham-hiae/master/media/xaxx.png)
+
+[White Paper on ePrint](https://eprint.iacr.org/2025/377)
+
+## Known Implementations
+
+| Name                                                                     | Language |
+| ------------------------------------------------------------------------ | -------- |
+| [Reference Implementation](https://github.com/Concyclics/HiAE/tree/main) | C        |
+| [Zig-HiAE](https://github.com/jedisct1/zig-hiae)                         | Zig      |
 
 ## Contributing
 
