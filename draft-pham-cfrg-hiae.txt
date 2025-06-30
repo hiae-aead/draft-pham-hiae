@@ -5,14 +5,14 @@
 Network Working Group                                           F. Denis
 Internet-Draft                                               Fastly Inc.
 Intended status: Standards Track                                 P. Pham
-Expires: 18 December 2025                                      L. Prabel
+Expires: 1 January 2026                                        L. Prabel
                                                                   S. Sun
                                                                   Huawei
-                                                            16 June 2025
+                                                            30 June 2025
 
 
             The Fast Software Authenticated Encryption HiAE
-                         draft-pham-hiae-latest
+                      draft-pham-cfrg-hiae-latest
 
 Abstract
 
@@ -42,7 +42,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 18 December 2025.
+   This Internet-Draft will expire on 1 January 2026.
 
 Copyright Notice
 
