@@ -1,7 +1,7 @@
 ---
 title: "The Fast Software Authenticated Encryption HiAE"
 abbrev: "HiAE"
-docname: draft-pham-cfrghiae-latest
+docname: draft-pham-cfrg-hiae-latest
 category: std
 
 ipr: trust200902
