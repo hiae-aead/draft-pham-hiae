@@ -240,6 +240,9 @@ Table of Contents
       format: { 0x4a, 0x40, 0x93, 0x82, 0x22, 0x99, 0xf3, 0x1d, 0x00,
       0x82, 0xef, 0xa9, 0x8e, 0xc4, 0xe6, 0xc8 }.
 
+   The constants C0 and C1 are domain separation constants derived from
+   the fractional parts of π and e respectively.
+
    Input and output values:
 
    *  key: the encryption key (256 bits).

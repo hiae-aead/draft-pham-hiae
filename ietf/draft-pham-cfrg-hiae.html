@@ -2,7 +2,7 @@
 <html lang="en" class="Internet-Draft">
 <head>
 <meta charset="utf-8">
-<meta content="Common,Latin" name="scripts">
+<meta content="Common,Greek,Latin" name="scripts">
 <meta content="initial-scale=1.0" name="viewport">
 <title>The HiAE Authenticated Encryption Algorithm</title>
 <meta content="Frank Denis" name="author">
@@ -1437,25 +1437,26 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
           <p id="section-2-6.5.1"><code>C1</code>: an AES block built from the following bytes in hexadecimal format: <code>{ 0x4a, 0x40, 0x93, 0x82, 0x22, 0x99, 0xf3, 0x1d, 0x00, 0x82, 0xef, 0xa9, 0x8e, 0xc4, 0xe6, 0xc8 }</code>.<a href="#section-2-6.5.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-2-7">Input and output values:<a href="#section-2-7" class="pilcrow">¶</a></p>
+<p id="section-2-7">The constants C0 and C1 are domain separation constants derived from the fractional parts of π and e respectively.<a href="#section-2-7" class="pilcrow">¶</a></p>
+<p id="section-2-8">Input and output values:<a href="#section-2-8" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2-8.1">
-          <p id="section-2-8.1.1"><code>key</code>: the encryption key (256 bits).<a href="#section-2-8.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-2-9.1">
+          <p id="section-2-9.1.1"><code>key</code>: the encryption key (256 bits).<a href="#section-2-9.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-2-8.2">
-          <p id="section-2-8.2.1"><code>nonce</code>: the public nonce (128 bits).<a href="#section-2-8.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-2-9.2">
+          <p id="section-2-9.2.1"><code>nonce</code>: the public nonce (128 bits).<a href="#section-2-9.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-2-8.3">
-          <p id="section-2-8.3.1"><code>ad</code>: the associated data.<a href="#section-2-8.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-2-9.3">
+          <p id="section-2-9.3.1"><code>ad</code>: the associated data.<a href="#section-2-9.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-2-8.4">
-          <p id="section-2-8.4.1"><code>msg</code>: the plaintext.<a href="#section-2-8.4.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-2-9.4">
+          <p id="section-2-9.4.1"><code>msg</code>: the plaintext.<a href="#section-2-9.4.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-2-8.5">
-          <p id="section-2-8.5.1"><code>ct</code>: the ciphertext.<a href="#section-2-8.5.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-2-9.5">
+          <p id="section-2-9.5.1"><code>ct</code>: the ciphertext.<a href="#section-2-9.5.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-2-8.6">
-          <p id="section-2-8.6.1"><code>tag</code>: the authentication tag (128 bits).<a href="#section-2-8.6.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-2-9.6">
+          <p id="section-2-9.6.1"><code>tag</code>: the authentication tag (128 bits).<a href="#section-2-9.6.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
