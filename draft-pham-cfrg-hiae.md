@@ -804,11 +804,103 @@ The details of the cryptanalysis can be found in the paper {{HiAE}}.
 
 # Implementation Considerations
 
-HiAE is designed to balance the performance of XOR and AES-NI instructions across both ARM and x86 architectures, while being optimized to push performance to its limits.
+HiAE is designed to balance the performance of XOR and AES-NI instructions across both ARM and x86 architectures, while being optimized to push performance to its limits. The algorithm's XAXX structure enables platform-specific optimizations by exploiting the fundamental differences in how ARM and Intel processors implement AES round functions.
+
+## Platform-Specific Optimizations
+
+The key to HiAE's cross-platform efficiency lies in understanding how different architectures implement AES operations:
+
+### ARM NEON Architecture
+
+On ARM processors with NEON SIMD extensions, the most efficient pattern for combining AES operations with XOR is:
+
+~~~
+z ^ AESL(x)
+~~~
+
+This pattern is implemented as a fused operation using ARM cryptographic extensions:
+
+~~~
+vaesmcq_u8(vaeseq_u8(z, x))
+~~~
+
+This SIMD fusion means that computing `z ^ AESL(x)` requires only two instructions with minimal latency between them.
+
+### Intel x86 Architecture with AES-NI
+
+On Intel processors with AES-NI, the most efficient pattern is:
+
+~~~
+AESL(x) ^ y
+~~~
+
+This pattern maps directly to the `aesenc` instruction:
+
+~~~
+aesenc(x, y)
+~~~
+
+The Intel AES-NI instruction set was designed for standard AES modes where the round key is XORed after the round function, making `AESL(x) ^ y` a single-instruction operation.
+
+## Leveraging XOR Properties
+
+XOR operations are both associative and commutative:
+
+- `(a ^ b) ^ c = a ^ (b ^ c)` (associativity)
+- `a ^ b = b ^ a` (commutativity)
+
+These properties allow implementations to reorder operations to match the target platform's efficient patterns.
+
+### Example: The Update Function
+
+Consider the core Update function operations:
+
+~~~
+t = AESL(S0 ^ S1) ^ xi
+S0 = AESL(S13) ^ t
+~~~
+
+On ARM, the first line can be optimized by reordering:
+~~~
+t = xi ^ AESL(S0 ^ S1)  // Matches ARM's efficient z ^ AESL(x) pattern
+~~~
+
+On Intel, the operations already match the efficient pattern:
+~~~
+t = AESL(S0 ^ S1) ^ xi   // Matches Intel's efficient AESL(x) ^ y pattern
+S0 = AESL(S13) ^ t       // Also matches AESL(x) ^ y pattern
+~~~
+
+### Multiple XOR Chains
+
+The UpdateEnc function demonstrates how multiple XORs can be reordered:
+
+~~~
+t = AESL(S0 ^ S1) ^ mi
+ci = t ^ S9
+~~~
+
+On ARM, this can be implemented as:
+
+~~~
+temp = AESL(S0 ^ S1)
+ci = S9 ^ (mi ^ temp)    // Two XORs grouped for efficiency
+t = mi ^ temp            // Reuse computation
+~~~
+
+## Security Considerations for Implementations
 
 The security of HiAE against timing and physical attacks is limited by the implementation of the underlying `AESL` function. Failure to implement `AESL` in a fashion safe against timing and physical attacks, such as differential power analysis, timing analysis, or fault injection attacks, may lead to leakage of secret key material or state information. The exact mitigations required for timing and physical attacks depend on the threat model in question.
 
-A complete list of known implementations and integrations is available at [](https://github.com/hiae-aead/draft-pham-hiae), including reference implementations. A comprehensive comparison of HiAE's performance with other high-throughput authenticated encryption schemes on ARM and x86 architectures is also provided.
+When implementing the platform-specific optimizations described above, care must be taken to ensure that:
+
+- All operations complete in constant time
+- No secret-dependent memory accesses occur
+- The optimization does not introduce timing variations based on input data
+
+## Validation
+
+A complete list of known implementations and integrations is available at [](https://github.com/hiae-aead/draft-pham-hiae), including reference implementations. A comprehensive comparison of HiAE's performance with other high-throughput authenticated encryption schemes on ARM and x86 architectures is also provided, demonstrating the effectiveness of these platform-specific optimizations.
 
 # IANA Considerations
 
