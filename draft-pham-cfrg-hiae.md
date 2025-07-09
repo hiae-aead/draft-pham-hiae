@@ -1224,11 +1224,11 @@ ct    : eef78d00c4de4c557d5c769e499af7b9
 tag   : 59970b0b35a7822f3b88b63396c2da98
 ~~~
 
-# Function-by-Function Examples
+# Function-by-Function Example
 
 This appendix provides step-by-step examples of HiAE internal functions for implementers. All values are in hexadecimal.
 
-## Initial Values for Examples
+## Initial Values for Example
 
 ~~~
 Key:   0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
