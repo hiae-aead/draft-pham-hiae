@@ -861,11 +861,13 @@ S0 = AESL(S13) ^ t
 ~~~
 
 On ARM, the first line can be optimized by reordering:
+
 ~~~
 t = xi ^ AESL(S0 ^ S1)  // Matches ARM's efficient z ^ AESL(x) pattern
 ~~~
 
 On Intel, the operations already match the efficient pattern:
+
 ~~~
 t = AESL(S0 ^ S1) ^ xi   // Matches Intel's efficient AESL(x) ^ y pattern
 S0 = AESL(S13) ^ t       // Also matches AESL(x) ^ y pattern
@@ -883,9 +885,9 @@ ci = t ^ S9
 On ARM, this can be implemented as:
 
 ~~~
-temp = AESL(S0 ^ S1)
+t2 = AESL(S0 ^ S1)
 ci = S9 ^ (mi ^ temp)    // Two XORs grouped for efficiency
-t = mi ^ temp            // Reuse computation
+t = mi ^ t2              // Reuse computation
 ~~~
 
 ## Security Considerations for Implementations
