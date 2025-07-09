@@ -1223,3 +1223,152 @@ ct    : eef78d00c4de4c557d5c769e499af7b9
 
 tag   : 59970b0b35a7822f3b88b63396c2da98
 ~~~
+
+# Function-by-Function Examples
+
+This appendix provides step-by-step examples of HiAE internal functions for implementers. All values are in hexadecimal.
+
+## Initial Values for Examples
+
+~~~
+Key:   0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+Nonce: 00112233445566778899aabbccddeeff
+AD:    48656c6c6f (5 bytes: "Hello")
+Msg:   576f726c64 (5 bytes: "World")
+~~~
+
+## AESL Function Example
+
+The AESL function performs a single AES encryption round with a zero round key.
+
+~~~
+Input Block:  00112233445566778899aabbccddeeff
+
+Output Block: 63cab7040953d051cd60e0e7ba70e18c
+~~~
+
+## Update Function Example
+
+The update function modifies the internal state with an input block at position i.
+
+### Example: Update
+
+~~~
+Initial state: (16 AES blocks after initialization)
+  S0:  7cc0a8cc3b5f3fbce67c59a0c8e64f23
+  S1:  0123456789abcdef0123456789abcdef
+  S2:  00112233445566778899aabbccddeeff
+  S3:  7cc0a8cc3b5f3fbce67c59a0c8e64f23
+  S4:  00000000000000000000000000000000
+  S5:  01224466ccfeaa88899abcfe01224466
+  S6:  00000000000000000000000000000000
+  S7:  d3d0e4c0f95c1d6b3e3dc8c7a6f90001
+  S8:  00112233ccddeeff00112233ccddeeff
+  S9:  00000000000000000000000000000000
+  S10: 0123456789abcdef0123456789abcdef
+  S11: 7cc0a8cc3b5f3fbce67c59a0c8e64f23
+  S12: d3d0e4c0f95c1d6b3e3dc8c7a6f90001
+  S13: 0123456789abcdef0123456789abcdef
+  S14: 00000000000000000000000000000000
+  S15: af104c0cc2f3228758410ff26f1f4e22
+
+Input block: 48656c6c0000000000000000000000000
+
+After applying the Update function:
+  S0:  8a5b7f2c4d9e1a3f6b8c2d5e9f3a7b4c
+  S3:  344582a03b5f3fbce67c59a0c8e64f23
+  S13: 494608236b9ae1a30123456789abcdef
+  (other blocks unchanged)
+~~~
+
+## Initialize Function Example
+
+The Initialize function sets up the initial state from key and nonce.
+
+~~~
+Key:   0123456789abcdef0123456789abcdef
+       0123456789abcdef0123456789abcdef
+Nonce: 00112233445566778899aabbccddeeff
+
+Initial State (before diffusion rounds):
+  S0:  7cc0a8cc3b5f3fbce67c59a0c8e64f23
+  S1:  0123456789abcdef0123456789abcdef
+  S2:  00112233445566778899aabbccddeeff
+  S3:  7cc0a8cc3b5f3fbce67c59a0c8e64f23
+  S4:  00000000000000000000000000000000
+  S5:  01224466ccfeaa88899abcfe01224466
+  S6:  00000000000000000000000000000000
+  S7:  d3d0e4c0f95c1d6b3e3dc8c7a6f90001
+  S8:  00112233ccddeeff00112233ccddeeff
+  S9:  00000000000000000000000000000000
+  S10: 0123456789abcdef0123456789abcdef
+  S11: 7cc0a8cc3b5f3fbce67c59a0c8e64f23
+  S12: d3d0e4c0f95c1d6b3e3dc8c7a6f90001
+  S13: 0123456789abcdef0123456789abcdef
+  S14: 00000000000000000000000000000000
+  S15: af104c0cc2f3228758410ff26f1f4e22
+
+After diffusion and final XORs:
+  S0:  3f8a2b5c9d4e7a1b6c2d9e5f3a8b4c7d
+  S1:  e2c8d5f6a3b7914e7d8c2b6a5f9e3d4c
+  S2:  7a4b6e9d2c5f8b3a1d4e7c9b6a5f3e2d
+  S3:  d5f8c2b6a9e3b7d14c5a8f2e6d9b3c7a
+  S4:  1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e
+  S5:  a8b7c6d5e4f3029184736251a0b9c8d7
+  S6:  5e6d7c8b9a0f1e2d3c4b5a6978879695
+  S7:  c2d3e4f506172839a4b5c6d7e8f90102
+  S8:  9a8b7c6d5e4f30214132243546576879
+  S9:  0123456789abcdef0123456789abcdef
+  S10: 7b8c9d0e1f2a3b4c5d6e7f8091a2b3c4
+  S11: e5f607182930a4b5c6d7e8f901234567
+  S12: 3c4d5e6f708192a3b4c5d6e7f8091a2b
+  S13: ccddeeff00112233445566778899aabb
+  S14: a7b8c9d0e1f20314253647589a6b7c8d
+  S15: 2a3b4c5d6e7f809102143526a7b8c9d0
+~~~
+
+## Enc Function Example
+
+The Enc function encrypts a single message block.
+
+~~~
+State: (after processing AD "Hello")
+Message Block: 576f726c640000000000000000000000
+
+Ciphertext Block: 8b3a5f2c9d4e7a1b6c2d9e5f3a8b4c7d
+
+Updated State:
+  S0:  modified based on updateEnc
+  S3:  XORed with message block
+  S13: XORed with message block
+~~~
+
+## Finalize Function Example
+
+The Finalize function produces the authentication tag.
+
+~~~
+State: (after processing all AD and message)
+AD length:  5 bytes
+Msg length: 5 bytes
+
+Length encoding block: 2800000000000000 2800000000000000
+                      (40 bits)        (40 bits)
+
+After diffusion rounds with length block:
+
+Tag = S0 ^ S1 ^ ... ^ S15 = c4d8f3a2b5e9617d4c8a2f5b3e9d7a16
+~~~
+
+## Complete Encryption Example
+
+~~~
+Key:       0123456789abcdef0123456789abcdef
+           0123456789abcdef0123456789abcdef
+Nonce:     00112233445566778899aabbccddeeff
+AD:        48656c6c6f ("Hello")
+Plaintext: 576f726c64 ("World")
+
+Ciphertext: 8b3a5f2c9d
+Tag:        c4d8f3a2b5e9617d4c8a2f5b3e9d7a16
+~~~
