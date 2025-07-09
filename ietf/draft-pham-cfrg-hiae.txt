@@ -108,8 +108,8 @@ Table of Contents
      A.8.  Test Vector 8 - Single byte plaintext
      A.9.  Test Vector 9 - Two blocks plaintext
      A.10. Test Vector 10 - All zeros plaintext
-   Appendix B.  Function-by-Function Examples
-     B.1.  Initial Values for Examples
+   Appendix B.  Function-by-Function Example
+     B.1.  Initial Values for Example
      B.2.  AESL Function Example
      B.3.  Update Function Example
        B.3.1.  Example: Update
@@ -1388,12 +1388,12 @@ A.10.  Test Vector 10 - All zeros plaintext
 
    tag   : 59970b0b35a7822f3b88b63396c2da98
 
-Appendix B.  Function-by-Function Examples
+Appendix B.  Function-by-Function Example
 
    This appendix provides step-by-step examples of HiAE internal
    functions for implementers.  All values are in hexadecimal.
 
-B.1.  Initial Values for Examples
+B.1.  Initial Values for Example
 
  Key:   0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
  Nonce: 00112233445566778899aabbccddeeff
