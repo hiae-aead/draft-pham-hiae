@@ -18,11 +18,11 @@ def bytes_to_hex(data: bytes) -> str:
     return data.hex()
 
 
-def run_test(test_num: int, key: str, nonce: str, ad: str, msg: str, 
+def run_test(test_num: int, key: str, nonce: str, ad: str, msg: str,
               expected_ct: str, expected_tag: str) -> bool:
     """Run a single test vector"""
     print(f"\nTest Vector {test_num}:")
-    
+
     # Convert inputs
     key_bytes = hex_to_bytes(key)
     nonce_bytes = hex_to_bytes(nonce)
@@ -30,13 +30,13 @@ def run_test(test_num: int, key: str, nonce: str, ad: str, msg: str,
     msg_bytes = hex_to_bytes(msg) if msg else b''
     expected_ct_bytes = hex_to_bytes(expected_ct) if expected_ct else b''
     expected_tag_bytes = hex_to_bytes(expected_tag)
-    
+
     # Test encryption
     ct, tag = encrypt(msg_bytes, ad_bytes, key_bytes, nonce_bytes)
-    
+
     ct_matches = ct == expected_ct_bytes
     tag_matches = tag == expected_tag_bytes
-    
+
     print(f"  Encryption:")
     print(f"    CT matches: {ct_matches}")
     if not ct_matches:
@@ -46,26 +46,26 @@ def run_test(test_num: int, key: str, nonce: str, ad: str, msg: str,
     if not tag_matches:
         print(f"      Expected: {expected_tag}")
         print(f"      Got:      {bytes_to_hex(tag)}")
-    
+
     # Test decryption
     decrypted = decrypt(ct, tag, ad_bytes, key_bytes, nonce_bytes)
     decrypt_success = decrypted is not None
     msg_matches = decrypted == msg_bytes if decrypt_success else False
-    
+
     print(f"  Decryption:")
     print(f"    Success: {decrypt_success}")
     print(f"    Message matches: {msg_matches}")
     if not msg_matches and decrypt_success:
         print(f"      Expected: {msg}")
         print(f"      Got:      {bytes_to_hex(decrypted)}")
-    
+
     # Test tag verification (should fail with wrong tag)
     if len(tag) > 0:
         wrong_tag = bytes([(tag[0] + 1) % 256]) + tag[1:]
         should_fail = decrypt(ct, wrong_tag, ad_bytes, key_bytes, nonce_bytes)
         tag_verify_works = should_fail is None
         print(f"  Tag verification: {'PASS' if tag_verify_works else 'FAIL'}")
-    
+
     return ct_matches and tag_matches and decrypt_success and msg_matches
 
 
@@ -73,9 +73,9 @@ def main():
     """Run all test vectors"""
     print("HiAE Test Vectors")
     print("=================")
-    
+
     all_passed = True
-    
+
     # Test Vector 1 - Empty plaintext, no AD
     passed = run_test(
         1,
@@ -87,7 +87,7 @@ def main():
         expected_tag="e3b7c5993e804d7e1f95905fe8fa1d74"
     )
     all_passed &= passed
-    
+
     # Test Vector 2 - Single block plaintext, no AD
     passed = run_test(
         2,
@@ -99,7 +99,7 @@ def main():
         expected_tag="2e4d9b3bf320283de63ea5547454878d"
     )
     all_passed &= passed
-    
+
     # Test Vector 3 - Empty plaintext with AD
     passed = run_test(
         3,
@@ -111,7 +111,7 @@ def main():
         expected_tag="531a4d1ed47bda55d01cc510512099e4"
     )
     all_passed &= passed
-    
+
     # Test Vector 4 - Rate-aligned plaintext (256 bytes)
     passed = run_test(
         4,
@@ -138,7 +138,7 @@ a3570482ece70856ae6e6f8d5aa19cc2
         expected_tag="f330ae219d6739aba556fe94776b486b"
     )
     all_passed &= passed
-    
+
     # Test Vector 5 - Rate + 1 byte plaintext
     passed = run_test(
         5,
@@ -166,7 +166,7 @@ f6""",
         expected_tag="1122dc5bedc7cad4e196f7227b7102f3"
     )
     all_passed &= passed
-    
+
     # Test Vector 6 - Rate - 1 byte plaintext
     passed = run_test(
         6,
@@ -193,7 +193,7 @@ fb3ec4fa3b4c648411fd09d4cada31b8
         expected_tag="7eb4461a035fe51eaf4a1829605e6227"
     )
     all_passed &= passed
-    
+
     # Test Vector 7 - Medium plaintext with AD
     passed = run_test(
         7,
@@ -232,7 +232,7 @@ a59c202fab564f0f""",
         expected_tag="74ba4c28296f09101db59c37c4759bcf"
     )
     all_passed &= passed
-    
+
     # Test Vector 8 - Single byte plaintext
     passed = run_test(
         8,
@@ -244,7 +244,7 @@ a59c202fab564f0f""",
         expected_tag="588535eb70c53ba5cce0d215194cb1c9"
     )
     all_passed &= passed
-    
+
     # Test Vector 9 - Two blocks plaintext
     passed = run_test(
         9,
@@ -260,7 +260,7 @@ cd89df4d0288fa9063309e5e323bf78f""",
         expected_tag="2a3144f369a893c3d756f262067e5e59"
     )
     all_passed &= passed
-    
+
     # Test Vector 10 - All zeros plaintext
     passed = run_test(
         10,
@@ -279,7 +279,7 @@ e5e423b253a44c78060435050698ccae""",
         expected_tag="59970b0b35a7822f3b88b63396c2da98"
     )
     all_passed &= passed
-    
+
     print("\n" + "="*50)
     if all_passed:
         print("ALL TESTS PASSED!")
