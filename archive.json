@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-08T01:39:53.865471+00:00",
+  "timestamp": "2025-07-10T01:41:06.730973+00:00",
   "repo": "hiae-aead/draft-pham-hiae",
   "labels": [
     {
@@ -49,6 +49,74 @@
       "color": "ffffff"
     }
   ],
-  "issues": [],
-  "pulls": []
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDOO7UM1s6_qT9r",
+      "title": "Finalization: bits vs bytes",
+      "url": "https://github.com/hiae-aead/draft-pham-hiae/issues/1",
+      "state": "OPEN",
+      "author": "jedisct1",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Both the paper and the specification define `len(x)` or `|x|` as being the length of `x` in *bits*.\n\nHowever, in the finalization function, both the C implementation and the test vectors assume that the length is in *bytes*.\n\nWe should probably use bits everywhere. \n\n/cc @ptmphuong12 ",
+      "createdAt": "2025-07-09T11:09:11Z",
+      "updatedAt": "2025-07-09T11:09:56Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 3,
+      "id": "I_kwDOO7UM1s6_vFI9",
+      "title": "Batch updates",
+      "url": "https://github.com/hiae-aead/draft-pham-hiae/issues/3",
+      "state": "OPEN",
+      "author": "jedisct1",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Since the update function doesn't modify the entire state, it's faster to maintain a cycling index offset rather than rotate the entire state.\n\nThis is how current implementations handle it.\n\nFor this reason, word updates and state rotation are presented as separate steps, to highlight this potential optimization for implementers. This is also why `UpdateEnc` and `Enc` are defined as separate functions, allowing `UpdateEnc` to be reused for batch updates.\n\nHowever, it may be helpful to explicitly document this optimization. It's not urgent, though.",
+      "createdAt": "2025-07-09T18:30:16Z",
+      "updatedAt": "2025-07-09T18:30:16Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
+  "pulls": [
+    {
+      "number": 2,
+      "id": "PR_kwDOO7UM1s6eK3Em",
+      "title": "Comprehensive documentation improvements",
+      "url": "https://github.com/hiae-aead/draft-pham-hiae/pull/2",
+      "state": "OPEN",
+      "author": "jedisct1",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This commit significantly enhances the clarity and technical precision of the draft.\r\n\r\n- Restructured the specification using formal function definitions with clear inputs, outputs, and step-by-step procedures\r\n- Improved readability: Better organization with subsections for core functions, initialization, and processing\r\n- Security considerations: More explicit security requirements for constant-time operations and error handling\r\n- Test vectors: exercise more edge cases to catch implementation issues\r\n\r\nThese changes improve the document's suitability for IETF standardization by providing implementers with unambiguous specifications while maintaining consistency with existing IETF cryptographic algorithm descriptions.",
+      "createdAt": "2025-07-09T18:19:50Z",
+      "updatedAt": "2025-07-09T21:50:42Z",
+      "baseRepository": "hiae-aead/draft-pham-hiae",
+      "baseRefName": "main",
+      "baseRefOid": "5c65979225881847ccd90ce03abd317d784c73da",
+      "headRepository": "hiae-aead/draft-pham-hiae",
+      "headRefName": "ietf",
+      "headRefOid": "1bceea45e921320ddd6e4e78f3799ff541cea316",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "jedisct1",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "/cc @ptmphuong12 ",
+          "createdAt": "2025-07-09T18:20:10Z",
+          "updatedAt": "2025-07-09T18:20:10Z"
+        }
+      ],
+      "reviews": []
+    }
+  ]
 }
