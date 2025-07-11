@@ -1414,8 +1414,7 @@ B.2.  AESL Function Example
 
 B.3.  Update Function Example
 
-   The update function modifies the internal state with an input block
-   at position i.
+   The update function modifies the internal state with an input block.
 
 B.3.1.  Example: Update
 
