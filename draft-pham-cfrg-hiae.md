@@ -1251,7 +1251,7 @@ Output Block: 63cab7040953d051cd60e0e7ba70e18c
 
 ## Update Function Example
 
-The update function modifies the internal state with an input block at position i.
+The update function modifies the internal state with an input block.
 
 ### Example: Update
 
