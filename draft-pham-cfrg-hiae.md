@@ -203,7 +203,14 @@ Primitives:
 - `Truncate(x, n)`: returns the first `n` bits of `x`.
 - `Split(x, n)`: returns `x` split into `n`-bit blocks, ignoring partial blocks.
 - `Tail(x, n)`: returns the last `n` bits of `x`.
-- `AESL(x)`: the linear part of a single AES round, defined as the composition AESL(x) = MixColumns(ShiftRows(SubBytes(x))), where these transformations are as specified in Section 5 of {{FIPS-AES}}. The input `x` is a 128-bit AES state. Notably, this function explicitly excludes the AddRoundKey operation, containing only the SubBytes, ShiftRows, and MixColumns transformations in that order.
+- `AESL(x)`: A single AES round function without key addition. Given a 128-bit AES state `x`, this function applies the following AES transformations in sequence:
+  1. SubBytes: Apply the AES S-box to each byte
+  2. ShiftRows: Cyclically shift the rows of the state
+  3. MixColumns: Mix the columns of the state
+
+  Formally: `AESL(x) = MixColumns(ShiftRows(SubBytes(x)))`
+
+  These transformations are as specified in Section 5 of {{FIPS-AES}}. This is NOT the full AES encryption algorithm. It is a single round without the AddRoundKey operation (equivalent to using a zero round key).
 - `Repeat(n, F)`: `n` sequential evaluations of the function `F`.
 - `CtEq(a, b)`: compares `a` and `b` in constant-time, returning `True` for an exact match and `False` otherwise.
 
