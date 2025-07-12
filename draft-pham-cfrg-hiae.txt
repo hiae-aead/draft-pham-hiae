@@ -587,6 +587,7 @@ Table of Contents
 
    Repeat(32,
      Update(x)
+     Rol()
    )
 
 3.5.  Initialization and Processing Functions
