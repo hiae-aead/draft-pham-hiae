@@ -1262,7 +1262,7 @@ The AESL function performs a single AES encryption round with a zero round key.
 ~~~
 Input Block:  00112233445566778899aabbccddeeff
 
-Output Block: 63cab7040953d051cd60e0e7ba70e18c
+Output Block: 6379e6d9f467fb76ad063cf4d2eb8aa3
 ~~~
 
 ## Update Function Example
