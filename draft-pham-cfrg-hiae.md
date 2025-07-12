@@ -216,7 +216,7 @@ Cryptographic operations:
 
   Formally: `AESL(x) = MixColumns(ShiftRows(SubBytes(x)))`
 
-  These transformations are as specified in Section 5 of {{FIPS-AES}}. This is NOT the full AES encryption algorithm. It is a single round without the AddRoundKey operation (equivalent to using a zero round key).
+  These transformations are as specified in Section 5 of {{FIPS-AES}}. This is NOT the full AES encryption algorithm. It is a single round without the AddRoundKey operation (equivalent to using a zero round key). A test vector for this function is provided in Appendix B.
 
 Control flow and comparison:
 
