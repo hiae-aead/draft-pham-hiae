@@ -22,3 +22,4 @@ draft-pham-hiae.xml
 package-lock.json
 report.xml
 !requirements.txt
+__pycache__
