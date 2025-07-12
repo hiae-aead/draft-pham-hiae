@@ -678,7 +678,7 @@ return mn
 Finalize(ad_len_bits, msg_len_bits)
 ~~~
 
-The `Finalize` function completes the authentication process by generating a 128-bit tag. It incorporates the lengths of both the associated data and message, applies the Diffuse function for final mixing, and combines all state blocks to produce the authentication tag.
+The `Finalize` function completes the authentication process by generating a 128-bit tag. It incorporates the lengths of both the associated data and message (each encoded as 8 bytes in little-endian format), applies the Diffuse function for final mixing, and combines all state blocks to produce the authentication tag.
 
 Inputs:
 
