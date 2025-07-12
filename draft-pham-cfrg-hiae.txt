@@ -5,10 +5,10 @@
 Network Working Group                                           F. Denis
 Internet-Draft                                               Fastly Inc.
 Intended status: Standards Track                                 P. Pham
-Expires: 12 January 2026                                       L. Prabel
+Expires: 13 January 2026                                       L. Prabel
                                                                   S. Sun
                                                                   Huawei
-                                                            11 July 2025
+                                                            12 July 2025
 
 
               The HiAE Authenticated Encryption Algorithm
@@ -42,7 +42,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 January 2026.
+   This Internet-Draft will expire on 13 January 2026.
 
 Copyright Notice
 
@@ -184,7 +184,7 @@ Table of Contents
    Throughout this document, “byte” is used interchangeably with “octet”
    and refers to an 8-bit sequence.
 
-   Primitives:
+   Basic operations:
 
    *  {}: an empty bit array.
 
@@ -197,6 +197,8 @@ Table of Contents
    *  a mod b: the remainder of the Euclidean division between a as the
       dividend and b as the divisor.
 
+   Data manipulation:
+
    *  LE64(x): returns the little-endian encoding of unsigned 64-bit
       integer x.
 
@@ -206,17 +208,31 @@ Table of Contents
 
    *  Truncate(x, n): returns the first n bits of x.
 
+   *  Tail(x, n): returns the last n bits of x.
+
    *  Split(x, n): returns x split into n-bit blocks, ignoring partial
       blocks.
 
-   *  Tail(x, n): returns the last n bits of x.
+   Cryptographic operations:
 
-   *  AESL(x): the linear part of a single AES round, defined as the
-      composition AESL(x) = MixColumns(ShiftRows(SubBytes(x))), where
-      these transformations are as specified in Section 5 of [FIPS-AES].
-      The input x is a 128-bit AES state.  Notably, this function
-      explicitly excludes the AddRoundKey operation, containing only the
-      SubBytes, ShiftRows, and MixColumns transformations in that order.
+   *  AESL(x): A single AES round function without key addition.  Given
+      a 128-bit AES state x, this function applies the following AES
+      transformations in sequence:
+
+      1.  SubBytes: Apply the AES S-box to each byte
+
+      2.  ShiftRows: Cyclically shift the rows of the state
+
+      3.  MixColumns: Mix the columns of the state
+
+      Formally: AESL(x) = MixColumns(ShiftRows(SubBytes(x)))
+
+      These transformations are as specified in Section 5 of [FIPS-AES].
+      This is NOT the full AES encryption algorithm.  It is a single
+      round without the AddRoundKey operation (equivalent to using a
+      zero round key).
+
+   Control flow and comparison:
 
    *  Repeat(n, F): n sequential evaluations of the function F.
 
