@@ -230,7 +230,8 @@ Table of Contents
       These transformations are as specified in Section 5 of [FIPS-AES].
       This is NOT the full AES encryption algorithm.  It is a single
       round without the AddRoundKey operation (equivalent to using a
-      zero round key).
+      zero round key).  A test vector for this function is provided in
+      Appendix B.
 
    Control flow and comparison:
 
@@ -587,7 +588,6 @@ Table of Contents
 
    Repeat(32,
      Update(x)
-     Rol()
    )
 
 3.5.  Initialization and Processing Functions
