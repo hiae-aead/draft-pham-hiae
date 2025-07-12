@@ -2084,7 +2084,7 @@ return mn
 Finalize(ad_len_bits, msg_len_bits)
 </pre><a href="#section-3.5.6-1" class="pilcrow">¶</a>
 </div>
-<p id="section-3.5.6-2">The <code>Finalize</code> function completes the authentication process by generating a 128-bit tag. It incorporates the lengths of both the associated data and message, applies the Diffuse function for final mixing, and combines all state blocks to produce the authentication tag.<a href="#section-3.5.6-2" class="pilcrow">¶</a></p>
+<p id="section-3.5.6-2">The <code>Finalize</code> function completes the authentication process by generating a 128-bit tag. It incorporates the lengths of both the associated data and message (each encoded as 8 bytes in little-endian format), applies the Diffuse function for final mixing, and combines all state blocks to produce the authentication tag.<a href="#section-3.5.6-2" class="pilcrow">¶</a></p>
 <p id="section-3.5.6-3">Inputs:<a href="#section-3.5.6-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3.5.6-4.1">
