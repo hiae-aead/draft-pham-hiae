@@ -191,18 +191,24 @@ The remainder of this document is organized as follows: Section 2 establishes no
 
 Throughout this document, "byte" is used interchangeably with "octet" and refers to an 8-bit sequence.
 
-Primitives:
+Basic operations:
 
 - `{}`: an empty bit array.
 - `|x|`: the length of `x` in bits.
 - `a ^ b`: the bitwise exclusive OR operation between `a` and `b`.
 - `a || b`: the concatenation of `a` and `b`.
 - `a mod b`: the remainder of the Euclidean division between `a` as the dividend and `b` as the divisor.
+
+Data manipulation:
+
 - `LE64(x)`: returns the little-endian encoding of unsigned 64-bit integer `x`.
 - `ZeroPad(x, n)`: returns `x` after appending zeros until its length is a multiple of `n` bits. No padding is added if the length of `x` is already a multiple of `n`, including when `x` is empty.
 - `Truncate(x, n)`: returns the first `n` bits of `x`.
-- `Split(x, n)`: returns `x` split into `n`-bit blocks, ignoring partial blocks.
 - `Tail(x, n)`: returns the last `n` bits of `x`.
+- `Split(x, n)`: returns `x` split into `n`-bit blocks, ignoring partial blocks.
+
+Cryptographic operations:
+
 - `AESL(x)`: A single AES round function without key addition. Given a 128-bit AES state `x`, this function applies the following AES transformations in sequence:
   1. SubBytes: Apply the AES S-box to each byte
   2. ShiftRows: Cyclically shift the rows of the state
@@ -211,6 +217,9 @@ Primitives:
   Formally: `AESL(x) = MixColumns(ShiftRows(SubBytes(x)))`
 
   These transformations are as specified in Section 5 of {{FIPS-AES}}. This is NOT the full AES encryption algorithm. It is a single round without the AddRoundKey operation (equivalent to using a zero round key).
+
+Control flow and comparison:
+
 - `Repeat(n, F)`: `n` sequential evaluations of the function `F`.
 - `CtEq(a, b)`: compares `a` and `b` in constant-time, returning `True` for an exact match and `False` otherwise.
 
