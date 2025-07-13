@@ -31,7 +31,7 @@ author:
     email: lucas.prabel@huawei.com
  -
     ins: S. Sun
-    name: Sun Shuzhou
+    name: Shuzhou Sun
     organization: Huawei
     email: sunshuzhou@huawei.com
 
@@ -167,23 +167,23 @@ informative:
 
 --- abstract
 
-This document describes the high-throughput authenticated encryption algorithm HiAE designed for next-generation wireless systems (6G) and high-speed data transmission applications.
+This document describes HiAE, a high-throughput authenticated encryption algorithm designed for next-generation wireless systems (6G) and high-speed data transmission applications.
 
 --- middle
 
 # Introduction
 
-The evolution of wireless networks toward 6G, alongside the growing demands of Cloud service providers and CDN operators, requires cryptographic algorithms capable of delivering unprecedented throughput while maintaining strong security guarantees. Current high-performance authenticated encryption schemes achieve impressive speeds by leveraging platform-specific SIMD instructions, particularly AES-NI on x86 architectures {{AES-NI}}. Notable examples include AEGIS {{!I-D.irtf-cfrg-aegis-aead}}, SNOW-V {{SNOW-V}}, and Rocca-S {{ROCCA-S}}.
+The evolution of wireless networks toward 6G, alongside the growing demands of cloud service providers and CDN operators, requires cryptographic algorithms capable of delivering unprecedented throughput while maintaining strong security guarantees. Current high-performance authenticated encryption schemes achieve impressive speeds by leveraging platform-specific SIMD instructions, particularly AES-NI on x86 architectures {{AES-NI}}. Notable examples include AEGIS {{!I-D.irtf-cfrg-aegis-aead}}, SNOW-V {{SNOW-V}}, and Rocca-S {{ROCCA-S}}.
 
 While these platform-specific optimizations deliver high performance on their target architectures, they create a significant performance disparity across different hardware platforms. These algorithms excel on x86 processors equipped with AES-NI but exhibit substantially degraded performance on ARM architectures that implement SIMD functionality through NEON instructions. This inconsistency poses a critical challenge for modern network deployments where ARM processors dominate mobile devices, edge computing nodes, and increasingly, data center environments.
 
 The architectural differences between x86 and ARM extend beyond instruction set variations. They encompass fundamental distinctions in how AES round functions are implemented in hardware, pipeline structures, and memory subsystems. These differences mean that algorithms optimized for one architecture may inadvertently create bottlenecks on another, resulting in unpredictable performance characteristics across heterogeneous deployments.
 
-The transition to 6G networks amplifies these challenges. Next-generation wireless systems will rely heavily on software-defined networking (SDN) and Cloud Radio Access Networks (Cloud RAN), requiring cryptographic algorithms that perform consistently across diverse hardware platforms. The stringent latency requirements and massive data rates anticipated for 6G, potentially exceeding 1 Tbps, demand encryption schemes that can leverage the full capabilities of both x86 and ARM architectures without compromise.
+The transition to 6G networks amplifies these challenges. Next-generation wireless systems will rely heavily on software-defined networking (SDN) and cloud radio access networks (Cloud RAN), requiring cryptographic algorithms that perform consistently across diverse hardware platforms. The stringent latency requirements and massive data rates anticipated for 6G, potentially exceeding 1 Tbps, demand encryption schemes that can leverage the full capabilities of both x86 and ARM architectures without compromise.
 
 This document presents HiAE (High-throughput Authenticated Encryption), an authenticated encryption algorithm explicitly designed to address these cross-platform performance challenges. Through careful algorithmic design, HiAE delivers superior performance compared to existing high-throughput algorithms on both x86 and ARM architectures by efficiently utilizing the capabilities of each platform without being overly dependent on architecture-specific features.
 
-The remainder of this document is organized as follows: Section 2 establishes notation and conventions. Section 3 provides the complete specification of the HiAE algorithm, including its three operational modes. Sections 4-6 detail the specific use cases as an AEAD cipher, stream cipher, and MAC. Section 7 analyzes security considerations, while Section 8 discusses implementation aspects. The appendix provides comprehensive test vectors for validation.
+The remainder of this document is organized as follows: Section 2 establishes notation and conventions. Section 3 provides the complete specification of the HiAE algorithm, including its three operational modes. Sections 4–6 detail the specific use cases as an AEAD cipher, stream cipher, and MAC. Section 7 analyzes security considerations, while Section 8 discusses implementation aspects. The appendix provides comprehensive test vectors for validation.
 
 # Conventions and Definitions
 
@@ -231,7 +231,7 @@ AES blocks:
 - `C0`: an AES block built from the following bytes in hexadecimal format: `{ 0x32, 0x43, 0xf6, 0xa8, 0x88, 0x5a, 0x30, 0x8d, 0x31, 0x31, 0x98, 0xa2, 0xe0, 0x37, 0x07, 0x34 }`.
 - `C1`: an AES block built from the following bytes in hexadecimal format: `{ 0x4a, 0x40, 0x93, 0x82, 0x22, 0x99, 0xf3, 0x1d, 0x00, 0x82, 0xef, 0xa9, 0x8e, 0xc4, 0xe6, 0xc8 }`.
 
-The constants C0 and C1 are domain separation constants derived from the fractional parts of π and e respectively.
+The constants C0 and C1 are domain separation constants derived from the fractional parts of π and e, respectively.
 
 Input and output values:
 
@@ -248,7 +248,7 @@ This section provides the complete specification of HiAE. The algorithm operates
 
 ## Algorithm Parameters
 
-HiAE maintains a 2048-bit state, organized as sixteen 128-bit blocks denoted `{S0, S1, S2, ..., S15}`. Each block Si represents a 128-bit AES state that can be processed independently by AES round functions. This large state size provides security margins while enabling efficient parallel processing on modern architectures.
+HiAE maintains a 2048-bit state organized as sixteen 128-bit blocks denoted `{S0, S1, S2, ..., S15}`. Each block Si represents a 128-bit AES state that can be processed independently by AES round functions. This large state size provides security margins while enabling efficient parallel processing on modern architectures.
 
 The parameters for this algorithm, whose meaning is defined in {{!RFC5116, Section 4}}, are:
 
@@ -313,11 +313,11 @@ return ct and tag
 Decrypt(ct, tag, ad, key, nonce)
 ~~~
 
-The `Decrypt` function decrypts a ciphertext, verifies that the authentication tag is correct, and returns the message on success or an error if tag verification failed.
+The `Decrypt` function decrypts a ciphertext, verifies that the authentication tag is correct, and returns the message on success or an error if tag verification fails.
 
 Security:
 
-- If tag verification fails, the decrypted message and wrong authentication tag MUST NOT be given as output. The decrypted message MUST be overwritten with zeros before the function returns.
+- If tag verification fails, the decrypted message and incorrect authentication tag MUST NOT be given as output. The decrypted message MUST be overwritten with zeros before the function returns.
 - The comparison of the input `tag` with the `expected_tag` MUST be done in constant time.
 
 Inputs:
@@ -745,7 +745,7 @@ else:
     return stream
 ~~~
 
-This is equivalent to encrypting a `len` all-zero bits message without associated data and discarding the authentication tag.
+This is equivalent to encrypting a message of `len` zero bits without associated data and discarding the authentication tag.
 
 Instead of relying on the generic `Encrypt` function, implementations can omit the `Finalize` function.
 
@@ -762,7 +762,7 @@ Mac(data, key, nonce)
 Security:
 
 - This is the only function that allows the reuse of `(key, nonce)` pairs with different inputs.
-- HiAE-based MAC functions MUST NOT be used as a hash function: if the key is known, inputs causing state collisions can easily be crafted.
+- HiAE-based MAC functions MUST NOT be used as hash functions: if the key is known, inputs causing state collisions can easily be crafted.
 - Unlike hash-based MACs, tags MUST NOT be used for key derivation as there is no guarantee that they are uniformly random.
 
 Inputs:
@@ -791,42 +791,42 @@ return tag
 
 ## Classic Setting
 
-HiAE provides `256`-bit security against key recovery and state recovery attacks, along with `128`-bit security for integrity against forgery attempts.
+HiAE provides 256-bit security against key recovery and state recovery attacks, along with 128-bit security for integrity against forgery attempts.
 
-It is important to note that the encryption security assumes the attacker cannot successfully forge messages through repeated trials. {{HiAE-Clarification}}
+It is important to note that the encryption security assumes the attacker cannot successfully forge messages through repeated trials {{HiAE-Clarification}}.
 
-Regarding keystream bias attacks, analysis shows that at least `150`-bit security is guaranteed by HiAE.
+Regarding keystream bias attacks, analysis shows that at least 150-bit security is guaranteed by HiAE.
 
 Finally, HiAE is assumed to be secure against key-committing attacks, but it has not been proven to be secure in the everything-committing setting.
 
 ## Quantum Setting
 
-HiAE targets a security strength of `128` bits against key recovery attacks and forgery attacks in the quantum setting. Security is not claimed against online superposition queries to the cryptographic oracle attacks, as such attacks are highly impractical in real-world applications.
+HiAE targets a security strength of 128 bits against key recovery attacks and forgery attacks in the quantum setting. Security is not claimed against online superposition queries to cryptographic oracle attacks, as such attacks are highly impractical in real-world applications.
 
-## Attacks Considerations
+## Attack Considerations
 
 HiAE is assumed to be secure against the following attacks:
 
-1. Key-Recovery Attack: 256-bit security against key-recovery attacks.
+1. Key-Recovery Attack: 256-bit security against key recovery attacks.
 2. Differential Attack: 256-bit security against differential attacks in the initialization phase.
 3. Forgery Attack: 128-bit security against forgery attacks.
 4. Integral Attack: Secure against integral attacks.
-5. State-recovery Attack:
+5. State-Recovery Attack:
     * Guess-and-Determine Attack: The time complexity of the guess-and-determine attack cannot be lower than 2<sup>256</sup>.
     * Algebraic Attack: The system of equations to recover HiAE states cannot be solved with time complexity lower than 2<sup>256</sup>.
-6. The Linear Bias: at least 150-bit security against a statistical attack.
-7. Key-committing attacks: Secure in the FROB, CMT1, and CMT2 models.
-8. Everything-committing attacks: Security of HiAE is not claimed in the CMT3 model.
+6. Linear Bias: At least 150-bit security against statistical attacks.
+7. Key-Committing Attacks: Secure in the FROB, CMT1, and CMT2 models.
+8. Everything-Committing Attacks: Security is not claimed in the CMT3 model.
 
 The details of the cryptanalysis can be found in the paper {{HiAE}}.
 
 # Implementation Considerations
 
-HiAE is designed to balance the performance of XOR and AES-NI instructions across both ARM and x86 architectures, while being optimized to push performance to its limits. The algorithm's XAXX structure enables platform-specific optimizations by exploiting the fundamental differences in how ARM and Intel processors implement AES round functions.
+HiAE is designed to balance the performance of XOR and AES instructions across both ARM and x86 architectures while being optimized to push performance to its limits. The algorithm's XAXX structure enables platform-specific optimizations by exploiting the fundamental differences in how ARM and Intel processors implement AES round functions.
 
 ## Platform-Specific Optimizations
 
-The key to HiAE's cross-platform efficiency lies in understanding how different architectures implement AES operations:
+The key to HiAE's cross-platform efficiency lies in understanding how different architectures implement AES operations.
 
 ### ARM NEON Architecture
 
@@ -858,7 +858,7 @@ This pattern maps directly to the `aesenc` instruction:
 aesenc(x, y)
 ~~~
 
-The Intel AES-NI instruction set was designed for standard AES modes where the round key is XORed after the round function, making `AESL(x) ^ y` a single-instruction operation.
+The Intel AES-NI instruction set was designed for standard AES modes where the round key is XORed after the round function, making `AESL(x) ^ y` a single instruction operation.
 
 ## Leveraging XOR Properties
 
@@ -1267,7 +1267,7 @@ Output Block: 6379e6d9f467fb76ad063cf4d2eb8aa3
 
 ## Update Function Example
 
-The update function modifies the internal state with an input block.
+The Update function modifies the internal state with an input block.
 
 ### Example: Update
 
