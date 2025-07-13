@@ -910,11 +910,10 @@ return mn
    5.  State-recovery Attack:
 
        *  Guess-and-Determine Attack: The time complexity of the guess-
-          and-determine attack cannot be lower than 2^{256}.
+          and-determine attack cannot be lower than 2^256.
 
        *  Algebraic Attack: The system of equations to recover HiAE
-          states cannot be solved with time complexity lower than
-          2^{256}.
+          states cannot be solved with time complexity lower than 2^256.
 
    6.  The Linear Bias: at least 150-bit security against a statistical
        attack.
