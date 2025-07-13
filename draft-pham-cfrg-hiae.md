@@ -812,8 +812,8 @@ HiAE is assumed to be secure against the following attacks:
 3. Forgery Attack: 128-bit security against forgery attacks.
 4. Integral Attack: Secure against integral attacks.
 5. State-recovery Attack:
-    * Guess-and-Determine Attack: The time complexity of the guess-and-determine attack cannot be lower than 2^{256}.
-    * Algebraic Attack: The system of equations to recover HiAE states cannot be solved with time complexity lower than 2^{256}.
+    * Guess-and-Determine Attack: The time complexity of the guess-and-determine attack cannot be lower than 2<sup>256</sup>.
+    * Algebraic Attack: The system of equations to recover HiAE states cannot be solved with time complexity lower than 2<sup>256</sup>.
 6. The Linear Bias: at least 150-bit security against a statistical attack.
 7. Key-committing attacks: Secure in the FROB, CMT1, and CMT2 models.
 8. Everything-committing attacks: Security of HiAE is not claimed in the CMT3 model.
