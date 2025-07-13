@@ -5,10 +5,10 @@
 Network Working Group                                           F. Denis
 Internet-Draft                                               Fastly Inc.
 Intended status: Standards Track                                 P. Pham
-Expires: 13 January 2026                                       L. Prabel
+Expires: 14 January 2026                                       L. Prabel
                                                                   S. Sun
                                                                   Huawei
-                                                            12 July 2025
+                                                            13 July 2025
 
 
               The HiAE Authenticated Encryption Algorithm
@@ -42,7 +42,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 13 January 2026.
+   This Internet-Draft will expire on 14 January 2026.
 
 Copyright Notice
 
@@ -121,19 +121,21 @@ Table of Contents
 
 1.  Introduction
 
-   The evolution of wireless networks toward 6G demands cryptographic
-   algorithms capable of delivering unprecedented throughput while
-   maintaining strong security guarantees.  Current high-performance
-   authenticated encryption schemes frequently leverage platform-
-   specific SIMD instructions, particularly AES-NI on x86 architectures
-   [AES-NI], to achieve impressive speeds exceeding 100 Gbps.  Notable
-   examples include AEGIS [I-D.irtf-cfrg-aegis-aead], SNOW-V [SNOW-V],
-   and Rocca-S [ROCCA-S].
+   The evolution of wireless networks toward 6G, alongside the growing
+   demands of Cloud service providers and CDN operators, requires
+   cryptographic algorithms capable of delivering unprecedented
+   throughput while maintaining strong security guarantees.  Current
+   high-performance authenticated encryption schemes achieve impressive
+   speeds by leveraging platform-specific SIMD instructions,
+   particularly AES-NI on x86 architectures [AES-NI].  Notable examples
+   include AEGIS [I-D.irtf-cfrg-aegis-aead], SNOW-V [SNOW-V], and
+   Rocca-S [ROCCA-S].
 
-   However, this optimization strategy creates a significant performance
-   disparity across different hardware platforms.  While these
-   algorithms excel on x86 processors equipped with AES-NI, they often
-   exhibit substantially degraded performance on ARM architectures that
+   While these platform-specific optimizations deliver high performance
+   on their target architectures, they create a significant performance
+   disparity across different hardware platforms.  These algorithms
+   excel on x86 processors equipped with AES-NI but exhibit
+   substantially degraded performance on ARM architectures that
    implement SIMD functionality through NEON instructions.  This
    inconsistency poses a critical challenge for modern network
    deployments where ARM processors dominate mobile devices, edge
@@ -152,18 +154,18 @@ Table of Contents
    networking (SDN) and Cloud Radio Access Networks (Cloud RAN),
    requiring cryptographic algorithms that perform consistently across
    diverse hardware platforms.  The stringent latency requirements and
-   massive data rates anticipated for 6G—potentially exceeding 1
-   Tbps—demand encryption schemes that can leverage the full
-   capabilities of both x86 and ARM architectures without compromise.
+   massive data rates anticipated for 6G, potentially exceeding 1 Tbps,
+   demand encryption schemes that can leverage the full capabilities of
+   both x86 and ARM architectures without compromise.
 
    This document presents HiAE (High-throughput Authenticated
    Encryption), an authenticated encryption algorithm explicitly
    designed to address these cross-platform performance challenges.
-   HiAE achieves competitive performance on both x86 and ARM
-   architectures through careful algorithmic design that balances the
-   strengths and constraints of each platform, making it particularly
-   well-suited for the heterogeneous computing environments that will
-   characterize 6G networks and beyond.
+   Through careful algorithmic design, HiAE delivers superior
+   performance compared to existing high-throughput algorithms on both
+   x86 and ARM architectures by efficiently utilizing the capabilities
+   of each platform without being overly dependent on architecture-
+   specific features.
 
    The remainder of this document is organized as follows: Section 2
    establishes notation and conventions.  Section 3 provides the
