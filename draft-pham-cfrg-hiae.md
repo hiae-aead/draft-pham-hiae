@@ -908,6 +908,10 @@ ci = S9 ^ (mi ^ temp)    // Two XORs grouped for efficiency
 t = mi ^ t2              // Reuse computation
 ~~~
 
+## Decryption Performance
+
+It is expected that HiAE decryption will be slower than encryption due to inherent data dependencies in the algorithm. While encryption can process keystream generation and state updates in parallel, decryption must first recover the plaintext before performing any state updates. This sequential dependency chain is a consequence of HiAE's design, which incorporates plaintext into the internal state to provide strong authentication properties.
+
 ## Security Considerations for Implementations
 
 The security of HiAE against timing and physical attacks is limited by the implementation of the underlying `AESL` function. Failure to implement `AESL` in a fashion safe against timing and physical attacks, such as differential power analysis, timing analysis, or fault injection attacks, may lead to leakage of secret key material or state information. The exact mitigations required for timing and physical attacks depend on the threat model in question.
