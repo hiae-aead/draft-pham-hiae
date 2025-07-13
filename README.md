@@ -19,11 +19,12 @@ HiAE is an AES-based AEAD cipher optimized for cross-platform efficiency (ARM an
 
 ## Known Implementations
 
-| Name                                                                                                           | Language |
-| -------------------------------------------------------------------------------------------------------------- | -------- |
-| [This document's simple implementation](https://github.com/hiae-aead/draft-pham-hiae/tree/main/implementation) | Python   |
-| [Reference implementation](https://github.com/Concyclics/HiAE/tree/main)                                       | C        |
-| [Zig-HiAE](https://github.com/jedisct1/zig-hiae)                                                               | Zig      |
+| Name                                                                                                           | Language   |
+| -------------------------------------------------------------------------------------------------------------- | ---------- |
+| [This document's simple implementation](https://github.com/hiae-aead/draft-pham-hiae/tree/main/implementation) | Python     |
+| [Reference implementation](https://github.com/Concyclics/HiAE/tree/main)                                       | C          |
+| [Zig-HiAE](https://github.com/jedisct1/zig-hiae)                                                               | Zig        |
+| [JavaScript (TypeScript)](https://github.com/jedisc1/hiae.js)                                                  | JavaScript |
 
 ## Contributing
 
