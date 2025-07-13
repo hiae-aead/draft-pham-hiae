@@ -16,9 +16,9 @@ Expires: 14 January 2026                                       L. Prabel
 
 Abstract
 
-   This document describes the high-throughput authenticated encryption
-   algorithm HiAE designed for next-generation wireless systems (6G) and
-   high-speed data transmission applications.
+   This document describes HiAE, a high-throughput authenticated
+   encryption algorithm designed for next-generation wireless systems
+   (6G) and high-speed data transmission applications.
 
 Discussion Venues
 
@@ -83,7 +83,7 @@ Table of Contents
    6.  Security Considerations
      6.1.  Classic Setting
      6.2.  Quantum Setting
-     6.3.  Attacks Considerations
+     6.3.  Attack Considerations
    7.  Implementation Considerations
      7.1.  Platform-Specific Optimizations
        7.1.1.  ARM NEON Architecture
@@ -122,7 +122,7 @@ Table of Contents
 1.  Introduction
 
    The evolution of wireless networks toward 6G, alongside the growing
-   demands of Cloud service providers and CDN operators, requires
+   demands of cloud service providers and CDN operators, requires
    cryptographic algorithms capable of delivering unprecedented
    throughput while maintaining strong security guarantees.  Current
    high-performance authenticated encryption schemes achieve impressive
@@ -151,7 +151,7 @@ Table of Contents
 
    The transition to 6G networks amplifies these challenges.  Next-
    generation wireless systems will rely heavily on software-defined
-   networking (SDN) and Cloud Radio Access Networks (Cloud RAN),
+   networking (SDN) and cloud radio access networks (Cloud RAN),
    requiring cryptographic algorithms that perform consistently across
    diverse hardware platforms.  The stringent latency requirements and
    massive data rates anticipated for 6G, potentially exceeding 1 Tbps,
@@ -170,7 +170,7 @@ Table of Contents
    The remainder of this document is organized as follows: Section 2
    establishes notation and conventions.  Section 3 provides the
    complete specification of the HiAE algorithm, including its three
-   operational modes.  Sections 4-6 detail the specific use cases as an
+   operational modes.  Sections 4–6 detail the specific use cases as an
    AEAD cipher, stream cipher, and MAC.  Section 7 analyzes security
    considerations, while Section 8 discusses implementation aspects.
    The appendix provides comprehensive test vectors for validation.
@@ -260,7 +260,7 @@ Table of Contents
       0x82, 0xef, 0xa9, 0x8e, 0xc4, 0xe6, 0xc8 }.
 
    The constants C0 and C1 are domain separation constants derived from
-   the fractional parts of π and e respectively.
+   the fractional parts of π and e, respectively.
 
    Input and output values:
 
@@ -286,7 +286,7 @@ Table of Contents
 
 3.1.  Algorithm Parameters
 
-   HiAE maintains a 2048-bit state, organized as sixteen 128-bit blocks
+   HiAE maintains a 2048-bit state organized as sixteen 128-bit blocks
    denoted {S0, S1, S2, ..., S15}. Each block Si represents a 128-bit
    AES state that can be processed independently by AES round functions.
    This large state size provides security margins while enabling
@@ -373,11 +373,11 @@ Table of Contents
 
    The Decrypt function decrypts a ciphertext, verifies that the
    authentication tag is correct, and returns the message on success or
-   an error if tag verification failed.
+   an error if tag verification fails.
 
    Security:
 
-   *  If tag verification fails, the decrypted message and wrong
+   *  If tag verification fails, the decrypted message and incorrect
       authentication tag MUST NOT be given as output.  The decrypted
       message MUST be overwritten with zeros before the function
       returns.
@@ -815,7 +815,7 @@ return mn
        stream, tag = Encrypt(ZeroPad({ 0 }, len), {}, key, nonce)
        return stream
 
-   This is equivalent to encrypting a len all-zero bits message without
+   This is equivalent to encrypting a message of len zero bits without
    associated data and discarding the authentication tag.
 
    Instead of relying on the generic Encrypt function, implementations
@@ -837,7 +837,7 @@ return mn
    *  This is the only function that allows the reuse of (key, nonce)
       pairs with different inputs.
 
-   *  HiAE-based MAC functions MUST NOT be used as a hash function: if
+   *  HiAE-based MAC functions MUST NOT be used as hash functions: if
       the key is known, inputs causing state collisions can easily be
       crafted.
 
@@ -875,8 +875,8 @@ return mn
    forgery attempts.
 
    It is important to note that the encryption security assumes the
-   attacker cannot successfully forge messages through repeated trials.
-   [HiAE-Clarification]
+   attacker cannot successfully forge messages through repeated trials
+   [HiAE-Clarification].
 
    Regarding keystream bias attacks, analysis shows that at least
    150-bit security is guaranteed by HiAE.
@@ -889,15 +889,15 @@ return mn
 
    HiAE targets a security strength of 128 bits against key recovery
    attacks and forgery attacks in the quantum setting.  Security is not
-   claimed against online superposition queries to the cryptographic
-   oracle attacks, as such attacks are highly impractical in real-world
+   claimed against online superposition queries to cryptographic oracle
+   attacks, as such attacks are highly impractical in real-world
    applications.
 
-6.3.  Attacks Considerations
+6.3.  Attack Considerations
 
    HiAE is assumed to be secure against the following attacks:
 
-   1.  Key-Recovery Attack: 256-bit security against key-recovery
+   1.  Key-Recovery Attack: 256-bit security against key recovery
        attacks.
 
    2.  Differential Attack: 256-bit security against differential
@@ -907,7 +907,7 @@ return mn
 
    4.  Integral Attack: Secure against integral attacks.
 
-   5.  State-recovery Attack:
+   5.  State-Recovery Attack:
 
        *  Guess-and-Determine Attack: The time complexity of the guess-
           and-determine attack cannot be lower than 2^256.
@@ -915,21 +915,21 @@ return mn
        *  Algebraic Attack: The system of equations to recover HiAE
           states cannot be solved with time complexity lower than 2^256.
 
-   6.  The Linear Bias: at least 150-bit security against a statistical
-       attack.
+   6.  Linear Bias: At least 150-bit security against statistical
+       attacks.
 
-   7.  Key-committing attacks: Secure in the FROB, CMT1, and CMT2
+   7.  Key-Committing Attacks: Secure in the FROB, CMT1, and CMT2
        models.
 
-   8.  Everything-committing attacks: Security of HiAE is not claimed in
-       the CMT3 model.
+   8.  Everything-Committing Attacks: Security is not claimed in the
+       CMT3 model.
 
    The details of the cryptanalysis can be found in the paper [HiAE].
 
 7.  Implementation Considerations
 
-   HiAE is designed to balance the performance of XOR and AES-NI
-   instructions across both ARM and x86 architectures, while being
+   HiAE is designed to balance the performance of XOR and AES
+   instructions across both ARM and x86 architectures while being
    optimized to push performance to its limits.  The algorithm’s XAXX
    structure enables platform-specific optimizations by exploiting the
    fundamental differences in how ARM and Intel processors implement AES
@@ -938,7 +938,7 @@ return mn
 7.1.  Platform-Specific Optimizations
 
    The key to HiAE’s cross-platform efficiency lies in understanding how
-   different architectures implement AES operations:
+   different architectures implement AES operations.
 
 7.1.1.  ARM NEON Architecture
 
@@ -967,7 +967,7 @@ return mn
 
    The Intel AES-NI instruction set was designed for standard AES modes
    where the round key is XORed after the round function, making AESL(x)
-   ^ y a single-instruction operation.
+   ^ y a single instruction operation.
 
 7.2.  Leveraging XOR Properties
 
@@ -1432,7 +1432,7 @@ B.2.  AESL Function Example
 
 B.3.  Update Function Example
 
-   The update function modifies the internal state with an input block.
+   The Update function modifies the internal state with an input block.
 
 B.3.1.  Example: Update
 
@@ -1563,6 +1563,6 @@ Authors' Addresses
    Email: lucas.prabel@huawei.com
 
 
-   Sun Shuzhou
+   Shuzhou Sun
    Huawei
    Email: sunshuzhou@huawei.com
