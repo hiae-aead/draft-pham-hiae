@@ -91,8 +91,9 @@ Table of Contents
      7.2.  Leveraging XOR Properties
        7.2.1.  Example: The Update Function
        7.2.2.  Multiple XOR Chains
-     7.3.  Security Considerations for Implementations
-     7.4.  Validation
+     7.3.  Decryption Performance
+     7.4.  Security Considerations for Implementations
+     7.5.  Validation
    8.  IANA Considerations
    9.  References
      9.1.  Normative References
@@ -1010,7 +1011,17 @@ S0 = AESL(S13) ^ t       // Also matches AESL(x) ^ y pattern
    ci = S9 ^ (mi ^ temp)    // Two XORs grouped for efficiency
    t = mi ^ t2              // Reuse computation
 
-7.3.  Security Considerations for Implementations
+7.3.  Decryption Performance
+
+   It is expected that HiAE decryption will be slower than encryption
+   due to inherent data dependencies in the algorithm.  While encryption
+   can process keystream generation and state updates in parallel,
+   decryption must first recover the plaintext before performing any
+   state updates.  This sequential dependency chain is a consequence of
+   HiAE’s design, which incorporates plaintext into the internal state
+   to provide strong authentication properties.
+
+7.4.  Security Considerations for Implementations
 
    The security of HiAE against timing and physical attacks is limited
    by the implementation of the underlying AESL function.  Failure to
@@ -1030,7 +1041,7 @@ S0 = AESL(S13) ^ t       // Also matches AESL(x) ^ y pattern
    *  The optimization does not introduce timing variations based on
       input data
 
-7.4.  Validation
+7.5.  Validation
 
    A complete list of known implementations and integrations is
    available at https://github.com/hiae-aead/draft-pham-hiae, including

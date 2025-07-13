@@ -1260,10 +1260,13 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.3">
-                <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-security-considerations-for" class="internal xref">Security Considerations for Implementations</a></p>
+                <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-decryption-performance" class="internal xref">Decryption Performance</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.4">
-                <p id="section-toc.1-1.7.2.4.1"><a href="#section-7.4" class="auto internal xref">7.4</a>.  <a href="#name-validation" class="internal xref">Validation</a></p>
+                <p id="section-toc.1-1.7.2.4.1"><a href="#section-7.4" class="auto internal xref">7.4</a>.  <a href="#name-security-considerations-for" class="internal xref">Security Considerations for Implementations</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.5">
+                <p id="section-toc.1-1.7.2.5.1"><a href="#section-7.5" class="auto internal xref">7.5</a>.  <a href="#name-validation" class="internal xref">Validation</a></p>
 </li>
             </ul>
 </li>
@@ -2428,32 +2431,40 @@ t = mi ^ t2              // Reuse computation
 </div>
 </section>
 </div>
-<div id="security-considerations-for-implementations">
+<div id="decryption-performance">
 <section id="section-7.3">
-        <h3 id="name-security-considerations-for">
-<a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-security-considerations-for" class="section-name selfRef">Security Considerations for Implementations</a>
+        <h3 id="name-decryption-performance">
+<a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-decryption-performance" class="section-name selfRef">Decryption Performance</a>
         </h3>
-<p id="section-7.3-1">The security of HiAE against timing and physical attacks is limited by the implementation of the underlying <code>AESL</code> function. Failure to implement <code>AESL</code> in a fashion safe against timing and physical attacks, such as differential power analysis, timing analysis, or fault injection attacks, may lead to leakage of secret key material or state information. The exact mitigations required for timing and physical attacks depend on the threat model in question.<a href="#section-7.3-1" class="pilcrow">¶</a></p>
-<p id="section-7.3-2">When implementing the platform-specific optimizations described above, care must be taken to ensure that:<a href="#section-7.3-2" class="pilcrow">¶</a></p>
+<p id="section-7.3-1">It is expected that HiAE decryption will be slower than encryption due to inherent data dependencies in the algorithm. While encryption can process keystream generation and state updates in parallel, decryption must first recover the plaintext before performing any state updates. This sequential dependency chain is a consequence of HiAE’s design, which incorporates plaintext into the internal state to provide strong authentication properties.<a href="#section-7.3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="security-considerations-for-implementations">
+<section id="section-7.4">
+        <h3 id="name-security-considerations-for">
+<a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-security-considerations-for" class="section-name selfRef">Security Considerations for Implementations</a>
+        </h3>
+<p id="section-7.4-1">The security of HiAE against timing and physical attacks is limited by the implementation of the underlying <code>AESL</code> function. Failure to implement <code>AESL</code> in a fashion safe against timing and physical attacks, such as differential power analysis, timing analysis, or fault injection attacks, may lead to leakage of secret key material or state information. The exact mitigations required for timing and physical attacks depend on the threat model in question.<a href="#section-7.4-1" class="pilcrow">¶</a></p>
+<p id="section-7.4-2">When implementing the platform-specific optimizations described above, care must be taken to ensure that:<a href="#section-7.4-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-7.3-3.1">
-            <p id="section-7.3-3.1.1">All operations complete in constant time<a href="#section-7.3-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-7.4-3.1">
+            <p id="section-7.4-3.1.1">All operations complete in constant time<a href="#section-7.4-3.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-7.3-3.2">
-            <p id="section-7.3-3.2.1">No secret-dependent memory accesses occur<a href="#section-7.3-3.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.4-3.2">
+            <p id="section-7.4-3.2.1">No secret-dependent memory accesses occur<a href="#section-7.4-3.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-7.3-3.3">
-            <p id="section-7.3-3.3.1">The optimization does not introduce timing variations based on input data<a href="#section-7.3-3.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.4-3.3">
+            <p id="section-7.4-3.3.1">The optimization does not introduce timing variations based on input data<a href="#section-7.4-3.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
 </div>
 <div id="validation">
-<section id="section-7.4">
+<section id="section-7.5">
         <h3 id="name-validation">
-<a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-validation" class="section-name selfRef">Validation</a>
+<a href="#section-7.5" class="section-number selfRef">7.5. </a><a href="#name-validation" class="section-name selfRef">Validation</a>
         </h3>
-<p id="section-7.4-1">A complete list of known implementations and integrations is available at <span><a href="https://github.com/hiae-aead/draft-pham-hiae">https://github.com/hiae-aead/draft-pham-hiae</a></span>, including reference implementations. A comprehensive comparison of HiAE’s performance with other high-throughput authenticated encryption schemes on ARM and x86 architectures is also provided, demonstrating the effectiveness of these platform-specific optimizations.<a href="#section-7.4-1" class="pilcrow">¶</a></p>
+<p id="section-7.5-1">A complete list of known implementations and integrations is available at <span><a href="https://github.com/hiae-aead/draft-pham-hiae">https://github.com/hiae-aead/draft-pham-hiae</a></span>, including reference implementations. A comprehensive comparison of HiAE’s performance with other high-throughput authenticated encryption schemes on ARM and x86 architectures is also provided, demonstrating the effectiveness of these platform-specific optimizations.<a href="#section-7.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
