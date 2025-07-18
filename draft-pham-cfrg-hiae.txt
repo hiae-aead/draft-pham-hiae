@@ -5,10 +5,10 @@
 Network Working Group                                           F. Denis
 Internet-Draft                                               Fastly Inc.
 Intended status: Standards Track                                 P. Pham
-Expires: 14 January 2026                                       L. Prabel
+Expires: 19 January 2026                                       L. Prabel
                                                                   S. Sun
                                                                   Huawei
-                                                            13 July 2025
+                                                            18 July 2025
 
 
               The HiAE Authenticated Encryption Algorithm
@@ -42,7 +42,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 14 January 2026.
+   This Internet-Draft will expire on 19 January 2026.
 
 Copyright Notice
 
@@ -89,8 +89,6 @@ Table of Contents
        7.1.1.  ARM NEON Architecture
        7.1.2.  Intel x86 Architecture with AES-NI
      7.2.  Leveraging XOR Properties
-       7.2.1.  Example: The Update Function
-       7.2.2.  Multiple XOR Chains
      7.3.  Decryption Performance
      7.4.  Security Considerations for Implementations
      7.5.  Validation
@@ -980,36 +978,6 @@ return mn
 
    These properties allow implementations to reorder operations to match
    the target platform’s efficient patterns.
-
-7.2.1.  Example: The Update Function
-
-   Consider the core Update function operations:
-
-   t = AESL(S0 ^ S1) ^ xi
-   S0 = AESL(S13) ^ t
-
-   On ARM, the first line can be optimized by reordering:
-
-  t = xi ^ AESL(S0 ^ S1)  // Matches ARM's efficient z ^ AESL(x) pattern
-
-   On Intel, the operations already match the efficient pattern:
-
-t = AESL(S0 ^ S1) ^ xi   // Matches Intel's efficient AESL(x) ^ y pattern
-S0 = AESL(S13) ^ t       // Also matches AESL(x) ^ y pattern
-
-7.2.2.  Multiple XOR Chains
-
-   The UpdateEnc function demonstrates how multiple XORs can be
-   reordered:
-
-   t = AESL(S0 ^ S1) ^ mi
-   ci = t ^ S9
-
-   On ARM, this can be implemented as:
-
-   t2 = AESL(S0 ^ S1)
-   ci = S9 ^ (mi ^ temp)    // Two XORs grouped for efficiency
-   t = mi ^ t2              // Reuse computation
 
 7.3.  Decryption Performance
 

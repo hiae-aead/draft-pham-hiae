@@ -12,11 +12,11 @@
 <meta content="
        This document describes HiAE, a high-throughput authenticated encryption algorithm designed for next-generation wireless systems (6G) and high-speed data transmission applications. 
     " name="description">
-<meta content="xml2rfc 3.29.0" name="generator">
+<meta content="xml2rfc 3.30.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-pham-cfrg-hiae-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.29.0
+  xml2rfc 3.30.0
     Python 3.12.11
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
@@ -1051,7 +1051,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Denis, et al.</td>
-<td class="center">Expires 14 January 2026</td>
+<td class="center">Expires 19 January 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1064,12 +1064,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-pham-cfrg-hiae-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-07-13" class="published">13 July 2025</time>
+<time datetime="2025-07-18" class="published">18 July 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-01-14">14 January 2026</time></dd>
+<dd class="expires"><time datetime="2026-01-19">19 January 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1123,7 +1123,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 14 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 19 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1250,14 +1250,6 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
                 <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-leveraging-xor-properties" class="internal xref">Leveraging XOR Properties</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2.2.1">
-                    <p id="section-toc.1-1.7.2.2.2.1.1"><a href="#section-7.2.1" class="auto internal xref">7.2.1</a>.  <a href="#name-example-the-update-function" class="internal xref">Example: The Update Function</a></p>
-</li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2.2.2">
-                    <p id="section-toc.1-1.7.2.2.2.2.1"><a href="#section-7.2.2" class="auto internal xref">7.2.2</a>.  <a href="#name-multiple-xor-chains" class="internal xref">Multiple XOR Chains</a></p>
-</li>
-                </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.3">
                 <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-decryption-performance" class="internal xref">Decryption Performance</a></p>
@@ -2380,55 +2372,6 @@ aesenc(x, y)
 </li>
         </ul>
 <p id="section-7.2-3">These properties allow implementations to reorder operations to match the target platform’s efficient patterns.<a href="#section-7.2-3" class="pilcrow">¶</a></p>
-<div id="example-the-update-function">
-<section id="section-7.2.1">
-          <h4 id="name-example-the-update-function">
-<a href="#section-7.2.1" class="section-number selfRef">7.2.1. </a><a href="#name-example-the-update-function" class="section-name selfRef">Example: The Update Function</a>
-          </h4>
-<p id="section-7.2.1-1">Consider the core Update function operations:<a href="#section-7.2.1-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.1-2">
-<pre>
-t = AESL(S0 ^ S1) ^ xi
-S0 = AESL(S13) ^ t
-</pre><a href="#section-7.2.1-2" class="pilcrow">¶</a>
-</div>
-<p id="section-7.2.1-3">On ARM, the first line can be optimized by reordering:<a href="#section-7.2.1-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.1-4">
-<pre>
-t = xi ^ AESL(S0 ^ S1)  // Matches ARM's efficient z ^ AESL(x) pattern
-</pre><a href="#section-7.2.1-4" class="pilcrow">¶</a>
-</div>
-<p id="section-7.2.1-5">On Intel, the operations already match the efficient pattern:<a href="#section-7.2.1-5" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.1-6">
-<pre>
-t = AESL(S0 ^ S1) ^ xi   // Matches Intel's efficient AESL(x) ^ y pattern
-S0 = AESL(S13) ^ t       // Also matches AESL(x) ^ y pattern
-</pre><a href="#section-7.2.1-6" class="pilcrow">¶</a>
-</div>
-</section>
-</div>
-<div id="multiple-xor-chains">
-<section id="section-7.2.2">
-          <h4 id="name-multiple-xor-chains">
-<a href="#section-7.2.2" class="section-number selfRef">7.2.2. </a><a href="#name-multiple-xor-chains" class="section-name selfRef">Multiple XOR Chains</a>
-          </h4>
-<p id="section-7.2.2-1">The UpdateEnc function demonstrates how multiple XORs can be reordered:<a href="#section-7.2.2-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.2-2">
-<pre>
-t = AESL(S0 ^ S1) ^ mi
-ci = t ^ S9
-</pre><a href="#section-7.2.2-2" class="pilcrow">¶</a>
-</div>
-<p id="section-7.2.2-3">On ARM, this can be implemented as:<a href="#section-7.2.2-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.2-4">
-<pre>
-t2 = AESL(S0 ^ S1)
-ci = S9 ^ (mi ^ temp)    // Two XORs grouped for efficiency
-t = mi ^ t2              // Reuse computation
-</pre><a href="#section-7.2.2-4" class="pilcrow">¶</a>
-</div>
-</section>
-</div>
 </section>
 </div>
 <div id="decryption-performance">
