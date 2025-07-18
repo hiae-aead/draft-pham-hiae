@@ -834,8 +834,8 @@ The following optimizations leverage architectural differences between ARM and I
 
 ARM processors with NEON SIMD extensions can efficiently compute `AESL(x^y)` and (with SHA3 extensions) three-way XOR operations. For convenience, the following additional primitives can be defined:
 
-- `XAESL(x,y)`: Computes `AESL(x^y)` in a single fused operation (`AESE ∘ AESMC`)
-- `XOR3(a,b,c)`: Computes `a^b^c` in a single three-way XOR instruction (`EOR3`)
+- `XAESL(x,y)`: Computes `AESL(x^y)` in a single fused operation (assembly instruction `AESE ∘ AESMC`, or equivalently C intrinsic `vaesmcq_u8(vaeseq_u8(x,y))`)
+- `XOR3(x,y,z)`: Computes `x^y^z` in a single three-way XOR instruction (assembly instruction `EOR3`, or equivalently C intrinsic `veor3q_u8(x,y,z)`)
 
 #### ARM-Optimized Update Function
 
@@ -915,7 +915,7 @@ return mn
 
 Intel processors with AES-NI can efficiently compute `AESL(y)^z` patterns. We can define the following additional function:
 
-- `AESLX(y,z)`: Computes `AESL(y) ^ z` using a single instruction (`AESENC`)
+- `AESLX(y,z)`: Computes `AESL(y) ^ z` using a single instruction (assembly instruction `AESENC`, or equivalently C intrinsic `_mm_aesenc_si128(y, z)`)
 
 #### Intel-Optimized Update Function
 
