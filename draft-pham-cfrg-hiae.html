@@ -1246,6 +1246,9 @@ svg :is([fill="white"], [fill^="#fff"]) {
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1.2.2">
                     <p id="section-toc.1-1.7.2.1.2.2.1"><a href="#section-7.1.2" class="auto internal xref">7.1.2</a>.  <a href="#name-state-access-pattern" class="internal xref">State Access Pattern</a></p>
 </li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1.2.3">
+                    <p id="section-toc.1-1.7.2.1.2.3.1"><a href="#section-7.1.3" class="auto internal xref">7.1.3</a>.  <a href="#name-batch-processing-optimizati" class="internal xref">Batch Processing Optimization</a></p>
+</li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
@@ -2376,6 +2379,15 @@ S15 = t
 </li>
           </ul>
 <p id="section-7.1.2-3">This approach is mathematically equivalent to the specification but eliminates the expensive memory operations associated with state rotation. Since <code>Rol()</code> is called in every <code>Update()</code>, <code>UpdateEnc()</code>, and <code>UpdateDec()</code> operation, this optimization provides substantial performance benefits during encryption and decryption operations.<a href="#section-7.1.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="batch-processing-optimization">
+<section id="section-7.1.3">
+          <h4 id="name-batch-processing-optimizati">
+<a href="#section-7.1.3" class="section-number selfRef">7.1.3. </a><a href="#name-batch-processing-optimizati" class="section-name selfRef">Batch Processing Optimization</a>
+          </h4>
+<p id="section-7.1.3-1">Since the offset cycles back to zero every 16 operations (<code>offset mod 16</code>), implementations may benefit from processing data in batches of 16 blocks. After processing 16 consecutive input blocks, the logical state mapping returns to its original configuration, which can simplify implementation and potentially enable further optimizations such as loop unrolling or vectorization of the batch processing logic.<a href="#section-7.1.3-1" class="pilcrow">¶</a></p>
+<p id="section-7.1.3-2">When the offset is aligned to zero at the start of a batch, implementations can hardcode the specific offset values for each operation within the unrolled batch processing function, eliminating the need for modular arithmetic during the inner loop and providing additional performance benefits.<a href="#section-7.1.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
