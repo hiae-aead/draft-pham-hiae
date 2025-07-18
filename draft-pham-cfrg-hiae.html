@@ -1238,24 +1238,35 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-implementation-consideratio" class="internal xref">Implementation Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
-                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-platform-specific-optimizat" class="internal xref">Platform-Specific Optimizations</a></p>
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-state-rotation-optimization" class="internal xref">State Rotation Optimization</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1.2.1">
-                    <p id="section-toc.1-1.7.2.1.2.1.1"><a href="#section-7.1.1" class="auto internal xref">7.1.1</a>.  <a href="#name-arm-neon-optimizations" class="internal xref">ARM NEON Optimizations</a></p>
+                    <p id="section-toc.1-1.7.2.1.2.1.1"><a href="#section-7.1.1" class="auto internal xref">7.1.1</a>.  <a href="#name-cycling-index-approach" class="internal xref">Cycling Index Approach</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1.2.2">
-                    <p id="section-toc.1-1.7.2.1.2.2.1"><a href="#section-7.1.2" class="auto internal xref">7.1.2</a>.  <a href="#name-intel-aes-ni-optimizations" class="internal xref">Intel AES-NI Optimizations</a></p>
+                    <p id="section-toc.1-1.7.2.1.2.2.1"><a href="#section-7.1.2" class="auto internal xref">7.1.2</a>.  <a href="#name-state-access-pattern" class="internal xref">State Access Pattern</a></p>
 </li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
-                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-decryption-performance" class="internal xref">Decryption Performance</a></p>
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-platform-specific-optimizat" class="internal xref">Platform-Specific Optimizations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2.2.1">
+                    <p id="section-toc.1-1.7.2.2.2.1.1"><a href="#section-7.2.1" class="auto internal xref">7.2.1</a>.  <a href="#name-arm-neon-optimizations" class="internal xref">ARM NEON Optimizations</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2.2.2">
+                    <p id="section-toc.1-1.7.2.2.2.2.1"><a href="#section-7.2.2" class="auto internal xref">7.2.2</a>.  <a href="#name-intel-aes-ni-optimizations" class="internal xref">Intel AES-NI Optimizations</a></p>
+</li>
+                </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.3">
-                <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-security-considerations-for" class="internal xref">Security Considerations for Implementations</a></p>
+                <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-decryption-performance" class="internal xref">Decryption Performance</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.4">
-                <p id="section-toc.1-1.7.2.4.1"><a href="#section-7.4" class="auto internal xref">7.4</a>.  <a href="#name-validation" class="internal xref">Validation</a></p>
+                <p id="section-toc.1-1.7.2.4.1"><a href="#section-7.4" class="auto internal xref">7.4</a>.  <a href="#name-security-considerations-for" class="internal xref">Security Considerations for Implementations</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.5">
+                <p id="section-toc.1-1.7.2.5.1"><a href="#section-7.5" class="auto internal xref">7.5</a>.  <a href="#name-validation" class="internal xref">Validation</a></p>
 </li>
             </ul>
 </li>
@@ -2306,34 +2317,97 @@ return tag
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-implementation-consideratio" class="section-name selfRef">Implementation Considerations</a>
       </h2>
 <p id="section-7-1">HiAE is designed to balance the performance of XOR and AES instructions across both ARM and x86 architectures while being optimized to push performance to its limits. The algorithm’s XAXX structure enables platform-specific optimizations by exploiting the fundamental differences in how ARM and Intel processors implement AES round functions.<a href="#section-7-1" class="pilcrow">¶</a></p>
-<div id="platform-specific-optimizations">
+<div id="state-rotation-optimization">
 <section id="section-7.1">
-        <h3 id="name-platform-specific-optimizat">
-<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-platform-specific-optimizat" class="section-name selfRef">Platform-Specific Optimizations</a>
+        <h3 id="name-state-rotation-optimization">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-state-rotation-optimization" class="section-name selfRef">State Rotation Optimization</a>
         </h3>
-<p id="section-7.1-1">The key to HiAE’s cross-platform efficiency lies in understanding how different architectures implement AES operations.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
-<p id="section-7.1-2">The following optimizations leverage architectural differences between ARM and Intel processors to maximize HiAE’s performance while maintaining cryptographic correctness.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
-<div id="arm-neon-optimizations">
+<p id="section-7.1-1">Instead of performing physical rotations with the <code>Rol()</code> function, implementations can use a cycling index (offset) approach to avoid copying the entire 2048-bit state on every rotation. This optimization provides significant performance improvements across all platforms.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<div id="cycling-index-approach">
 <section id="section-7.1.1">
-          <h4 id="name-arm-neon-optimizations">
-<a href="#section-7.1.1" class="section-number selfRef">7.1.1. </a><a href="#name-arm-neon-optimizations" class="section-name selfRef">ARM NEON Optimizations</a>
+          <h4 id="name-cycling-index-approach">
+<a href="#section-7.1.1" class="section-number selfRef">7.1.1. </a><a href="#name-cycling-index-approach" class="section-name selfRef">Cycling Index Approach</a>
           </h4>
-<p id="section-7.1.1-1">ARM processors with NEON SIMD extensions can efficiently compute <code>AESL(x^y)</code> and (with SHA3 extensions) three-way XOR operations. For convenience, the following additional primitives can be defined:<a href="#section-7.1.1-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-7.1.1-2.1">
-              <p id="section-7.1.1-2.1.1"><code>XAESL(x,y)</code>: Computes <code>AESL(x^y)</code> in a single fused operation (assembly instruction <code>AESE ∘ AESMC</code>, or equivalently C intrinsic <code>vaesmcq_u8(vaeseq_u8(x,y))</code>)<a href="#section-7.1.1-2.1.1" class="pilcrow">¶</a></p>
+<p id="section-7.1.1-1">The standard <code>Rol()</code> function requires copying all sixteen 128-bit blocks:<a href="#section-7.1.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.1.1-2">
+<pre>
+  t = S0
+ S0 = S1
+ S1 = S2
+ ...
+S15 = t
+</pre><a href="#section-7.1.1-2" class="pilcrow">¶</a>
+</div>
+<p id="section-7.1.1-3">This approach copies 2048 bits of data on every rotation. An optimized implementation can instead:<a href="#section-7.1.1-3" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-7.1.1-4">
+<li id="section-7.1.1-4.1">
+              <p id="section-7.1.1-4.1.1">Keep the state blocks in a fixed array position<a href="#section-7.1.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-7.1.1-2.2">
-              <p id="section-7.1.1-2.2.1"><code>XOR3(x,y,z)</code>: Computes <code>x^y^z</code> in a single three-way XOR instruction (assembly instruction <code>EOR3</code>, or equivalently C intrinsic <code>veor3q_u8(x,y,z)</code>)<a href="#section-7.1.1-2.2.1" class="pilcrow">¶</a></p>
+            <li id="section-7.1.1-4.2">
+              <p id="section-7.1.1-4.2.1">Maintain an <code>offset</code> variable tracking the logical position of S0<a href="#section-7.1.1-4.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-7.1.1-4.3">
+              <p id="section-7.1.1-4.3.1">Map logical state block Si to physical position <code>(i + offset) mod 16</code><a href="#section-7.1.1-4.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-7.1.1-4.4">
+              <p id="section-7.1.1-4.4.1">Replace the entire <code>Rol()</code> operation with: <code>offset = (offset + 1) mod 16</code><a href="#section-7.1.1-4.4.1" class="pilcrow">¶</a></p>
+</li>
+          </ol>
+</section>
+</div>
+<div id="state-access-pattern">
+<section id="section-7.1.2">
+          <h4 id="name-state-access-pattern">
+<a href="#section-7.1.2" class="section-number selfRef">7.1.2. </a><a href="#name-state-access-pattern" class="section-name selfRef">State Access Pattern</a>
+          </h4>
+<p id="section-7.1.2-1">With this optimization, the logical-to-physical state block mapping becomes:<a href="#section-7.1.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.1.2-2.1">
+              <p id="section-7.1.2-2.1.1">Logical <code>S0</code> maps to physical position <code>offset mod 16</code><a href="#section-7.1.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.2-2.2">
+              <p id="section-7.1.2-2.2.1">Logical <code>S3</code> maps to physical position <code>(3 + offset) mod 16</code><a href="#section-7.1.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.2-2.3">
+              <p id="section-7.1.2-2.3.1">Logical <code>S9</code> maps to physical position <code>(9 + offset) mod 16</code><a href="#section-7.1.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.2-2.4">
+              <p id="section-7.1.2-2.4.1">Logical <code>S13</code> maps to physical position <code>(13 + offset) mod 16</code><a href="#section-7.1.2-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-7.1.2-3">This approach is mathematically equivalent to the specification but eliminates the expensive memory operations associated with state rotation. Since <code>Rol()</code> is called in every <code>Update()</code>, <code>UpdateEnc()</code>, and <code>UpdateDec()</code> operation, this optimization provides substantial performance benefits during encryption and decryption operations.<a href="#section-7.1.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="platform-specific-optimizations">
+<section id="section-7.2">
+        <h3 id="name-platform-specific-optimizat">
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-platform-specific-optimizat" class="section-name selfRef">Platform-Specific Optimizations</a>
+        </h3>
+<p id="section-7.2-1">The key to HiAE’s cross-platform efficiency lies in understanding how different architectures implement AES operations.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<p id="section-7.2-2">The following optimizations leverage architectural differences between ARM and Intel processors to maximize HiAE’s performance while maintaining cryptographic correctness.<a href="#section-7.2-2" class="pilcrow">¶</a></p>
+<div id="arm-neon-optimizations">
+<section id="section-7.2.1">
+          <h4 id="name-arm-neon-optimizations">
+<a href="#section-7.2.1" class="section-number selfRef">7.2.1. </a><a href="#name-arm-neon-optimizations" class="section-name selfRef">ARM NEON Optimizations</a>
+          </h4>
+<p id="section-7.2.1-1">ARM processors with NEON SIMD extensions can efficiently compute <code>AESL(x^y)</code> and (with SHA3 extensions) three-way XOR operations. For convenience, the following additional primitives can be defined:<a href="#section-7.2.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.2.1-2.1">
+              <p id="section-7.2.1-2.1.1"><code>XAESL(x,y)</code>: Computes <code>AESL(x^y)</code> in a single fused operation (assembly instruction <code>AESE ∘ AESMC</code>, or equivalently C intrinsic <code>vaesmcq_u8(vaeseq_u8(x,y))</code>)<a href="#section-7.2.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.2.1-2.2">
+              <p id="section-7.2.1-2.2.1"><code>XOR3(x,y,z)</code>: Computes <code>x^y^z</code> in a single three-way XOR instruction (assembly instruction <code>EOR3</code>, or equivalently C intrinsic <code>veor3q_u8(x,y,z)</code>)<a href="#section-7.2.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <div id="arm-optimized-update-function">
-<section id="section-7.1.1.1">
+<section id="section-7.2.1.1">
             <h5 id="name-arm-optimized-update-functi">
-<a href="#section-7.1.1.1" class="section-number selfRef">7.1.1.1. </a><a href="#name-arm-optimized-update-functi" class="section-name selfRef">ARM-Optimized Update Function</a>
+<a href="#section-7.2.1.1" class="section-number selfRef">7.2.1.1. </a><a href="#name-arm-optimized-update-functi" class="section-name selfRef">ARM-Optimized Update Function</a>
             </h5>
-<p id="section-7.1.1.1-1">Original implementation:<a href="#section-7.1.1.1-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.1.1.1-2">
+<p id="section-7.2.1.1-1">Original implementation:<a href="#section-7.2.1.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.1.1-2">
 <pre>
 Update(xi)
   t = AESL(S0 ^ S1) ^ xi
@@ -2341,10 +2415,10 @@ Update(xi)
  S3 =  S3 ^ xi
 S13 = S13 ^ xi
 Rol()
-</pre><a href="#section-7.1.1.1-2" class="pilcrow">¶</a>
+</pre><a href="#section-7.2.1.1-2" class="pilcrow">¶</a>
 </div>
-<p id="section-7.1.1.1-3">ARM-optimized implementation:<a href="#section-7.1.1.1-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.1.1.1-4">
+<p id="section-7.2.1.1-3">ARM-optimized implementation:<a href="#section-7.2.1.1-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.1.1-4">
 <pre>
 Update_ARM(xi)
   t = XAESL(S0, S1) ^ xi
@@ -2352,17 +2426,17 @@ Update_ARM(xi)
  S3 = S3 ^ xi
 S13 = S13 ^ xi
 Rol()
-</pre><a href="#section-7.1.1.1-4" class="pilcrow">¶</a>
+</pre><a href="#section-7.2.1.1-4" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="arm-optimized-updateenc-function">
-<section id="section-7.1.1.2">
+<section id="section-7.2.1.2">
             <h5 id="name-arm-optimized-updateenc-fun">
-<a href="#section-7.1.1.2" class="section-number selfRef">7.1.1.2. </a><a href="#name-arm-optimized-updateenc-fun" class="section-name selfRef">ARM-Optimized UpdateEnc Function</a>
+<a href="#section-7.2.1.2" class="section-number selfRef">7.2.1.2. </a><a href="#name-arm-optimized-updateenc-fun" class="section-name selfRef">ARM-Optimized UpdateEnc Function</a>
             </h5>
-<p id="section-7.1.1.2-1">Original implementation:<a href="#section-7.1.1.2-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.1.1.2-2">
+<p id="section-7.2.1.2-1">Original implementation:<a href="#section-7.2.1.2-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.1.2-2">
 <pre>
 UpdateEnc(mi)
   t = AESL(S0 ^ S1) ^ mi
@@ -2372,10 +2446,10 @@ UpdateEnc(mi)
 S13 = S13 ^ mi
 Rol()
 return ci
-</pre><a href="#section-7.1.1.2-2" class="pilcrow">¶</a>
+</pre><a href="#section-7.2.1.2-2" class="pilcrow">¶</a>
 </div>
-<p id="section-7.1.1.2-3">ARM-optimized implementation:<a href="#section-7.1.1.2-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.1.1.2-4">
+<p id="section-7.2.1.2-3">ARM-optimized implementation:<a href="#section-7.2.1.2-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.1.2-4">
 <pre>
 UpdateEnc_ARM(mi)
   t = XAESL(S0, S1) ^ mi
@@ -2385,16 +2459,16 @@ UpdateEnc_ARM(mi)
 S13 = S13 ^ mi
 Rol()
 return ci
-</pre><a href="#section-7.1.1.2-4" class="pilcrow">¶</a>
+</pre><a href="#section-7.2.1.2-4" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="arm-optimized-decpartial-function">
-<section id="section-7.1.1.3">
+<section id="section-7.2.1.3">
             <h5 id="name-arm-optimized-decpartial-fu">
-<a href="#section-7.1.1.3" class="section-number selfRef">7.1.1.3. </a><a href="#name-arm-optimized-decpartial-fu" class="section-name selfRef">ARM-Optimized DecPartial Function</a>
+<a href="#section-7.2.1.3" class="section-number selfRef">7.2.1.3. </a><a href="#name-arm-optimized-decpartial-fu" class="section-name selfRef">ARM-Optimized DecPartial Function</a>
             </h5>
-<p id="section-7.1.1.3-1">Original implementation:
+<p id="section-7.2.1.3-1">Original implementation:
 ~~~
 DecPartial(cn)
 ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
@@ -2402,8 +2476,8 @@ ci = cn || Tail(ks, 128 - |cn|)
 mi = UpdateDec(ci)
 mn = Truncate(mi, |cn|)
 return mn
-~~~<a href="#section-7.1.1.3-1" class="pilcrow">¶</a></p>
-<p id="section-7.1.1.3-2">ARM-optimized implementation:
+~~~<a href="#section-7.2.1.3-1" class="pilcrow">¶</a></p>
+<p id="section-7.2.1.3-2">ARM-optimized implementation:
 ~~~
 DecPartial_ARM(cn)
 ks = XOR3(XAESL(S0, S1), ZeroPad(cn), S9)
@@ -2411,16 +2485,16 @@ ci = cn || Tail(ks, 128 - |cn|)
 mi = UpdateDec_ARM(ci)
 mn = Truncate(mi, |cn|)
 return mn
-~~~<a href="#section-7.1.1.3-2" class="pilcrow">¶</a></p>
+~~~<a href="#section-7.2.1.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="arm-optimized-updatedec-function">
-<section id="section-7.1.1.4">
+<section id="section-7.2.1.4">
             <h5 id="name-arm-optimized-updatedec-fun">
-<a href="#section-7.1.1.4" class="section-number selfRef">7.1.1.4. </a><a href="#name-arm-optimized-updatedec-fun" class="section-name selfRef">ARM-Optimized UpdateDec Function</a>
+<a href="#section-7.2.1.4" class="section-number selfRef">7.2.1.4. </a><a href="#name-arm-optimized-updatedec-fun" class="section-name selfRef">ARM-Optimized UpdateDec Function</a>
             </h5>
-<p id="section-7.1.1.4-1">Original implementation:<a href="#section-7.1.1.4-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.1.1.4-2">
+<p id="section-7.2.1.4-1">Original implementation:<a href="#section-7.2.1.4-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.1.4-2">
 <pre>
 UpdateDec(ci)
   t = ci ^ S9
@@ -2430,10 +2504,10 @@ UpdateDec(ci)
 S13 = S13 ^ mi
 Rol()
 return mi
-</pre><a href="#section-7.1.1.4-2" class="pilcrow">¶</a>
+</pre><a href="#section-7.2.1.4-2" class="pilcrow">¶</a>
 </div>
-<p id="section-7.1.1.4-3">ARM-optimized implementation:<a href="#section-7.1.1.4-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.1.1.4-4">
+<p id="section-7.2.1.4-3">ARM-optimized implementation:<a href="#section-7.2.1.4-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.1.4-4">
 <pre>
 UpdateDec_ARM(ci)
   t = ci ^ S9
@@ -2443,30 +2517,30 @@ UpdateDec_ARM(ci)
 S13 = S13 ^ mi
 Rol()
 return mi
-</pre><a href="#section-7.1.1.4-4" class="pilcrow">¶</a>
+</pre><a href="#section-7.2.1.4-4" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 </section>
 </div>
 <div id="intel-aes-ni-optimizations">
-<section id="section-7.1.2">
+<section id="section-7.2.2">
           <h4 id="name-intel-aes-ni-optimizations">
-<a href="#section-7.1.2" class="section-number selfRef">7.1.2. </a><a href="#name-intel-aes-ni-optimizations" class="section-name selfRef">Intel AES-NI Optimizations</a>
+<a href="#section-7.2.2" class="section-number selfRef">7.2.2. </a><a href="#name-intel-aes-ni-optimizations" class="section-name selfRef">Intel AES-NI Optimizations</a>
           </h4>
-<p id="section-7.1.2-1">Intel processors with AES-NI can efficiently compute <code>AESL(y)^z</code> patterns. We can define the following additional function:<a href="#section-7.1.2-1" class="pilcrow">¶</a></p>
+<p id="section-7.2.2-1">Intel processors with AES-NI can efficiently compute <code>AESL(y)^z</code> patterns. We can define the following additional function:<a href="#section-7.2.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-7.1.2-2.1">
-              <p id="section-7.1.2-2.1.1"><code>AESLX(y,z)</code>: Computes <code>AESL(y) ^ z</code> using a single instruction (assembly instruction <code>AESENC</code>, or equivalently C intrinsic <code>_mm_aesenc_si128(y, z)</code>)<a href="#section-7.1.2-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-7.2.2-2.1">
+              <p id="section-7.2.2-2.1.1"><code>AESLX(y,z)</code>: Computes <code>AESL(y) ^ z</code> using a single instruction (assembly instruction <code>AESENC</code>, or equivalently C intrinsic <code>_mm_aesenc_si128(y, z)</code>)<a href="#section-7.2.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <div id="intel-optimized-update-function">
-<section id="section-7.1.2.1">
+<section id="section-7.2.2.1">
             <h5 id="name-intel-optimized-update-func">
-<a href="#section-7.1.2.1" class="section-number selfRef">7.1.2.1. </a><a href="#name-intel-optimized-update-func" class="section-name selfRef">Intel-Optimized Update Function</a>
+<a href="#section-7.2.2.1" class="section-number selfRef">7.2.2.1. </a><a href="#name-intel-optimized-update-func" class="section-name selfRef">Intel-Optimized Update Function</a>
             </h5>
-<p id="section-7.1.2.1-1">Original implementation:<a href="#section-7.1.2.1-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.1.2.1-2">
+<p id="section-7.2.2.1-1">Original implementation:<a href="#section-7.2.2.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.1-2">
 <pre>
 Update(xi)
   t = AESL(S0 ^ S1) ^ xi
@@ -2474,10 +2548,10 @@ Update(xi)
  S3 =  S3 ^ xi
 S13 = S13 ^ xi
 Rol()
-</pre><a href="#section-7.1.2.1-2" class="pilcrow">¶</a>
+</pre><a href="#section-7.2.2.1-2" class="pilcrow">¶</a>
 </div>
-<p id="section-7.1.2.1-3">Intel-optimized implementation:<a href="#section-7.1.2.1-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.1.2.1-4">
+<p id="section-7.2.2.1-3">Intel-optimized implementation:<a href="#section-7.2.2.1-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.1-4">
 <pre>
 Update_Intel(xi)
   t = AESL(S0 ^ S1) ^ xi
@@ -2485,17 +2559,17 @@ Update_Intel(xi)
  S3 =  S3 ^ xi
 S13 = S13 ^ xi
 Rol()
-</pre><a href="#section-7.1.2.1-4" class="pilcrow">¶</a>
+</pre><a href="#section-7.2.2.1-4" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="intel-optimized-updateenc-function">
-<section id="section-7.1.2.2">
+<section id="section-7.2.2.2">
             <h5 id="name-intel-optimized-updateenc-f">
-<a href="#section-7.1.2.2" class="section-number selfRef">7.1.2.2. </a><a href="#name-intel-optimized-updateenc-f" class="section-name selfRef">Intel-Optimized UpdateEnc Function</a>
+<a href="#section-7.2.2.2" class="section-number selfRef">7.2.2.2. </a><a href="#name-intel-optimized-updateenc-f" class="section-name selfRef">Intel-Optimized UpdateEnc Function</a>
             </h5>
-<p id="section-7.1.2.2-1">Original implementation:<a href="#section-7.1.2.2-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.1.2.2-2">
+<p id="section-7.2.2.2-1">Original implementation:<a href="#section-7.2.2.2-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.2-2">
 <pre>
 UpdateEnc(mi)
   t = AESL(S0 ^ S1) ^ mi
@@ -2505,10 +2579,10 @@ UpdateEnc(mi)
 S13 = S13 ^ mi
 Rol()
 return ci
-</pre><a href="#section-7.1.2.2-2" class="pilcrow">¶</a>
+</pre><a href="#section-7.2.2.2-2" class="pilcrow">¶</a>
 </div>
-<p id="section-7.1.2.2-3">Intel-optimized implementation:<a href="#section-7.1.2.2-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.1.2.2-4">
+<p id="section-7.2.2.2-3">Intel-optimized implementation:<a href="#section-7.2.2.2-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.2-4">
 <pre>
 UpdateEnc_Intel(mi)
   t = AESL(S0 ^ S1) ^ mi
@@ -2518,17 +2592,17 @@ UpdateEnc_Intel(mi)
 S13 = S13 ^ mi
 Rol()
 return ci
-</pre><a href="#section-7.1.2.2-4" class="pilcrow">¶</a>
+</pre><a href="#section-7.2.2.2-4" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="intel-optimized-decpartial-function">
-<section id="section-7.1.2.3">
+<section id="section-7.2.2.3">
             <h5 id="name-intel-optimized-decpartial-">
-<a href="#section-7.1.2.3" class="section-number selfRef">7.1.2.3. </a><a href="#name-intel-optimized-decpartial-" class="section-name selfRef">Intel-Optimized DecPartial Function</a>
+<a href="#section-7.2.2.3" class="section-number selfRef">7.2.2.3. </a><a href="#name-intel-optimized-decpartial-" class="section-name selfRef">Intel-Optimized DecPartial Function</a>
             </h5>
-<p id="section-7.1.2.3-1">Original implementation:<a href="#section-7.1.2.3-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.1.2.3-2">
+<p id="section-7.2.2.3-1">Original implementation:<a href="#section-7.2.2.3-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.3-2">
 <pre>
 DecPartial(cn)
 ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
@@ -2536,10 +2610,10 @@ ci = cn || Tail(ks, 128 - |cn|)
 mi = UpdateDec(ci)
 mn = Truncate(mi, |cn|)
 return mn
-</pre><a href="#section-7.1.2.3-2" class="pilcrow">¶</a>
+</pre><a href="#section-7.2.2.3-2" class="pilcrow">¶</a>
 </div>
-<p id="section-7.1.2.3-3">Intel-optimized implementation:<a href="#section-7.1.2.3-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.1.2.3-4">
+<p id="section-7.2.2.3-3">Intel-optimized implementation:<a href="#section-7.2.2.3-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.3-4">
 <pre>
 DecPartial_Intel(cn)
 ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
@@ -2547,17 +2621,17 @@ ci = cn || Tail(ks, 128 - |cn|)
 mi = UpdateDec_Intel(ci)
 mn = Truncate(mi, |cn|)
 return mn
-</pre><a href="#section-7.1.2.3-4" class="pilcrow">¶</a>
+</pre><a href="#section-7.2.2.3-4" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="intel-optimized-updatedec-function">
-<section id="section-7.1.2.4">
+<section id="section-7.2.2.4">
             <h5 id="name-intel-optimized-updatedec-f">
-<a href="#section-7.1.2.4" class="section-number selfRef">7.1.2.4. </a><a href="#name-intel-optimized-updatedec-f" class="section-name selfRef">Intel-Optimized UpdateDec Function</a>
+<a href="#section-7.2.2.4" class="section-number selfRef">7.2.2.4. </a><a href="#name-intel-optimized-updatedec-f" class="section-name selfRef">Intel-Optimized UpdateDec Function</a>
             </h5>
-<p id="section-7.1.2.4-1">Original implementation:<a href="#section-7.1.2.4-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.1.2.4-2">
+<p id="section-7.2.2.4-1">Original implementation:<a href="#section-7.2.2.4-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.4-2">
 <pre>
 UpdateDec(ci)
   t = ci ^ S9
@@ -2567,10 +2641,10 @@ UpdateDec(ci)
 S13 = S13 ^ mi
 Rol()
 return mi
-</pre><a href="#section-7.1.2.4-2" class="pilcrow">¶</a>
+</pre><a href="#section-7.2.2.4-2" class="pilcrow">¶</a>
 </div>
-<p id="section-7.1.2.4-3">Intel-optimized implementation:<a href="#section-7.1.2.4-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.1.2.4-4">
+<p id="section-7.2.2.4-3">Intel-optimized implementation:<a href="#section-7.2.2.4-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.4-4">
 <pre>
 UpdateDec_Intel(ci)
   t = ci ^ S9
@@ -2580,7 +2654,7 @@ UpdateDec_Intel(ci)
 S13 = S13 ^ mi
 Rol()
 return mi
-</pre><a href="#section-7.1.2.4-4" class="pilcrow">¶</a>
+</pre><a href="#section-7.2.2.4-4" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
@@ -2589,39 +2663,39 @@ return mi
 </section>
 </div>
 <div id="decryption-performance">
-<section id="section-7.2">
+<section id="section-7.3">
         <h3 id="name-decryption-performance">
-<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-decryption-performance" class="section-name selfRef">Decryption Performance</a>
+<a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-decryption-performance" class="section-name selfRef">Decryption Performance</a>
         </h3>
-<p id="section-7.2-1">It is expected that HiAE decryption will be slower than encryption due to inherent data dependencies in the algorithm. While encryption can process keystream generation and state updates in parallel, decryption must first recover the plaintext before performing any state updates. This sequential dependency chain is a consequence of HiAE’s design, which incorporates plaintext into the internal state to provide strong authentication properties.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<p id="section-7.3-1">It is expected that HiAE decryption will be slower than encryption due to inherent data dependencies in the algorithm. While encryption can process keystream generation and state updates in parallel, decryption must first recover the plaintext before performing any state updates. This sequential dependency chain is a consequence of HiAE’s design, which incorporates plaintext into the internal state to provide strong authentication properties.<a href="#section-7.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations-for-implementations">
-<section id="section-7.3">
+<section id="section-7.4">
         <h3 id="name-security-considerations-for">
-<a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-security-considerations-for" class="section-name selfRef">Security Considerations for Implementations</a>
+<a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-security-considerations-for" class="section-name selfRef">Security Considerations for Implementations</a>
         </h3>
-<p id="section-7.3-1">The security of HiAE against timing and physical attacks is limited by the implementation of the underlying <code>AESL</code> function. Failure to implement <code>AESL</code> in a fashion safe against timing and physical attacks, such as differential power analysis, timing analysis, or fault injection attacks, may lead to leakage of secret key material or state information. The exact mitigations required for timing and physical attacks depend on the threat model in question.<a href="#section-7.3-1" class="pilcrow">¶</a></p>
-<p id="section-7.3-2">When implementing the platform-specific optimizations described above, care must be taken to ensure that:<a href="#section-7.3-2" class="pilcrow">¶</a></p>
+<p id="section-7.4-1">The security of HiAE against timing and physical attacks is limited by the implementation of the underlying <code>AESL</code> function. Failure to implement <code>AESL</code> in a fashion safe against timing and physical attacks, such as differential power analysis, timing analysis, or fault injection attacks, may lead to leakage of secret key material or state information. The exact mitigations required for timing and physical attacks depend on the threat model in question.<a href="#section-7.4-1" class="pilcrow">¶</a></p>
+<p id="section-7.4-2">When implementing the platform-specific optimizations described above, care must be taken to ensure that:<a href="#section-7.4-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-7.3-3.1">
-            <p id="section-7.3-3.1.1">All operations complete in constant time<a href="#section-7.3-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-7.4-3.1">
+            <p id="section-7.4-3.1.1">All operations complete in constant time<a href="#section-7.4-3.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-7.3-3.2">
-            <p id="section-7.3-3.2.1">No secret-dependent memory accesses occur<a href="#section-7.3-3.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.4-3.2">
+            <p id="section-7.4-3.2.1">No secret-dependent memory accesses occur<a href="#section-7.4-3.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-7.3-3.3">
-            <p id="section-7.3-3.3.1">The optimization does not introduce timing variations based on input data<a href="#section-7.3-3.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.4-3.3">
+            <p id="section-7.4-3.3.1">The optimization does not introduce timing variations based on input data<a href="#section-7.4-3.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
 </div>
 <div id="validation">
-<section id="section-7.4">
+<section id="section-7.5">
         <h3 id="name-validation">
-<a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-validation" class="section-name selfRef">Validation</a>
+<a href="#section-7.5" class="section-number selfRef">7.5. </a><a href="#name-validation" class="section-name selfRef">Validation</a>
         </h3>
-<p id="section-7.4-1">A complete list of known implementations and integrations is available at <span><a href="https://github.com/hiae-aead/draft-pham-hiae">https://github.com/hiae-aead/draft-pham-hiae</a></span>, including reference implementations. A comprehensive comparison of HiAE’s performance with other high-throughput authenticated encryption schemes on ARM and x86 architectures is also provided, demonstrating the effectiveness of these platform-specific optimizations.<a href="#section-7.4-1" class="pilcrow">¶</a></p>
+<p id="section-7.5-1">A complete list of known implementations and integrations is available at <span><a href="https://github.com/hiae-aead/draft-pham-hiae">https://github.com/hiae-aead/draft-pham-hiae</a></span>, including reference implementations. A comprehensive comparison of HiAE’s performance with other high-throughput authenticated encryption schemes on ARM and x86 architectures is also provided, demonstrating the effectiveness of these platform-specific optimizations.<a href="#section-7.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
