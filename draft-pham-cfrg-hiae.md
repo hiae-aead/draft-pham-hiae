@@ -828,46 +828,170 @@ HiAE is designed to balance the performance of XOR and AES instructions across b
 
 The key to HiAE's cross-platform efficiency lies in understanding how different architectures implement AES operations.
 
-### ARM NEON Architecture
+The following optimizations leverage architectural differences between ARM and Intel processors to maximize HiAE's performance while maintaining cryptographic correctness.
 
-On ARM processors with NEON SIMD extensions, the most efficient pattern for combining AES operations with XOR is:
+### ARM NEON Optimizations
 
-~~~
-z ^ AESL(x)
-~~~
+ARM processors with NEON SIMD extensions can efficiently compute `AESL(x^y)` and (with SHA3 extensions) three-way XOR operations. For convenience, the following additional primitives can be defined:
 
-This pattern is implemented as a fused operation using ARM cryptographic extensions:
+- `XAESL(x,y)`: Computes `AESL(x^y)` in a single fused operation (`AESE ∘ AESMC`)
+- `XOR3(a,b,c)`: Computes `a^b^c` in a single three-way XOR instruction (`EOR3`)
 
-~~~
-vaesmcq_u8(vaeseq_u8(z, x))
-~~~
+#### ARM-Optimized Update Function
 
-This SIMD fusion means that computing `z ^ AESL(x)` requires only two instructions with minimal latency between them.
-
-### Intel x86 Architecture with AES-NI
-
-On Intel processors with AES-NI, the most efficient pattern is:
+Original implementation:
 
 ~~~
-AESL(x) ^ y
+Update(xi)
+  t = AESL(S0 ^ S1) ^ xi
+ S0 = AESL(S13) ^ t
+ S3 =  S3 ^ xi
+S13 = S13 ^ xi
+Rol()
 ~~~
 
-This pattern maps directly to the `aesenc` instruction:
+ARM-optimized implementation:
 
 ~~~
-aesenc(x, y)
+Update_ARM(xi)
+  t = XAESL(S0, S1) ^ xi
+ S0 = AESL(S13) ^ t
+ S3 = XOR3(S3, S13, xi)
+S13 = S13 ^ xi
+Rol()
 ~~~
 
-The Intel AES-NI instruction set was designed for standard AES modes where the round key is XORed after the round function, making `AESL(x) ^ y` a single instruction operation.
+#### ARM-Optimized UpdateEnc Function
 
-## Leveraging XOR Properties
+Original implementation:
 
-XOR operations are both associative and commutative:
+~~~
+UpdateEnc(mi)
+  t = AESL(S0 ^ S1) ^ mi
+ ci = t ^ S9
+ S0 = AESL(S13) ^ t
+ S3 =  S3 ^ mi
+S13 = S13 ^ mi
+Rol()
+return ci
+~~~
 
-- `(a ^ b) ^ c = a ^ (b ^ c)` (associativity)
-- `a ^ b = b ^ a` (commutativity)
+ARM-optimized implementation:
 
-These properties allow implementations to reorder operations to match the target platform's efficient patterns.
+~~~
+UpdateEnc_ARM(mi)
+  t = XAESL(S0, S1) ^ mi
+ ci = t ^ S9
+ S0 = AESL(S13) ^ t
+ S3 = XOR3(S3, S13, mi)
+S13 = S13 ^ mi
+Rol()
+return ci
+~~~
+
+#### ARM-Optimized DecPartial Function
+
+Original implementation:
+~~~
+DecPartial(cn)
+ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
+ci = cn || Tail(ks, 128 - |cn|)
+mi = UpdateDec(ci)
+mn = Truncate(mi, |cn|)
+return mn
+~~~
+
+ARM-optimized implementation:
+~~~
+DecPartial_ARM(cn)
+ks = XOR3(XAESL(S0, S1), ZeroPad(cn), S9)
+ci = cn || Tail(ks, 128 - |cn|)
+mi = UpdateDec_ARM(ci)
+mn = Truncate(mi, |cn|)
+return mn
+~~~
+
+### Intel AES-NI Optimizations
+
+Intel processors with AES-NI can efficiently compute `AESL(y)^z` patterns. We can define the following additional function:
+
+- `AESLX(y,z)`: Computes `AESL(y) ^ z` using a single instruction (`AESENC`)
+
+#### Intel-Optimized Update Function
+
+Original implementation:
+
+~~~
+Update(xi)
+  t = AESL(S0 ^ S1) ^ xi
+ S0 = AESL(S13) ^ t
+ S3 =  S3 ^ xi
+S13 = S13 ^ xi
+Rol()
+~~~
+
+Intel-optimized implementation:
+
+~~~
+Update_Intel(xi)
+  t = AESL(S0 ^ S1) ^ xi
+ S0 = AESLX(S13, t)
+ S3 =  S3 ^ xi
+S13 = S13 ^ xi
+Rol()
+~~~
+
+#### Intel-Optimized UpdateEnc Function
+
+Original implementation:
+
+~~~
+UpdateEnc(mi)
+  t = AESL(S0 ^ S1) ^ mi
+ ci = t ^ S9
+ S0 = AESL(S13) ^ t
+ S3 =  S3 ^ mi
+S13 = S13 ^ mi
+Rol()
+return ci
+~~~
+
+Intel-optimized implementation:
+
+~~~
+UpdateEnc_Intel(mi)
+  t = AESL(S0 ^ S1) ^ mi
+ ci = t ^ S9
+ S0 = AESLX(S13, t)
+ S3 =  S3 ^ mi
+S13 = S13 ^ mi
+Rol()
+return ci
+~~~
+
+#### Intel-Optimized DecPartial Function
+
+Original implementation:
+
+~~~
+DecPartial(cn)
+ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
+ci = cn || Tail(ks, 128 - |cn|)
+mi = UpdateDec(ci)
+mn = Truncate(mi, |cn|)
+return mn
+~~~
+
+Intel-optimized implementation:
+
+~~~
+DecPartial_Intel(cn)
+ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
+ci = cn || Tail(ks, 128 - |cn|)
+mi = UpdateDec_Intel(ci)
+mn = Truncate(mi, |cn|)
+return mn
+~~~
 
 ## Decryption Performance
 
