@@ -856,7 +856,7 @@ ARM-optimized implementation:
 Update_ARM(xi)
   t = XAESL(S0, S1) ^ xi
  S0 = AESL(S13) ^ t
- S3 = XOR3(S3, S13, xi)
+ S3 = S3 ^ xi
 S13 = S13 ^ xi
 Rol()
 ~~~
@@ -883,7 +883,7 @@ UpdateEnc_ARM(mi)
   t = XAESL(S0, S1) ^ mi
  ci = t ^ S9
  S0 = AESL(S13) ^ t
- S3 = XOR3(S3, S13, mi)
+ S3 = S3 ^ mi
 S13 = S13 ^ mi
 Rol()
 return ci
@@ -909,6 +909,34 @@ ci = cn || Tail(ks, 128 - |cn|)
 mi = UpdateDec_ARM(ci)
 mn = Truncate(mi, |cn|)
 return mn
+~~~
+
+#### ARM-Optimized UpdateDec Function
+
+Original implementation:
+
+~~~
+UpdateDec(ci)
+  t = ci ^ S9
+ mi = AESL(S0 ^ S1) ^ t
+ S0 = AESL(S13) ^ t
+ S3 =  S3 ^ mi
+S13 = S13 ^ mi
+Rol()
+return mi
+~~~
+
+ARM-optimized implementation:
+
+~~~
+UpdateDec_ARM(ci)
+  t = ci ^ S9
+ mi = XAESL(S0, S1) ^ t
+ S0 = AESL(S13) ^ t
+ S3 =  S3 ^ mi
+S13 = S13 ^ mi
+Rol()
+return mi
 ~~~
 
 ### Intel AES-NI Optimizations
@@ -991,6 +1019,34 @@ ci = cn || Tail(ks, 128 - |cn|)
 mi = UpdateDec_Intel(ci)
 mn = Truncate(mi, |cn|)
 return mn
+~~~
+
+#### Intel-Optimized UpdateDec Function
+
+Original implementation:
+
+~~~
+UpdateDec(ci)
+  t = ci ^ S9
+ mi = AESL(S0 ^ S1) ^ t
+ S0 = AESL(S13) ^ t
+ S3 =  S3 ^ mi
+S13 = S13 ^ mi
+Rol()
+return mi
+~~~
+
+Intel-optimized implementation:
+
+~~~
+UpdateDec_Intel(ci)
+  t = ci ^ S9
+ mi = AESL(S0 ^ S1) ^ t
+ S0 = AESLX(S13, t)
+ S3 =  S3 ^ mi
+S13 = S13 ^ mi
+Rol()
+return mi
 ~~~
 
 ## Decryption Performance
