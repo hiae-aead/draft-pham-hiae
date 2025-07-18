@@ -869,45 +869,6 @@ XOR operations are both associative and commutative:
 
 These properties allow implementations to reorder operations to match the target platform's efficient patterns.
 
-### Example: The Update Function
-
-Consider the core Update function operations:
-
-~~~
-t = AESL(S0 ^ S1) ^ xi
-S0 = AESL(S13) ^ t
-~~~
-
-On ARM, the first line can be optimized by reordering:
-
-~~~
-t = xi ^ AESL(S0 ^ S1)  // Matches ARM's efficient z ^ AESL(x) pattern
-~~~
-
-On Intel, the operations already match the efficient pattern:
-
-~~~
-t = AESL(S0 ^ S1) ^ xi   // Matches Intel's efficient AESL(x) ^ y pattern
-S0 = AESL(S13) ^ t       // Also matches AESL(x) ^ y pattern
-~~~
-
-### Multiple XOR Chains
-
-The UpdateEnc function demonstrates how multiple XORs can be reordered:
-
-~~~
-t = AESL(S0 ^ S1) ^ mi
-ci = t ^ S9
-~~~
-
-On ARM, this can be implemented as:
-
-~~~
-t2 = AESL(S0 ^ S1)
-ci = S9 ^ (mi ^ temp)    // Two XORs grouped for efficiency
-t = mi ^ t2              // Reuse computation
-~~~
-
 ## Decryption Performance
 
 It is expected that HiAE decryption will be slower than encryption due to inherent data dependencies in the algorithm. While encryption can process keystream generation and state updates in parallel, decryption must first recover the plaintext before performing any state updates. This sequential dependency chain is a consequence of HiAE's design, which incorporates plaintext into the internal state to provide strong authentication properties.
