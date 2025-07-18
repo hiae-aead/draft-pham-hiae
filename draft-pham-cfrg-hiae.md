@@ -824,6 +824,40 @@ The details of the cryptanalysis can be found in the paper {{HiAE}}.
 
 HiAE is designed to balance the performance of XOR and AES instructions across both ARM and x86 architectures while being optimized to push performance to its limits. The algorithm's XAXX structure enables platform-specific optimizations by exploiting the fundamental differences in how ARM and Intel processors implement AES round functions.
 
+## State Rotation Optimization
+
+Instead of performing physical rotations with the `Rol()` function, implementations can use a cycling index (offset) approach to avoid copying the entire 2048-bit state on every rotation. This optimization provides significant performance improvements across all platforms.
+
+### Cycling Index Approach
+
+The standard `Rol()` function requires copying all sixteen 128-bit blocks:
+
+~~~
+  t = S0
+ S0 = S1
+ S1 = S2
+ ...
+S15 = t
+~~~
+
+This approach copies 2048 bits of data on every rotation. An optimized implementation can instead:
+
+1. Keep the state blocks in a fixed array position
+2. Maintain an `offset` variable tracking the logical position of S0
+3. Map logical state block Si to physical position `(i + offset) mod 16`
+4. Replace the entire `Rol()` operation with: `offset = (offset + 1) mod 16`
+
+### State Access Pattern
+
+With this optimization, the logical-to-physical state block mapping becomes:
+
+- Logical `S0` maps to physical position `offset mod 16`
+- Logical `S3` maps to physical position `(3 + offset) mod 16`
+- Logical `S9` maps to physical position `(9 + offset) mod 16`
+- Logical `S13` maps to physical position `(13 + offset) mod 16`
+
+This approach is mathematically equivalent to the specification but eliminates the expensive memory operations associated with state rotation. Since `Rol()` is called in every `Update()`, `UpdateEnc()`, and `UpdateDec()` operation, this optimization provides substantial performance benefits during encryption and decryption operations.
+
 ## Platform-Specific Optimizations
 
 The key to HiAE's cross-platform efficiency lies in understanding how different architectures implement AES operations.
