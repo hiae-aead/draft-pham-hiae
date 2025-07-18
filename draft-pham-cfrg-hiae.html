@@ -2321,10 +2321,10 @@ return tag
 <p id="section-7.1.1-1">ARM processors with NEON SIMD extensions can efficiently compute <code>AESL(x^y)</code> and (with SHA3 extensions) three-way XOR operations. For convenience, the following additional primitives can be defined:<a href="#section-7.1.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7.1.1-2.1">
-              <p id="section-7.1.1-2.1.1"><code>XAESL(x,y)</code>: Computes <code>AESL(x^y)</code> in a single fused operation (<code>AESE ∘ AESMC</code>)<a href="#section-7.1.1-2.1.1" class="pilcrow">¶</a></p>
+              <p id="section-7.1.1-2.1.1"><code>XAESL(x,y)</code>: Computes <code>AESL(x^y)</code> in a single fused operation (assembly instruction <code>AESE ∘ AESMC</code>, or equivalently C intrinsic <code>vaesmcq_u8(vaeseq_u8(x,y))</code>)<a href="#section-7.1.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-7.1.1-2.2">
-              <p id="section-7.1.1-2.2.1"><code>XOR3(a,b,c)</code>: Computes <code>a^b^c</code> in a single three-way XOR instruction (<code>EOR3</code>)<a href="#section-7.1.1-2.2.1" class="pilcrow">¶</a></p>
+              <p id="section-7.1.1-2.2.1"><code>XOR3(x,y,z)</code>: Computes <code>x^y^z</code> in a single three-way XOR instruction (assembly instruction <code>EOR3</code>, or equivalently C intrinsic <code>veor3q_u8(x,y,z)</code>)<a href="#section-7.1.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <div id="arm-optimized-update-function">
@@ -2424,7 +2424,7 @@ return mn
 <p id="section-7.1.2-1">Intel processors with AES-NI can efficiently compute <code>AESL(y)^z</code> patterns. We can define the following additional function:<a href="#section-7.1.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7.1.2-2.1">
-              <p id="section-7.1.2-2.1.1"><code>AESLX(y,z)</code>: Computes <code>AESL(y) ^ z</code> using a single instruction (<code>AESENC</code>)<a href="#section-7.1.2-2.1.1" class="pilcrow">¶</a></p>
+              <p id="section-7.1.2-2.1.1"><code>AESLX(y,z)</code>: Computes <code>AESL(y) ^ z</code> using a single instruction (assembly instruction <code>AESENC</code>, or equivalently C intrinsic <code>_mm_aesenc_si128(y, z)</code>)<a href="#section-7.1.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <div id="intel-optimized-update-function">
