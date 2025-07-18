@@ -858,6 +858,12 @@ With this optimization, the logical-to-physical state block mapping becomes:
 
 This approach is mathematically equivalent to the specification but eliminates the expensive memory operations associated with state rotation. Since `Rol()` is called in every `Update()`, `UpdateEnc()`, and `UpdateDec()` operation, this optimization provides substantial performance benefits during encryption and decryption operations.
 
+### Batch Processing Optimization
+
+Since the offset cycles back to zero every 16 operations (`offset mod 16`), implementations may benefit from processing data in batches of 16 blocks. After processing 16 consecutive input blocks, the logical state mapping returns to its original configuration, which can simplify implementation and potentially enable further optimizations such as loop unrolling or vectorization of the batch processing logic.
+
+When the offset is aligned to zero at the start of a batch, implementations can hardcode the specific offset values for each operation within the unrolled batch processing function, eliminating the need for modular arithmetic during the inner loop and providing additional performance benefits.
+
 ## Platform-Specific Optimizations
 
 The key to HiAE's cross-platform efficiency lies in understanding how different architectures implement AES operations.
