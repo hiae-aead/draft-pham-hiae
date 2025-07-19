@@ -932,6 +932,7 @@ return ci
 #### ARM-Optimized DecPartial Function
 
 Original implementation:
+
 ~~~
 DecPartial(cn)
 ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
@@ -942,6 +943,7 @@ return mn
 ~~~
 
 ARM-optimized implementation:
+
 ~~~
 DecPartial_ARM(cn)
 ks = XOR3(XAESL(S0, S1), ZeroPad(cn), S9)
