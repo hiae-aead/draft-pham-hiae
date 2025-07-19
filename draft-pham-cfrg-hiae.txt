@@ -5,10 +5,10 @@
 Network Working Group                                           F. Denis
 Internet-Draft                                               Fastly Inc.
 Intended status: Standards Track                                 P. Pham
-Expires: 19 January 2026                                       L. Prabel
+Expires: 20 January 2026                                       L. Prabel
                                                                   S. Sun
                                                                   Huawei
-                                                            18 July 2025
+                                                            19 July 2025
 
 
               The HiAE Authenticated Encryption Algorithm
@@ -42,7 +42,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 19 January 2026.
+   This Internet-Draft will expire on 20 January 2026.
 
 Copyright Notice
 
@@ -163,11 +163,10 @@ Table of Contents
    This document presents HiAE (High-throughput Authenticated
    Encryption), an authenticated encryption algorithm explicitly
    designed to address these cross-platform performance challenges.
-   Through careful algorithmic design, HiAE delivers superior
-   performance compared to existing high-throughput algorithms on both
-   x86 and ARM architectures by efficiently utilizing the capabilities
-   of each platform without being overly dependent on architecture-
-   specific features.
+   Through careful algorithmic design, HiAE delivers high performance on
+   both x86 and ARM architectures by efficiently utilizing the
+   capabilities of each platform without being overly dependent on
+   architecture-specific features.
 
    The remainder of this document is organized as follows: Section 2
    establishes notation and conventions.  Section 3 provides the
