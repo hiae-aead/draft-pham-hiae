@@ -1072,13 +1072,23 @@ return mn
 
 7.2.1.3.  ARM-Optimized DecPartial Function
 
-   Original implementation: ~~~ DecPartial(cn) ks = AESL(S0 ^ S1) ^
-   ZeroPad(cn) ^ S9 ci = cn || Tail(ks, 128 - |cn|) mi = UpdateDec(ci)
-   mn = Truncate(mi, |cn|) return mn ~~~
+   Original implementation:
 
-   ARM-optimized implementation: ~~~ DecPartial_ARM(cn) ks =
-   XOR3(XAESL(S0, S1), ZeroPad(cn), S9) ci = cn || Tail(ks, 128 - |cn|)
-   mi = UpdateDec_ARM(ci) mn = Truncate(mi, |cn|) return mn ~~~
+   DecPartial(cn)
+   ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
+   ci = cn || Tail(ks, 128 - |cn|)
+   mi = UpdateDec(ci)
+   mn = Truncate(mi, |cn|)
+   return mn
+
+   ARM-optimized implementation:
+
+   DecPartial_ARM(cn)
+   ks = XOR3(XAESL(S0, S1), ZeroPad(cn), S9)
+   ci = cn || Tail(ks, 128 - |cn|)
+   mi = UpdateDec_ARM(ci)
+   mn = Truncate(mi, |cn|)
+   return mn
 
 7.2.1.4.  ARM-Optimized UpdateDec Function
 
