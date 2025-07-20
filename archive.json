@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-13T01:50:54.103992+00:00",
+  "timestamp": "2025-07-20T01:52:30.773176+00:00",
   "repo": "hiae-aead/draft-pham-hiae",
   "labels": [
     {
@@ -79,15 +79,15 @@
       "id": "I_kwDOO7UM1s6_vFI9",
       "title": "Batch updates",
       "url": "https://github.com/hiae-aead/draft-pham-hiae/issues/3",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "jedisct1",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Since the update function doesn't modify the entire state, it's faster to maintain a cycling index offset rather than rotate the entire state.\n\nThis is how current implementations handle it.\n\nFor this reason, word updates and state rotation are presented as separate steps, to highlight this potential optimization for implementers. This is also why `UpdateEnc` and `Enc` are defined as separate functions, allowing `UpdateEnc` to be reused for batch updates.\n\nHowever, it may be helpful to explicitly document this optimization. It's not urgent, though.",
       "createdAt": "2025-07-09T18:30:16Z",
-      "updatedAt": "2025-07-09T18:30:16Z",
-      "closedAt": null,
+      "updatedAt": "2025-07-18T20:00:18Z",
+      "closedAt": "2025-07-18T20:00:18Z",
       "comments": []
     }
   ],
