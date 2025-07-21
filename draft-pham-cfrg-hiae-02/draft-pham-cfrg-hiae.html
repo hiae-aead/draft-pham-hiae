@@ -1,0 +1,3431 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Greek,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>The HiAE Authenticated Encryption Algorithm</title>
+<meta content="Frank Denis" name="author">
+<meta content="Phuong Pham" name="author">
+<meta content="Lucas Prabel" name="author">
+<meta content="Shuzhou Sun" name="author">
+<meta content="
+       This document describes HiAE, a high-throughput authenticated encryption algorithm designed for next-generation wireless systems (6G) and high-speed data transmission applications. 
+    " name="description">
+<meta content="xml2rfc 3.30.0" name="generator">
+<meta content="Internet-Draft" name="keyword">
+<meta content="draft-pham-cfrg-hiae-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.30.0
+    Python 3.12.11
+    ConfigArgParse 1.7
+    google-i18n-address 3.1.1
+    intervaltree 3.1.0
+    Jinja2 3.1.6
+    lxml 5.3.1
+    platformdirs 4.3.8
+    pycountry 24.6.1
+    PyYAML 6.0.2
+    requests 2.32.4
+    setuptools 80.9.0
+    wcwidth 0.2.13
+-->
+<link href="draft-pham-cfrg-hiae.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Lora SemiBold'), local('Lora-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light dark;
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  --font-mono: 'Oxygen Mono', monospace;
+  --font-title: "Sofia Sans Semi Condensed", sans-serif;
+  scrollbar-color: #bbb #eee;
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+section {
+  clear: both;
+}
+.section-number {
+  padding-right: 0.5em;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-title);
+  font-weight: 680;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+h1#title {
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1#title, h1#rfcnum {
+  margin: 1.5em 0 0.2em;
+}
+h1#rfcnum + h1#title {
+  margin: 0.2em 0;
+}
+
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+#abstract+p {
+  font-size: 18px;
+  line-height: 24px;
+}
+#abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 16px;
+  line-height: 0;
+}
+
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+/* font-family isn't space-separated, but =~ will have to do */
+svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
+  font-family: var(--font-mono);
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+  & :is(ol, ul) {
+    margin-left: 1em;
+  }
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+  & li {
+    margin-top: 0.5em;
+  }
+}
+:is(ul, ol).compact, .ulCompact, .olCompact {
+  margin: 0 0 0 2em;
+  & li {
+    margin: 0;
+    & :first-child { margin-top: 0; }
+    & :last-child { margin-bottom: 0; }
+  }
+}
+
+/* definition lists */
+dl {
+  clear: left;
+  --indent: 3ch;
+  /* --indent: attr(indent ch); not supported in any browser, but we can dream */
+  &.olPercent {
+    --indent: 5ch;
+    & > dt {
+      min-width: calc(var(--indent) - 2ch);
+    }
+  }
+  &.olPercent > dt {
+    float: none;
+  }
+
+  dl > dd > & {
+    margin-top: 0.5em;
+    margin-bottom: 0;
+  }
+}
+dl:not(.dlNewline) > dt {
+  float: left;
+  margin-right: 2ch;
+  min-width: 8ch;
+}
+dl > dd {
+  margin-bottom: .8em;
+  margin-left: var(--indent) !important; /* stupid element overrides */
+  min-height: 2ex;
+}
+:is(dl.compact, .dlCompact) > dd {
+  margin-bottom: 0;
+  & > :is(:first-child, .break:first-child + *) {
+    margin-top: 0;
+  }
+  & > :is(:last-child) {
+    margin-bottom: 0;
+  }
+}
+:is(dd, span).break {
+  display: none;
+}
+
+/* links */
+a, a[href].selfRef:hover {
+  text-decoration: none;
+}
+a[href] {
+  color: var(--link-color);
+}
+a[href].selfRef, .iref + a[href].internal {
+  color: var(--text-color);
+}
+a[href]:hover {
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px var(--font-mono);
+}
+tt, code {
+  /* changing the font for inline elements leads to different ascender
+     and descender heights; as we want to retain baseline alignment,
+     remove leading to avoid altering the final height of lines
+     note: this fails if these blocks take an entire line,
+     a different solution would be great */
+  line-height: 0;
+}
+:is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
+  font-size: 84%;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+  caption-side: bottom;
+}
+@media screen {
+  /* Auto-collapse boilerplate. */
+  :is(#status-of-memo, #copyright) p {
+    margin: -2px 0;
+    max-height: 0;
+    transition: max-height 2s ease, margin 0.5s ease 0.5s;
+    overflow: hidden;
+  }
+  :is(#status-of-memo, #copyright):hover p,
+  :is(#status-of-memo, #copyright) h2:target ~ p {
+    margin: 0.5em 0;
+    max-height: 500px;
+    overflow: auto;
+  }
+  pre, svg {
+    display: inline-block;
+    /* In the horizontal direction, sometimes people make over-sized figures.
+       Scrollbars for those is therefore necessary: auto adds them as necessary..
+       In the vertical direction, the line-height can combine with the font
+       asender/descender height to produce scrollbars: hidden avoids that. */
+    overflow: auto hidden;
+  }
+  pre {
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  svg {
+    max-width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  :is(pre, svg) + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  width: auto;
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+table .text-left {
+  text-align: left;
+}
+table .text-center {
+  text-align: center;
+}
+table .text-right {
+  text-align: right;
+}
+
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+:is(tr:nth-child(2n), thead+tbody > tr:nth-child(2n+1)) > td {
+  background-color: var(--background-color);
+}
+:is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
+  background-color: var(--highlight-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+  &[href] {
+    color: var(--pilcrow-weak);
+    &:hover { text-decoration: none; }
+  }
+}
+@media not print {
+  :hover > a.pilcrow {
+    opacity: 1;
+  }
+  a.pilcrow[href]:hover {
+    color: var(--pilcrow-strong);
+    background-color: transparent;
+  }
+}
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: 600;
+  font-size: var(--small-font-size);
+}
+.role {
+  font-variant: all-small-caps;
+}
+sub, sup {
+  line-height: 1;
+  font-size: 80%;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 15ch;
+  & dt {
+    width: var(--identifier-width);
+    min-width: var(--identifier-width);
+    clear: left;
+    float: left;
+    text-align: right;
+    margin-right: 1ch;
+  }
+  & dd {
+    margin: 0;
+    margin-left: calc(1em + var(--identifier-width)) !important;
+    min-width: 5em;
+  }
+  & .authors {
+    & .author {
+      display: inline-block;
+      margin-right: 1.5em;
+    }
+    & .org {
+      font-style: italic;
+    }
+  }
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+
+  & nav {
+    & ul {
+      margin: 0 0.5em 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    & li {
+      line-height: 1.3em;
+      margin: 2px 0;
+      padding-left: 1.2em;
+      text-indent: -1.2em;
+    }
+  }
+  & a.xref {
+    white-space: normal;
+  }
+}
+
+.references {
+  & > dt {
+    text-align: right;
+    font-weight: bold;
+    min-width: 10ch;
+    margin-right: 1.5ch;
+    &:target::before {
+      content: "⇒";
+      margin: 0 10px 0 -25px;
+    }
+  }
+  & > dd {
+    margin-left: 12ch !important;
+    overflow: visible;
+    & .refInstance {
+      margin-bottom: 0.8em;
+    }
+    & .ascii {
+      margin-bottom: 0.25em;
+    }
+  }
+}
+
+#rfc\.index\.index + ul {
+  margin-left: 0;
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  max-width: 20em;
+  margin: 1em auto 1em 0;
+
+  & .nameRole {
+    font-weight: 700;
+    margin-left: 0;
+  }
+  & .label {
+    margin: 0.5em 0;
+  }
+  & .type {
+    display: none;
+  }
+  & .alternative-contact {
+    margin: 0.5em 0 0.25em 0;
+  }
+  & .non-ascii {
+    margin: 0 0 0 2em;
+  }
+  & div.left {
+    text-align: left;
+  }
+  & div.right {
+    text-align: right;
+  }
+}
+
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+/* Comments */
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+
+@media screen {
+  #toc nav {
+    font-family: var(--font-title);
+    font-weight: 360;
+    & > ul { margin-bottom: 2em; }
+    & ul {
+      margin: 0 0 0 4px;
+      & :is(p, li) {
+        margin: 2px 0;
+      }
+    }
+  }
+  #toc a.toplink {
+    float: right;
+  }
+}
+@media not screen {
+  #toc a.toplink {
+    display: none;
+  }
+}
+
+
+/* TOC layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 1px 0 0 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+    &::before { /* css hamburger */
+      float: right;
+      position: relative;
+      width: 1em;
+      height: 1px;
+      left: -164px;
+      margin: 8px 0 0 0;
+      background: white none repeat scroll 0 0;
+      box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+      content: "";
+    }
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active {
+    opacity: 1;
+    & nav { display: block; }
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:is(:link, :focus, :hover),
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin: 2px 0.5em 0;
+  }
+}
+
+/* TOC layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+  #toc a.toplink {
+    margin: 8px 0.5em 0;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre, .vcard {
+    page-break-inside: avoid;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  :is(h2, h3, h4, h5, h6)+*, dd {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Dark mode. */
+@media (prefers-color-scheme: dark) {
+:root {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+
+/* SVG Trick: a prefix match works because only black and white are allowed */
+svg :is([stroke="black"], [stroke^="#000"]) {
+  stroke: var(--text-color);
+}
+svg :is([stroke="white"], [stroke^="#fff"]) {
+  stroke: var(--background-color);
+}
+svg :is([fill="black"], [fill^="#000"], :not([fill])) {
+  fill: var(--text-color);
+}
+svg :is([fill="white"], [fill^="#fff"]) {
+  fill: var(--background-color);
+}
+</style>
+
+</head>
+<body class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">HiAE</td>
+<td class="right">July 2025</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Denis, et al.</td>
+<td class="center">Expires 22 January 2026</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">Network Working Group</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-pham-cfrg-hiae-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2025-07-21" class="published">21 July 2025</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Standards Track</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2026-01-22">22 January 2026</time></dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">F. Denis</div>
+<div class="org">Fastly Inc.</div>
+</div>
+<div class="author">
+      <div class="author-name">P. Pham</div>
+<div class="org">Huawei</div>
+</div>
+<div class="author">
+      <div class="author-name">L. Prabel</div>
+<div class="org">Huawei</div>
+</div>
+<div class="author">
+      <div class="author-name">S. Sun</div>
+<div class="org">Huawei</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">The HiAE Authenticated Encryption Algorithm</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document describes HiAE, a high-throughput authenticated encryption algorithm designed for next-generation wireless systems (6G) and high-speed data transmission applications.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note rfcEditorRemove" id="section-note.1">
+      <h2 id="name-discussion-venues">
+<a href="#name-discussion-venues" class="section-name selfRef">Discussion Venues</a>
+      </h2>
+<p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">Source for this draft and an issue tracker can be found at
+    <span><a href="https://github.com/hiae-aead/draft-pham-hiae">https://github.com/hiae-aead/draft-pham-hiae</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 22 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2025 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-the-hiae-algorithm" class="internal xref">The HiAE Algorithm</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1" class="keepWithNext"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-algorithm-parameters" class="internal xref">Algorithm Parameters</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-authenticated-encryption" class="internal xref">Authenticated Encryption</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-authenticated-decryption" class="internal xref">Authenticated Decryption</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
+                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-core-functions" class="internal xref">Core Functions</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4.2.1">
+                    <p id="section-toc.1-1.3.2.4.2.1.1"><a href="#section-3.4.1" class="auto internal xref">3.4.1</a>.  <a href="#name-the-state-rotation-function" class="internal xref">The State Rotation Function</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4.2.2">
+                    <p id="section-toc.1-1.3.2.4.2.2.1"><a href="#section-3.4.2" class="auto internal xref">3.4.2</a>.  <a href="#name-the-state-update-functions" class="internal xref">The State Update Functions</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5">
+                <p id="section-toc.1-1.3.2.5.1"><a href="#section-3.5" class="auto internal xref">3.5</a>.  <a href="#name-initialization-and-processi" class="internal xref">Initialization and Processing Functions</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5.2.1">
+                    <p id="section-toc.1-1.3.2.5.2.1.1"><a href="#section-3.5.1" class="auto internal xref">3.5.1</a>.  <a href="#name-the-init-function" class="internal xref">The Init Function</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5.2.2">
+                    <p id="section-toc.1-1.3.2.5.2.2.1"><a href="#section-3.5.2" class="auto internal xref">3.5.2</a>.  <a href="#name-the-absorb-function" class="internal xref">The Absorb Function</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5.2.3">
+                    <p id="section-toc.1-1.3.2.5.2.3.1"><a href="#section-3.5.3" class="auto internal xref">3.5.3</a>.  <a href="#name-the-enc-function" class="internal xref">The Enc Function</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5.2.4">
+                    <p id="section-toc.1-1.3.2.5.2.4.1"><a href="#section-3.5.4" class="auto internal xref">3.5.4</a>.  <a href="#name-the-dec-function" class="internal xref">The Dec Function</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5.2.5">
+                    <p id="section-toc.1-1.3.2.5.2.5.1"><a href="#section-3.5.5" class="auto internal xref">3.5.5</a>.  <a href="#name-the-decpartial-function" class="internal xref">The DecPartial Function</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5.2.6">
+                    <p id="section-toc.1-1.3.2.5.2.6.1"><a href="#section-3.5.6" class="auto internal xref">3.5.6</a>.  <a href="#name-the-finalize-function" class="internal xref">The Finalize Function</a></p>
+</li>
+                </ul>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-encoding-ct-tag-tuples" class="internal xref">Encoding (ct, tag) Tuples</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-alternative-operating-modes" class="internal xref">Alternative Operating Modes</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-hiae-as-a-stream-cipher" class="internal xref">HiAE as a Stream Cipher</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-hiae-as-a-message-authentic" class="internal xref">HiAE as a Message Authentication Code</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-classic-setting" class="internal xref">Classic Setting</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-quantum-setting" class="internal xref">Quantum Setting</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3">
+                <p id="section-toc.1-1.6.2.3.1"><a href="#section-6.3" class="auto internal xref">6.3</a>.  <a href="#name-attack-considerations" class="internal xref">Attack Considerations</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-implementation-consideratio" class="internal xref">Implementation Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-state-rotation-optimization" class="internal xref">State Rotation Optimization</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1.2.1">
+                    <p id="section-toc.1-1.7.2.1.2.1.1"><a href="#section-7.1.1" class="auto internal xref">7.1.1</a>.  <a href="#name-cycling-index-approach" class="internal xref">Cycling Index Approach</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1.2.2">
+                    <p id="section-toc.1-1.7.2.1.2.2.1"><a href="#section-7.1.2" class="auto internal xref">7.1.2</a>.  <a href="#name-state-access-pattern" class="internal xref">State Access Pattern</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1.2.3">
+                    <p id="section-toc.1-1.7.2.1.2.3.1"><a href="#section-7.1.3" class="auto internal xref">7.1.3</a>.  <a href="#name-batch-processing-optimizati" class="internal xref">Batch Processing Optimization</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-platform-specific-optimizat" class="internal xref">Platform-Specific Optimizations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2.2.1">
+                    <p id="section-toc.1-1.7.2.2.2.1.1"><a href="#section-7.2.1" class="auto internal xref">7.2.1</a>.  <a href="#name-arm-neon-optimizations" class="internal xref">ARM NEON Optimizations</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2.2.2">
+                    <p id="section-toc.1-1.7.2.2.2.2.1"><a href="#section-7.2.2" class="auto internal xref">7.2.2</a>.  <a href="#name-intel-aes-ni-optimizations" class="internal xref">Intel AES-NI Optimizations</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.3">
+                <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-decryption-performance" class="internal xref">Decryption Performance</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.4">
+                <p id="section-toc.1-1.7.2.4.1"><a href="#section-7.4" class="auto internal xref">7.4</a>.  <a href="#name-security-considerations-for" class="internal xref">Security Considerations for Implementations</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.5">
+                <p id="section-toc.1-1.7.2.5.1"><a href="#section-7.5" class="auto internal xref">7.5</a>.  <a href="#name-validation" class="internal xref">Validation</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.1">
+                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="auto internal xref">9.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
+                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-test-vectors" class="internal xref">Test Vectors</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1">
+                <p id="section-toc.1-1.10.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-test-vector-1-empty-plainte" class="internal xref">Test Vector 1 - Empty plaintext, no AD</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.2">
+                <p id="section-toc.1-1.10.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-test-vector-2-single-block-" class="internal xref">Test Vector 2 - Single block plaintext, no AD</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.3">
+                <p id="section-toc.1-1.10.2.3.1"><a href="#appendix-A.3" class="auto internal xref">A.3</a>.  <a href="#name-test-vector-3-empty-plainte" class="internal xref">Test Vector 3 - Empty plaintext with AD</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.4">
+                <p id="section-toc.1-1.10.2.4.1"><a href="#appendix-A.4" class="auto internal xref">A.4</a>.  <a href="#name-test-vector-4-rate-aligned-" class="internal xref">Test Vector 4 - Rate-aligned plaintext (256 bytes)</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.5">
+                <p id="section-toc.1-1.10.2.5.1"><a href="#appendix-A.5" class="auto internal xref">A.5</a>.  <a href="#name-test-vector-5-rate-1-byte-p" class="internal xref">Test Vector 5 - Rate + 1 byte plaintext</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.6">
+                <p id="section-toc.1-1.10.2.6.1"><a href="#appendix-A.6" class="auto internal xref">A.6</a>.  <a href="#name-test-vector-6-rate-1-byte-p" class="internal xref">Test Vector 6 - Rate - 1 byte plaintext</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.7">
+                <p id="section-toc.1-1.10.2.7.1"><a href="#appendix-A.7" class="auto internal xref">A.7</a>.  <a href="#name-test-vector-7-medium-plaint" class="internal xref">Test Vector 7 - Medium plaintext with AD</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.8">
+                <p id="section-toc.1-1.10.2.8.1"><a href="#appendix-A.8" class="auto internal xref">A.8</a>.  <a href="#name-test-vector-8-single-byte-p" class="internal xref">Test Vector 8 - Single byte plaintext</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.9">
+                <p id="section-toc.1-1.10.2.9.1"><a href="#appendix-A.9" class="auto internal xref">A.9</a>.  <a href="#name-test-vector-9-two-blocks-pl" class="internal xref">Test Vector 9 - Two blocks plaintext</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.10">
+                <p id="section-toc.1-1.10.2.10.1"><a href="#appendix-A.10" class="auto internal xref">A.10</a>. <a href="#name-test-vector-10-all-zeros-pl" class="internal xref">Test Vector 10 - All zeros plaintext</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-function-by-function-exampl" class="internal xref">Function-by-Function Example</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1">
+                <p id="section-toc.1-1.11.2.1.1"><a href="#appendix-B.1" class="auto internal xref">B.1</a>.  <a href="#name-initial-values-for-example" class="internal xref">Initial Values for Example</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
+                <p id="section-toc.1-1.11.2.2.1"><a href="#appendix-B.2" class="auto internal xref">B.2</a>.  <a href="#name-aesl-function-example" class="internal xref">AESL Function Example</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.3">
+                <p id="section-toc.1-1.11.2.3.1"><a href="#appendix-B.3" class="auto internal xref">B.3</a>.  <a href="#name-update-function-example" class="internal xref">Update Function Example</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.3.2.1">
+                    <p id="section-toc.1-1.11.2.3.2.1.1"><a href="#appendix-B.3.1" class="auto internal xref">B.3.1</a>.  <a href="#name-example-update" class="internal xref">Example: Update</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.4">
+                <p id="section-toc.1-1.11.2.4.1"><a href="#appendix-B.4" class="auto internal xref">B.4</a>.  <a href="#name-initialize-function-example" class="internal xref">Initialize Function Example</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.5">
+                <p id="section-toc.1-1.11.2.5.1"><a href="#appendix-B.5" class="auto internal xref">B.5</a>.  <a href="#name-enc-function-example" class="internal xref">Enc Function Example</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.6">
+                <p id="section-toc.1-1.11.2.6.1"><a href="#appendix-B.6" class="auto internal xref">B.6</a>.  <a href="#name-finalize-function-example" class="internal xref">Finalize Function Example</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.7">
+                <p id="section-toc.1-1.11.2.7.1"><a href="#appendix-B.7" class="auto internal xref">B.7</a>.  <a href="#name-complete-encryption-example" class="internal xref">Complete Encryption Example</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#appendix-C" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">The evolution of wireless networks toward 6G, alongside the growing demands of cloud service providers and CDN operators, requires cryptographic algorithms capable of delivering unprecedented throughput while maintaining strong security guarantees. Current high-performance authenticated encryption schemes achieve impressive speeds by leveraging platform-specific SIMD instructions, particularly AES-NI on x86 architectures <span>[<a href="#AES-NI" class="cite xref">AES-NI</a>]</span>. Notable examples include AEGIS <span>[<a href="#I-D.irtf-cfrg-aegis-aead" class="cite xref">I-D.irtf-cfrg-aegis-aead</a>]</span>, SNOW-V <span>[<a href="#SNOW-V" class="cite xref">SNOW-V</a>]</span>, and Rocca-S <span>[<a href="#ROCCA-S" class="cite xref">ROCCA-S</a>]</span>.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">While these platform-specific optimizations deliver high performance on their target architectures, they create a significant performance disparity across different hardware platforms. These algorithms excel on x86 processors equipped with AES-NI but exhibit substantially degraded performance on ARM architectures that implement SIMD functionality through NEON instructions. This inconsistency poses a critical challenge for modern network deployments where ARM processors dominate mobile devices, edge computing nodes, and increasingly, data center environments.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">The architectural differences between x86 and ARM extend beyond instruction set variations. They encompass fundamental distinctions in how AES round functions are implemented in hardware, pipeline structures, and memory subsystems. These differences mean that algorithms optimized for one architecture may inadvertently create bottlenecks on another, resulting in unpredictable performance characteristics across heterogeneous deployments.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">The transition to 6G networks amplifies these challenges. Next-generation wireless systems will rely heavily on software-defined networking (SDN) and cloud radio access networks (Cloud RAN), requiring cryptographic algorithms that perform consistently across diverse hardware platforms. The stringent latency requirements and massive data rates anticipated for 6G, potentially exceeding 1 Tbps, demand encryption schemes that can leverage the full capabilities of both x86 and ARM architectures without compromise.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5">This document presents HiAE (High-throughput Authenticated Encryption), an authenticated encryption algorithm explicitly designed to address these cross-platform performance challenges. Through careful algorithmic design, HiAE delivers high performance on both x86 and ARM architectures by efficiently utilizing the capabilities of each platform without being overly dependent on architecture-specific features.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-6">The remainder of this document is organized as follows: Section 2 establishes notation and conventions. Section 3 provides the complete specification of the HiAE algorithm, including its three operational modes. Sections 4–6 detail the specific use cases as an AEAD cipher, stream cipher, and MAC. Section 7 analyzes security considerations, while Section 8 discusses implementation aspects. The appendix provides comprehensive test vectors for validation.<a href="#section-1-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="conventions-and-definitions">
+<section id="section-2">
+      <h2 id="name-conventions-and-definitions">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
+      </h2>
+<p id="section-2-1">The key words “<span class="bcp14">MUST</span>”, “<span class="bcp14">MUST NOT</span>”, “<span class="bcp14">REQUIRED</span>”, “<span class="bcp14">SHALL</span>”, “<span class="bcp14">SHALL NOT</span>”, “<span class="bcp14">SHOULD</span>”, “<span class="bcp14">SHOULD NOT</span>”, “<span class="bcp14">RECOMMENDED</span>”, “<span class="bcp14">NOT RECOMMENDED</span>”,
+“<span class="bcp14">MAY</span>”, and “<span class="bcp14">OPTIONAL</span>” in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">Throughout this document, “byte” is used interchangeably with “octet” and refers to an 8-bit sequence.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<p id="section-2-3">Basic operations:<a href="#section-2-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2-4.1">
+          <p id="section-2-4.1.1"><code>{}</code>: an empty bit array.<a href="#section-2-4.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-4.2">
+          <p id="section-2-4.2.1"><code>|x|</code>: the length of <code>x</code> in bits.<a href="#section-2-4.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-4.3">
+          <p id="section-2-4.3.1"><code>a ^ b</code>: the bitwise exclusive OR operation between <code>a</code> and <code>b</code>.<a href="#section-2-4.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-4.4">
+          <p id="section-2-4.4.1"><code>a || b</code>: the concatenation of <code>a</code> and <code>b</code>.<a href="#section-2-4.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-4.5">
+          <p id="section-2-4.5.1"><code>a mod b</code>: the remainder of the Euclidean division between <code>a</code> as the dividend and <code>b</code> as the divisor.<a href="#section-2-4.5.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-2-5">Data manipulation:<a href="#section-2-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2-6.1">
+          <p id="section-2-6.1.1"><code>LE64(x)</code>: returns the little-endian encoding of unsigned 64-bit integer <code>x</code>.<a href="#section-2-6.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-6.2">
+          <p id="section-2-6.2.1"><code>ZeroPad(x, n)</code>: returns <code>x</code> after appending zeros until its length is a multiple of <code>n</code> bits. No padding is added if the length of <code>x</code> is already a multiple of <code>n</code>, including when <code>x</code> is empty.<a href="#section-2-6.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-6.3">
+          <p id="section-2-6.3.1"><code>Truncate(x, n)</code>: returns the first <code>n</code> bits of <code>x</code>.<a href="#section-2-6.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-6.4">
+          <p id="section-2-6.4.1"><code>Tail(x, n)</code>: returns the last <code>n</code> bits of <code>x</code>.<a href="#section-2-6.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-6.5">
+          <p id="section-2-6.5.1"><code>Split(x, n)</code>: returns <code>x</code> split into <code>n</code>-bit blocks, ignoring partial blocks.<a href="#section-2-6.5.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-2-7">Cryptographic operations:<a href="#section-2-7" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2-8.1">
+          <p id="section-2-8.1.1"><code>AESL(x)</code>: A single AES round function without key addition. Given a 128-bit AES state <code>x</code>, this function applies the following AES transformations in sequence:<a href="#section-2-8.1.1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2-8.1.2">
+<li id="section-2-8.1.2.1">
+              <p id="section-2-8.1.2.1.1">SubBytes: Apply the AES S-box to each byte<a href="#section-2-8.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-2-8.1.2.2">
+              <p id="section-2-8.1.2.2.1">ShiftRows: Cyclically shift the rows of the state<a href="#section-2-8.1.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-2-8.1.2.3">
+              <p id="section-2-8.1.2.3.1">MixColumns: Mix the columns of the state<a href="#section-2-8.1.2.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ol>
+<p id="section-2-8.1.3">
+Formally: <code>AESL(x) = MixColumns(ShiftRows(SubBytes(x)))</code><a href="#section-2-8.1.3" class="pilcrow">¶</a></p>
+<p id="section-2-8.1.4">
+These transformations are as specified in Section 5 of <span>[<a href="#FIPS-AES" class="cite xref">FIPS-AES</a>]</span>. This is NOT the full AES encryption algorithm. It is a single round without the AddRoundKey operation (equivalent to using a zero round key). A test vector for this function is provided in Appendix B.<a href="#section-2-8.1.4" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-2-9">Control flow and comparison:<a href="#section-2-9" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2-10.1">
+          <p id="section-2-10.1.1"><code>Repeat(n, F)</code>: <code>n</code> sequential evaluations of the function <code>F</code>.<a href="#section-2-10.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-10.2">
+          <p id="section-2-10.2.1"><code>CtEq(a, b)</code>: compares <code>a</code> and <code>b</code> in constant-time, returning <code>True</code> for an exact match and <code>False</code> otherwise.<a href="#section-2-10.2.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-2-11">AES blocks:<a href="#section-2-11" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2-12.1">
+          <p id="section-2-12.1.1"><code>Si</code>: the <code>i</code>-th AES block of the current state.<a href="#section-2-12.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-12.2">
+          <p id="section-2-12.2.1"><code>S'i</code>: the <code>i</code>-th AES block of the next state.<a href="#section-2-12.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-12.3">
+          <p id="section-2-12.3.1"><code>{Si, ...Sj}</code>: the vector of the <code>i</code>-th AES block of the current state to the <code>j</code>-th block of the current state.<a href="#section-2-12.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-12.4">
+          <p id="section-2-12.4.1"><code>C0</code>: an AES block built from the following bytes in hexadecimal format: <code>{ 0x32, 0x43, 0xf6, 0xa8, 0x88, 0x5a, 0x30, 0x8d, 0x31, 0x31, 0x98, 0xa2, 0xe0, 0x37, 0x07, 0x34 }</code>.<a href="#section-2-12.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-12.5">
+          <p id="section-2-12.5.1"><code>C1</code>: an AES block built from the following bytes in hexadecimal format: <code>{ 0x4a, 0x40, 0x93, 0x82, 0x22, 0x99, 0xf3, 0x1d, 0x00, 0x82, 0xef, 0xa9, 0x8e, 0xc4, 0xe6, 0xc8 }</code>.<a href="#section-2-12.5.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-2-13">The constants C0 and C1 are domain separation constants derived from the fractional parts of π and e, respectively.<a href="#section-2-13" class="pilcrow">¶</a></p>
+<p id="section-2-14">Input and output values:<a href="#section-2-14" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2-15.1">
+          <p id="section-2-15.1.1"><code>key</code>: the encryption key (256 bits).<a href="#section-2-15.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-15.2">
+          <p id="section-2-15.2.1"><code>nonce</code>: the public nonce (128 bits).<a href="#section-2-15.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-15.3">
+          <p id="section-2-15.3.1"><code>ad</code>: the associated data.<a href="#section-2-15.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-15.4">
+          <p id="section-2-15.4.1"><code>msg</code>: the plaintext.<a href="#section-2-15.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-15.5">
+          <p id="section-2-15.5.1"><code>ct</code>: the ciphertext.<a href="#section-2-15.5.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-15.6">
+          <p id="section-2-15.6.1"><code>tag</code>: the authentication tag (128 bits).<a href="#section-2-15.6.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+</section>
+</div>
+<div id="the-hiae-algorithm">
+<section id="section-3">
+      <h2 id="name-the-hiae-algorithm">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-the-hiae-algorithm" class="section-name selfRef">The HiAE Algorithm</a>
+      </h2>
+<p id="section-3-1">This section provides the complete specification of HiAE. The algorithm operates on a 2048-bit internal state organized as sixteen 128-bit blocks, combining AES round functions with an efficient update mechanism to achieve both high security and cross-platform performance.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<div id="algorithm-parameters">
+<section id="section-3.1">
+        <h3 id="name-algorithm-parameters">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-algorithm-parameters" class="section-name selfRef">Algorithm Parameters</a>
+        </h3>
+<p id="section-3.1-1">HiAE maintains a 2048-bit state organized as sixteen 128-bit blocks denoted <code>{S0, S1, S2, ..., S15}</code>. Each block Si represents a 128-bit AES state that can be processed independently by AES round functions. This large state size provides security margins while enabling efficient parallel processing on modern architectures.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">The parameters for this algorithm, whose meaning is defined in <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>], <a href="https://rfc-editor.org/rfc/rfc5116#section-4" class="relref">Section 4</a></span>, are:<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.1-3.1">
+            <p id="section-3.1-3.1.1"><code>K_LEN</code> (key length) is 32 bytes (256 bits).<a href="#section-3.1-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.1-3.2">
+            <p id="section-3.1-3.2.1"><code>P_MAX</code> (maximum length of the plaintext) is 2<sup>61</sup> - 1 bytes (2<sup>64</sup> - 8 bits).<a href="#section-3.1-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.1-3.3">
+            <p id="section-3.1-3.3.1"><code>A_MAX</code> (maximum length of the associated data) is 2<sup>61</sup> - 1 bytes (2<sup>64</sup> - 8 bits).<a href="#section-3.1-3.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.1-3.4">
+            <p id="section-3.1-3.4.1"><code>N_MIN</code> (minimum nonce length) = <code>N_MAX</code> (maximum nonce length) = 16 bytes (128 bits).<a href="#section-3.1-3.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.1-3.5">
+            <p id="section-3.1-3.5.1"><code>C_MAX</code> (maximum ciphertext length) = <code>P_MAX</code> + tag length = (2<sup>61</sup> - 1) + 16 or 32 bytes (in bits: (2<sup>64</sup> - 8) + 128 bits).<a href="#section-3.1-3.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.1-4">Distinct associated data inputs, as described in <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>], <a href="https://rfc-editor.org/rfc/rfc5116#section-3" class="relref">Section 3</a></span>, <span class="bcp14">MUST</span> be unambiguously encoded as a single input.
+It is up to the application to create a structure in the associated data input if needed.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authenticated-encryption">
+<section id="section-3.2">
+        <h3 id="name-authenticated-encryption">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-authenticated-encryption" class="section-name selfRef">Authenticated Encryption</a>
+        </h3>
+<div class="alignLeft art-text artwork" id="section-3.2-1">
+<pre>
+Encrypt(msg, ad, key, nonce)
+</pre><a href="#section-3.2-1" class="pilcrow">¶</a>
+</div>
+<p id="section-3.2-2">The <code>Encrypt</code> function encrypts a message and returns the ciphertext along with an authentication tag that verifies the authenticity of the message and associated data, if provided.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.2-3">Security:<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.2-4.1">
+            <p id="section-3.2-4.1.1">For a given key, the nonce <span class="bcp14">MUST NOT</span> be reused under any circumstances; doing so allows an attacker to recover the internal state.<a href="#section-3.2-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.2-4.2">
+            <p id="section-3.2-4.2.1">The key <span class="bcp14">MUST</span> be randomly chosen from a uniform distribution.<a href="#section-3.2-4.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.2-5">Inputs:<a href="#section-3.2-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.2-6.1">
+            <p id="section-3.2-6.1.1"><code>msg</code>: the message to be encrypted (length <span class="bcp14">MUST</span> be less than or equal to <code>P_MAX</code>).<a href="#section-3.2-6.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.2-6.2">
+            <p id="section-3.2-6.2.1"><code>ad</code>: the associated data to authenticate (length <span class="bcp14">MUST</span> be less than or equal to <code>A_MAX</code>).<a href="#section-3.2-6.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.2-6.3">
+            <p id="section-3.2-6.3.1"><code>key</code>: the encryption key.<a href="#section-3.2-6.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.2-6.4">
+            <p id="section-3.2-6.4.1"><code>nonce</code>: the public nonce.<a href="#section-3.2-6.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.2-7">Outputs:<a href="#section-3.2-7" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.2-8.1">
+            <p id="section-3.2-8.1.1"><code>ct</code>: the ciphertext.<a href="#section-3.2-8.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.2-8.2">
+            <p id="section-3.2-8.2.1"><code>tag</code>: the authentication tag.<a href="#section-3.2-8.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.2-9">Steps:<a href="#section-3.2-9" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.2-10">
+<pre>
+Init(key, nonce)
+
+ct = {}
+
+ad_blocks = Split(ZeroPad(ad, 128), 128)
+for ai in ad_blocks:
+    Absorb(ai)
+
+msg_blocks = Split(ZeroPad(msg, 128), 128)
+for xi in msg_blocks:
+    ct = ct || Enc(xi)
+
+tag = Finalize(|ad|, |msg|)
+ct = Truncate(ct, |msg|)
+
+return ct and tag
+</pre><a href="#section-3.2-10" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="authenticated-decryption">
+<section id="section-3.3">
+        <h3 id="name-authenticated-decryption">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-authenticated-decryption" class="section-name selfRef">Authenticated Decryption</a>
+        </h3>
+<div class="alignLeft art-text artwork" id="section-3.3-1">
+<pre>
+Decrypt(ct, tag, ad, key, nonce)
+</pre><a href="#section-3.3-1" class="pilcrow">¶</a>
+</div>
+<p id="section-3.3-2">The <code>Decrypt</code> function decrypts a ciphertext, verifies that the authentication tag is correct, and returns the message on success or an error if tag verification fails.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
+<p id="section-3.3-3">Security:<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.3-4.1">
+            <p id="section-3.3-4.1.1">If tag verification fails, the decrypted message and incorrect authentication tag <span class="bcp14">MUST NOT</span> be given as output. The decrypted message <span class="bcp14">MUST</span> be overwritten with zeros before the function returns.<a href="#section-3.3-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-4.2">
+            <p id="section-3.3-4.2.1">The comparison of the input <code>tag</code> with the <code>expected_tag</code> <span class="bcp14">MUST</span> be done in constant time.<a href="#section-3.3-4.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.3-5">Inputs:<a href="#section-3.3-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.3-6.1">
+            <p id="section-3.3-6.1.1"><code>ct</code>: the ciphertext to decrypt (length <span class="bcp14">MUST</span> be less than or equal to <code>C_MAX</code>).<a href="#section-3.3-6.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-6.2">
+            <p id="section-3.3-6.2.1"><code>tag</code>: the authentication tag.<a href="#section-3.3-6.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-6.3">
+            <p id="section-3.3-6.3.1"><code>ad</code>: the associated data to authenticate (length <span class="bcp14">MUST</span> be less than or equal to <code>A_MAX</code>).<a href="#section-3.3-6.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-6.4">
+            <p id="section-3.3-6.4.1"><code>key</code>: the encryption key.<a href="#section-3.3-6.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.3-6.5">
+            <p id="section-3.3-6.5.1"><code>nonce</code>: the public nonce.<a href="#section-3.3-6.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.3-7">Outputs:<a href="#section-3.3-7" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.3-8.1">
+            <p id="section-3.3-8.1.1">Either the decrypted message <code>msg</code> or an error indicating that the authentication tag is invalid for the given inputs.<a href="#section-3.3-8.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.3-9">Steps:<a href="#section-3.3-9" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.3-10">
+<pre>
+Init(key, nonce)
+
+msg = {}
+
+ad_blocks = Split(ZeroPad(ad, 128), 128)
+for ai in ad_blocks:
+    Absorb(ai)
+
+ct_blocks = Split(ct, 128)
+cn = Tail(ct, |ct| mod 128)
+
+for ci in ct_blocks:
+    msg = msg || Dec(ci)
+
+if cn is not empty:
+    msg = msg || DecPartial(cn)
+
+expected_tag = Finalize(|ad|, |msg|)
+
+if CtEq(tag, expected_tag) is False:
+    erase msg
+    erase expected_tag
+    return "verification failed" error
+else:
+    return msg
+</pre><a href="#section-3.3-10" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="core-functions">
+<section id="section-3.4">
+        <h3 id="name-core-functions">
+<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-core-functions" class="section-name selfRef">Core Functions</a>
+        </h3>
+<p id="section-3.4-1">The following sections describe the fundamental operations that form the building blocks of HiAE. These functions manipulate the 2048-bit state to provide confusion, diffusion, and the absorption of input data.<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+<div id="the-state-rotation-function">
+<section id="section-3.4.1">
+          <h4 id="name-the-state-rotation-function">
+<a href="#section-3.4.1" class="section-number selfRef">3.4.1. </a><a href="#name-the-state-rotation-function" class="section-name selfRef">The State Rotation Function</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-3.4.1-1">
+<pre>
+Rol()
+</pre><a href="#section-3.4.1-1" class="pilcrow">¶</a>
+</div>
+<p id="section-3.4.1-2">The <code>Rol</code> function provides diffusion by rotating the sixteen 128-bit blocks of the state one position to the left. This ensures that local changes propagate throughout the entire state over multiple rounds.<a href="#section-3.4.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.4.1-3">Modifies:<a href="#section-3.4.1-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.4.1-4.1">
+              <p id="section-3.4.1-4.1.1"><code>{S0, ...S15}</code>: the state.<a href="#section-3.4.1-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-3.4.1-5">Steps:<a href="#section-3.4.1-5" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.4.1-6">
+<pre>
+  t = S0
+ S0 = S1
+ S1 = S2
+ S2 = S3
+ S3 = S4
+ S4 = S5
+ S5 = S6
+ S6 = S7
+ S7 = S8
+ S8 = S9
+ S9 = S10
+S10 = S11
+S11 = S12
+S12 = S13
+S13 = S14
+S14 = S15
+S15 = t
+</pre><a href="#section-3.4.1-6" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="the-state-update-functions">
+<section id="section-3.4.2">
+          <h4 id="name-the-state-update-functions">
+<a href="#section-3.4.2" class="section-number selfRef">3.4.2. </a><a href="#name-the-state-update-functions" class="section-name selfRef">The State Update Functions</a>
+          </h4>
+<p id="section-3.4.2-1">The state update functions form the cryptographic core of HiAE. They combine the AESL transformation with XOR operations and state rotation to achieve both security and efficiency.<a href="#section-3.4.2-1" class="pilcrow">¶</a></p>
+<div id="the-update-function">
+<section id="section-3.4.2.1">
+            <h5 id="name-the-update-function">
+<a href="#section-3.4.2.1" class="section-number selfRef">3.4.2.1. </a><a href="#name-the-update-function" class="section-name selfRef">The Update Function</a>
+            </h5>
+<div class="alignLeft art-text artwork" id="section-3.4.2.1-1">
+<pre>
+Update(xi)
+</pre><a href="#section-3.4.2.1-1" class="pilcrow">¶</a>
+</div>
+<p id="section-3.4.2.1-2">The <code>Update</code> function is the core of the HiAE algorithm.
+It updates the state <code>{S0, ...S15}</code> using a 128-bit value.<a href="#section-3.4.2.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.4.2.1-3">Inputs:<a href="#section-3.4.2.1-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.4.2.1-4.1">
+                <p id="section-3.4.2.1-4.1.1"><code>xi</code>: the 128-bit block to be absorbed.<a href="#section-3.4.2.1-4.1.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+<p id="section-3.4.2.1-5">Modifies:<a href="#section-3.4.2.1-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.4.2.1-6.1">
+                <p id="section-3.4.2.1-6.1.1"><code>{S0, ...S15}</code>: the state.<a href="#section-3.4.2.1-6.1.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+<p id="section-3.4.2.1-7">Steps:<a href="#section-3.4.2.1-7" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.4.2.1-8">
+<pre>
+  t = AESL(S0 ^ S1) ^ xi
+ S0 = AESL(S13) ^ t
+ S3 =  S3 ^ xi
+S13 = S13 ^ xi
+
+Rol()
+</pre><a href="#section-3.4.2.1-8" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="the-updateenc-function">
+<section id="section-3.4.2.2">
+            <h5 id="name-the-updateenc-function">
+<a href="#section-3.4.2.2" class="section-number selfRef">3.4.2.2. </a><a href="#name-the-updateenc-function" class="section-name selfRef">The UpdateEnc Function</a>
+            </h5>
+<div class="alignLeft art-text artwork" id="section-3.4.2.2-1">
+<pre>
+UpdateEnc(mi)
+</pre><a href="#section-3.4.2.2-1" class="pilcrow">¶</a>
+</div>
+<p id="section-3.4.2.2-2">The <code>UpdateEnc</code> function extends the basic <code>Update</code> function to provide encryption. It absorbs a plaintext block while simultaneously generating the corresponding ciphertext block through an additional XOR with state block S9.<a href="#section-3.4.2.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.4.2.2-3">Inputs:<a href="#section-3.4.2.2-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.4.2.2-4.1">
+                <p id="section-3.4.2.2-4.1.1"><code>mi</code>: a 128-bit block to be encrypted.<a href="#section-3.4.2.2-4.1.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+<p id="section-3.4.2.2-5">Outputs:<a href="#section-3.4.2.2-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.4.2.2-6.1">
+                <p id="section-3.4.2.2-6.1.1"><code>ci</code>: the encrypted 128-bit block.<a href="#section-3.4.2.2-6.1.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+<p id="section-3.4.2.2-7">Modifies:<a href="#section-3.4.2.2-7" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.4.2.2-8.1">
+                <p id="section-3.4.2.2-8.1.1"><code>{S0, ...S15}</code>: the state.<a href="#section-3.4.2.2-8.1.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+<p id="section-3.4.2.2-9">Steps:<a href="#section-3.4.2.2-9" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.4.2.2-10">
+<pre>
+  t = AESL(S0 ^ S1) ^ mi
+ ci = t ^ S9
+ S0 = AESL(S13) ^ t
+ S3 =  S3 ^ mi
+S13 = S13 ^ mi
+
+Rol()
+
+return ci
+</pre><a href="#section-3.4.2.2-10" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="the-updatedec-function">
+<section id="section-3.4.2.3">
+            <h5 id="name-the-updatedec-function">
+<a href="#section-3.4.2.3" class="section-number selfRef">3.4.2.3. </a><a href="#name-the-updatedec-function" class="section-name selfRef">The UpdateDec Function</a>
+            </h5>
+<div class="alignLeft art-text artwork" id="section-3.4.2.3-1">
+<pre>
+UpdateDec(ci)
+</pre><a href="#section-3.4.2.3-1" class="pilcrow">¶</a>
+</div>
+<p id="section-3.4.2.3-2">The <code>UpdateDec</code> function provides the inverse operation of <code>UpdateEnc</code>. It processes a ciphertext block to recover the plaintext while maintaining the same state update pattern, ensuring that encryption and decryption produce identical internal states.<a href="#section-3.4.2.3-2" class="pilcrow">¶</a></p>
+<p id="section-3.4.2.3-3">Inputs:<a href="#section-3.4.2.3-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.4.2.3-4.1">
+                <p id="section-3.4.2.3-4.1.1"><code>ci</code>: a 128-bit block to be decrypted.<a href="#section-3.4.2.3-4.1.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+<p id="section-3.4.2.3-5">Outputs:<a href="#section-3.4.2.3-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.4.2.3-6.1">
+                <p id="section-3.4.2.3-6.1.1"><code>mi</code>: the decrypted 128-bit block.<a href="#section-3.4.2.3-6.1.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+<p id="section-3.4.2.3-7">Modifies:<a href="#section-3.4.2.3-7" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.4.2.3-8.1">
+                <p id="section-3.4.2.3-8.1.1"><code>{S0, ...S15}</code>: the state.<a href="#section-3.4.2.3-8.1.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+<p id="section-3.4.2.3-9">Steps:<a href="#section-3.4.2.3-9" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.4.2.3-10">
+<pre>
+  t = ci ^ S9
+ mi = AESL(S0 ^ S1) ^ t
+ S0 = AESL(S13) ^ t
+ S3 =  S3 ^ mi
+S13 = S13 ^ mi
+
+Rol()
+
+return mi
+</pre><a href="#section-3.4.2.3-10" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="the-diffuse-function">
+<section id="section-3.4.2.4">
+            <h5 id="name-the-diffuse-function">
+<a href="#section-3.4.2.4" class="section-number selfRef">3.4.2.4. </a><a href="#name-the-diffuse-function" class="section-name selfRef">The Diffuse Function</a>
+            </h5>
+<div class="alignLeft art-text artwork" id="section-3.4.2.4-1">
+<pre>
+Diffuse(x)
+</pre><a href="#section-3.4.2.4-1" class="pilcrow">¶</a>
+</div>
+<p id="section-3.4.2.4-2">The <code>Diffuse</code> function ensures full state mixing by performing 32 consecutive update operations. This function is critical for security during initialization and finalization phases, guaranteeing that every bit of the key and nonce influences the entire state, and that the authentication tag depends on all state bits.<a href="#section-3.4.2.4-2" class="pilcrow">¶</a></p>
+<p id="section-3.4.2.4-3">Inputs:<a href="#section-3.4.2.4-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.4.2.4-4.1">
+                <p id="section-3.4.2.4-4.1.1"><code>x</code>: a 128-bit input value.<a href="#section-3.4.2.4-4.1.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+<p id="section-3.4.2.4-5">Modifies:<a href="#section-3.4.2.4-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.4.2.4-6.1">
+                <p id="section-3.4.2.4-6.1.1"><code>{S0, ...S15}</code>: the state.<a href="#section-3.4.2.4-6.1.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+<p id="section-3.4.2.4-7">Steps:<a href="#section-3.4.2.4-7" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.4.2.4-8">
+<pre>
+Repeat(32,
+  Update(x)
+)
+</pre><a href="#section-3.4.2.4-8" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="initialization-and-processing-functions">
+<section id="section-3.5">
+        <h3 id="name-initialization-and-processi">
+<a href="#section-3.5" class="section-number selfRef">3.5. </a><a href="#name-initialization-and-processi" class="section-name selfRef">Initialization and Processing Functions</a>
+        </h3>
+<p id="section-3.5-1">The following functions implement the high-level operations of HiAE: initialization, data absorption, encryption/decryption, and finalization.<a href="#section-3.5-1" class="pilcrow">¶</a></p>
+<div id="the-init-function">
+<section id="section-3.5.1">
+          <h4 id="name-the-init-function">
+<a href="#section-3.5.1" class="section-number selfRef">3.5.1. </a><a href="#name-the-init-function" class="section-name selfRef">The Init Function</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-3.5.1-1">
+<pre>
+Init(key, nonce)
+</pre><a href="#section-3.5.1-1" class="pilcrow">¶</a>
+</div>
+<p id="section-3.5.1-2">The <code>Init</code> function constructs the initial state <code>{S0, ...S15}</code> from the encryption key and nonce. The initialization process carefully distributes key material across the state and applies the Diffuse function to ensure all state bits are cryptographically mixed before processing begins.<a href="#section-3.5.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.5.1-3">Inputs:<a href="#section-3.5.1-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.5.1-4.1">
+              <p id="section-3.5.1-4.1.1"><code>key</code>: the encryption key.<a href="#section-3.5.1-4.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3.5.1-4.2">
+              <p id="section-3.5.1-4.2.1"><code>nonce</code>: the public nonce.<a href="#section-3.5.1-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-3.5.1-5">Defines:<a href="#section-3.5.1-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.5.1-6.1">
+              <p id="section-3.5.1-6.1.1"><code>{S0, ...S15}</code>: the initial state.<a href="#section-3.5.1-6.1.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-3.5.1-7">Steps:<a href="#section-3.5.1-7" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.5.1-8">
+<pre>
+k0, k1 = Split(key, 128)
+
+ S0 = C0
+ S1 = k1
+ S2 = nonce
+ S3 = C0
+ S4 = ZeroPad({ 0 }, 128)
+ S5 = nonce ^ k0
+ S6 = ZeroPad({ 0 }, 128)
+ S7 = C1
+ S8 = nonce ^ k1
+ S9 = ZeroPad({ 0 }, 128)
+S10 = k1
+S11 = C0
+S12 = C1
+S13 = k1
+S14 = ZeroPad({ 0 }, 128)
+S15 = C0 ^ C1
+
+Diffuse(C0)
+
+ S9 =  S9 ^ k0
+S13 = S13 ^ k1
+</pre><a href="#section-3.5.1-8" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="the-absorb-function">
+<section id="section-3.5.2">
+          <h4 id="name-the-absorb-function">
+<a href="#section-3.5.2" class="section-number selfRef">3.5.2. </a><a href="#name-the-absorb-function" class="section-name selfRef">The Absorb Function</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-3.5.2-1">
+<pre>
+Absorb(ai)
+</pre><a href="#section-3.5.2-1" class="pilcrow">¶</a>
+</div>
+<p id="section-3.5.2-2">The <code>Absorb</code> function processes associated data by incorporating 128-bit blocks into the internal state. This function is used exclusively for authenticated data that should influence the authentication tag but not produce ciphertext output.<a href="#section-3.5.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.5.2-3">Inputs:<a href="#section-3.5.2-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.5.2-4.1">
+              <p id="section-3.5.2-4.1.1"><code>ai</code>: the 128-bit input block.<a href="#section-3.5.2-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-3.5.2-5">Steps:<a href="#section-3.5.2-5" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.5.2-6">
+<pre>
+Update(ai)
+</pre><a href="#section-3.5.2-6" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="the-enc-function">
+<section id="section-3.5.3">
+          <h4 id="name-the-enc-function">
+<a href="#section-3.5.3" class="section-number selfRef">3.5.3. </a><a href="#name-the-enc-function" class="section-name selfRef">The Enc Function</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-3.5.3-1">
+<pre>
+Enc(mi)
+</pre><a href="#section-3.5.3-1" class="pilcrow">¶</a>
+</div>
+<p id="section-3.5.3-2">The <code>Enc</code> function encrypts a single 128-bit plaintext block. It serves as a simple wrapper around <code>UpdateEnc</code>, providing a clean interface for the block-by-block encryption process.<a href="#section-3.5.3-2" class="pilcrow">¶</a></p>
+<p id="section-3.5.3-3">Inputs:<a href="#section-3.5.3-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.5.3-4.1">
+              <p id="section-3.5.3-4.1.1"><code>mi</code>: the 128-bit input block.<a href="#section-3.5.3-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-3.5.3-5">Outputs:<a href="#section-3.5.3-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.5.3-6.1">
+              <p id="section-3.5.3-6.1.1"><code>ci</code>: the 128-bit encrypted block.<a href="#section-3.5.3-6.1.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-3.5.3-7">Steps:<a href="#section-3.5.3-7" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.5.3-8">
+<pre>
+ci = UpdateEnc(mi)
+return ci
+</pre><a href="#section-3.5.3-8" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="the-dec-function">
+<section id="section-3.5.4">
+          <h4 id="name-the-dec-function">
+<a href="#section-3.5.4" class="section-number selfRef">3.5.4. </a><a href="#name-the-dec-function" class="section-name selfRef">The Dec Function</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-3.5.4-1">
+<pre>
+Dec(ci)
+</pre><a href="#section-3.5.4-1" class="pilcrow">¶</a>
+</div>
+<p id="section-3.5.4-2">The <code>Dec</code> function decrypts a single 128-bit ciphertext block. Like <code>Enc</code>, it provides a clean interface by wrapping the <code>UpdateDec</code> function.<a href="#section-3.5.4-2" class="pilcrow">¶</a></p>
+<p id="section-3.5.4-3">Inputs:<a href="#section-3.5.4-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.5.4-4.1">
+              <p id="section-3.5.4-4.1.1"><code>ci</code>: the 128-bit encrypted block.<a href="#section-3.5.4-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-3.5.4-5">Outputs:<a href="#section-3.5.4-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.5.4-6.1">
+              <p id="section-3.5.4-6.1.1"><code>mi</code>: the 128-bit decrypted block.<a href="#section-3.5.4-6.1.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-3.5.4-7">Steps:<a href="#section-3.5.4-7" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.5.4-8">
+<pre>
+mi = UpdateDec(ci)
+return mi
+</pre><a href="#section-3.5.4-8" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="the-decpartial-function">
+<section id="section-3.5.5">
+          <h4 id="name-the-decpartial-function">
+<a href="#section-3.5.5" class="section-number selfRef">3.5.5. </a><a href="#name-the-decpartial-function" class="section-name selfRef">The DecPartial Function</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-3.5.5-1">
+<pre>
+DecPartial(cn)
+</pre><a href="#section-3.5.5-1" class="pilcrow">¶</a>
+</div>
+<p id="section-3.5.5-2">The <code>DecPartial</code> function handles the special case of decrypting a partial block at the end of a ciphertext. This function carefully reconstructs the keystream to decrypt blocks smaller than 128 bits while maintaining the same state evolution as encryption.<a href="#section-3.5.5-2" class="pilcrow">¶</a></p>
+<p id="section-3.5.5-3">Inputs:<a href="#section-3.5.5-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.5.5-4.1">
+              <p id="section-3.5.5-4.1.1"><code>cn</code>: the encrypted input.<a href="#section-3.5.5-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-3.5.5-5">Outputs:<a href="#section-3.5.5-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.5.5-6.1">
+              <p id="section-3.5.5-6.1.1"><code>mn</code>: the decryption of <code>cn</code>.<a href="#section-3.5.5-6.1.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-3.5.5-7">Steps:<a href="#section-3.5.5-7" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.5.5-8">
+<pre>
+# Step 1: Recover the keystream that would encrypt a full zero block
+ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
+
+# Step 2: Construct a full 128-bit ciphertext block
+# by appending the appropriate keystream bits
+ci = cn || Tail(ks, 128 - |cn|)
+
+# Step 3: Decrypt the full block using standard UpdateDec
+mi = UpdateDec(ci)
+
+# Step 4: Extract only the decrypted bytes corresponding to the partial input
+mn = Truncate(mi, |cn|)
+
+return mn
+</pre><a href="#section-3.5.5-8" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="the-finalize-function">
+<section id="section-3.5.6">
+          <h4 id="name-the-finalize-function">
+<a href="#section-3.5.6" class="section-number selfRef">3.5.6. </a><a href="#name-the-finalize-function" class="section-name selfRef">The Finalize Function</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-3.5.6-1">
+<pre>
+Finalize(ad_len_bits, msg_len_bits)
+</pre><a href="#section-3.5.6-1" class="pilcrow">¶</a>
+</div>
+<p id="section-3.5.6-2">The <code>Finalize</code> function completes the authentication process by generating a 128-bit tag. It incorporates the lengths of both the associated data and message (each encoded as 8 bytes in little-endian format), applies the Diffuse function for final mixing, and combines all state blocks to produce the authentication tag.<a href="#section-3.5.6-2" class="pilcrow">¶</a></p>
+<p id="section-3.5.6-3">Inputs:<a href="#section-3.5.6-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.5.6-4.1">
+              <p id="section-3.5.6-4.1.1"><code>ad_len_bits</code>: the length of the associated data in bits.<a href="#section-3.5.6-4.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3.5.6-4.2">
+              <p id="section-3.5.6-4.2.1"><code>msg_len_bits</code>: the length of the message in bits.<a href="#section-3.5.6-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-3.5.6-5">Outputs:<a href="#section-3.5.6-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.5.6-6.1">
+              <p id="section-3.5.6-6.1.1"><code>tag</code>: the authentication tag.<a href="#section-3.5.6-6.1.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-3.5.6-7">Steps:<a href="#section-3.5.6-7" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.5.6-8">
+<pre>
+t = (LE64(ad_len_bits) || LE64(msg_len_bits))
+Diffuse(t)
+
+tag = S0 ^ S1 ^ S2 ^ S3 ^ S4 ^ S5 ^ S6 ^ S7 ^
+      S8 ^ S9 ^ S10 ^ S11 ^ S12 ^ S13 ^ S14 ^ S15
+
+return tag
+</pre><a href="#section-3.5.6-8" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="encoding-ct-tag-tuples">
+<section id="section-4">
+      <h2 id="name-encoding-ct-tag-tuples">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-encoding-ct-tag-tuples" class="section-name selfRef">Encoding (ct, tag) Tuples</a>
+      </h2>
+<p id="section-4-1">Applications <span class="bcp14">MAY</span> keep the ciphertext and the authentication tag in distinct structures or encode both as a single string.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">In the latter case, the tag <span class="bcp14">MUST</span> immediately follow the ciphertext:<a href="#section-4-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4-3">
+<pre>
+combined_ct = ct || tag
+</pre><a href="#section-4-3" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="alternative-operating-modes">
+<section id="section-5">
+      <h2 id="name-alternative-operating-modes">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-alternative-operating-modes" class="section-name selfRef">Alternative Operating Modes</a>
+      </h2>
+<p id="section-5-1">While HiAE is primarily designed as an authenticated encryption algorithm, its flexible structure allows it to operate in two additional modes: as a stream cipher for keystream generation and as a message authentication code (MAC) for data authentication without encryption.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<div id="hiae-as-a-stream-cipher">
+<section id="section-5.1">
+        <h3 id="name-hiae-as-a-stream-cipher">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-hiae-as-a-stream-cipher" class="section-name selfRef">HiAE as a Stream Cipher</a>
+        </h3>
+<p id="section-5.1-1">The stream cipher mode of HiAE generates a keystream by encrypting an all-zero message.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5.1-2">
+<pre>
+Stream(len, key, nonce)
+</pre><a href="#section-5.1-2" class="pilcrow">¶</a>
+</div>
+<p id="section-5.1-3">The <code>Stream</code> function expands a key and an optional nonce into a variable-length keystream.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<p id="section-5.1-4">Inputs:<a href="#section-5.1-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.1-5.1">
+            <p id="section-5.1-5.1.1"><code>len</code>: the length of the keystream to generate in bits.<a href="#section-5.1-5.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.1-5.2">
+            <p id="section-5.1-5.2.1"><code>key</code>: the HiAE key.<a href="#section-5.1-5.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.1-5.3">
+            <p id="section-5.1-5.3.1"><code>nonce</code>: the HiAE nonce. If unspecified, it is set to <code>N_MAX</code> zero bytes.<a href="#section-5.1-5.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-5.1-6">Outputs:<a href="#section-5.1-6" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.1-7.1">
+            <p id="section-5.1-7.1.1"><code>stream</code>: the keystream.<a href="#section-5.1-7.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-5.1-8">Steps:<a href="#section-5.1-8" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5.1-9">
+<pre>
+if len == 0:
+    return {}
+else:
+    stream, tag = Encrypt(ZeroPad({ 0 }, len), {}, key, nonce)
+    return stream
+</pre><a href="#section-5.1-9" class="pilcrow">¶</a>
+</div>
+<p id="section-5.1-10">This is equivalent to encrypting a message of <code>len</code> zero bits without associated data and discarding the authentication tag.<a href="#section-5.1-10" class="pilcrow">¶</a></p>
+<p id="section-5.1-11">Instead of relying on the generic <code>Encrypt</code> function, implementations can omit the <code>Finalize</code> function.<a href="#section-5.1-11" class="pilcrow">¶</a></p>
+<p id="section-5.1-12">After initialization, the <code>Update</code> function is called with constant parameters, allowing further optimizations.<a href="#section-5.1-12" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="hiae-as-a-message-authentication-code">
+<section id="section-5.2">
+        <h3 id="name-hiae-as-a-message-authentic">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-hiae-as-a-message-authentic" class="section-name selfRef">HiAE as a Message Authentication Code</a>
+        </h3>
+<p id="section-5.2-1">In MAC mode, HiAE processes input data without generating ciphertext, producing only an authentication tag. This mode is useful when data authenticity is required without confidentiality.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5.2-2">
+<pre>
+Mac(data, key, nonce)
+</pre><a href="#section-5.2-2" class="pilcrow">¶</a>
+</div>
+<p id="section-5.2-3">Security:<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.2-4.1">
+            <p id="section-5.2-4.1.1">This is the only function that allows the reuse of <code>(key, nonce)</code> pairs with different inputs.<a href="#section-5.2-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.2-4.2">
+            <p id="section-5.2-4.2.1">HiAE-based MAC functions <span class="bcp14">MUST NOT</span> be used as hash functions: if the key is known, inputs causing state collisions can easily be crafted.<a href="#section-5.2-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.2-4.3">
+            <p id="section-5.2-4.3.1">Unlike hash-based MACs, tags <span class="bcp14">MUST NOT</span> be used for key derivation as there is no guarantee that they are uniformly random.<a href="#section-5.2-4.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-5.2-5">Inputs:<a href="#section-5.2-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.2-6.1">
+            <p id="section-5.2-6.1.1"><code>data</code>: the input data to authenticate (length <span class="bcp14">MUST</span> be less than or equal to <code>A_MAX</code>).<a href="#section-5.2-6.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.2-6.2">
+            <p id="section-5.2-6.2.1"><code>key</code>: the secret key.<a href="#section-5.2-6.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.2-6.3">
+            <p id="section-5.2-6.3.1"><code>nonce</code>: the public nonce.<a href="#section-5.2-6.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-5.2-7">Outputs:<a href="#section-5.2-7" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.2-8.1">
+            <p id="section-5.2-8.1.1"><code>tag</code>: the authentication tag.<a href="#section-5.2-8.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-5.2-9">Steps:<a href="#section-5.2-9" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5.2-10">
+<pre>
+Init(key, nonce)
+data_blocks = Split(ZeroPad(data, 128), 128)
+for di in data_blocks:
+    Absorb(di)
+tag = Finalize(|data|, 0)
+return tag
+</pre><a href="#section-5.2-10" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-6">
+      <h2 id="name-security-considerations">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<div id="classic-setting">
+<section id="section-6.1">
+        <h3 id="name-classic-setting">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-classic-setting" class="section-name selfRef">Classic Setting</a>
+        </h3>
+<p id="section-6.1-1">HiAE provides 256-bit security against key recovery and state recovery attacks, along with 128-bit security for integrity against forgery attempts.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1-2">It is important to note that the encryption security assumes the attacker cannot successfully forge messages through repeated trials <span>[<a href="#HiAE-Clarification" class="cite xref">HiAE-Clarification</a>]</span>.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
+<p id="section-6.1-3">Regarding keystream bias attacks, analysis shows that at least 150-bit security is guaranteed by HiAE.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
+<p id="section-6.1-4">Finally, HiAE is assumed to be secure against key-committing attacks, but it has not been proven to be secure in the everything-committing setting.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="quantum-setting">
+<section id="section-6.2">
+        <h3 id="name-quantum-setting">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-quantum-setting" class="section-name selfRef">Quantum Setting</a>
+        </h3>
+<p id="section-6.2-1">HiAE targets a security strength of 128 bits against key recovery attacks and forgery attacks in the quantum setting. Security is not claimed against online superposition queries to cryptographic oracle attacks, as such attacks are highly impractical in real-world applications.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="attack-considerations">
+<section id="section-6.3">
+        <h3 id="name-attack-considerations">
+<a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-attack-considerations" class="section-name selfRef">Attack Considerations</a>
+        </h3>
+<p id="section-6.3-1">HiAE is assumed to be secure against the following attacks:<a href="#section-6.3-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-6.3-2">
+<li id="section-6.3-2.1">
+            <p id="section-6.3-2.1.1">Key-Recovery Attack: 256-bit security against key recovery attacks.<a href="#section-6.3-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-6.3-2.2">
+            <p id="section-6.3-2.2.1">Differential Attack: 256-bit security against differential attacks in the initialization phase.<a href="#section-6.3-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-6.3-2.3">
+            <p id="section-6.3-2.3.1">Forgery Attack: 128-bit security against forgery attacks.<a href="#section-6.3-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-6.3-2.4">
+            <p id="section-6.3-2.4.1">Integral Attack: Secure against integral attacks.<a href="#section-6.3-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-6.3-2.5">
+            <p id="section-6.3-2.5.1">State-Recovery Attack:<a href="#section-6.3-2.5.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6.3-2.5.2.1">
+                <p id="section-6.3-2.5.2.1.1">Guess-and-Determine Attack: The time complexity of the guess-and-determine attack cannot be lower than 2<sup>256</sup>.<a href="#section-6.3-2.5.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-6.3-2.5.2.2">
+                <p id="section-6.3-2.5.2.2.1">Algebraic Attack: The system of equations to recover HiAE states cannot be solved with time complexity lower than 2<sup>256</sup>.<a href="#section-6.3-2.5.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li id="section-6.3-2.6">
+            <p id="section-6.3-2.6.1">Linear Bias: At least 150-bit security against statistical attacks.<a href="#section-6.3-2.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-6.3-2.7">
+            <p id="section-6.3-2.7.1">Key-Committing Attacks: Secure in the FROB, CMT1, and CMT2 models.<a href="#section-6.3-2.7.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-6.3-2.8">
+            <p id="section-6.3-2.8.1">Everything-Committing Attacks: Security is not claimed in the CMT3 model.<a href="#section-6.3-2.8.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-6.3-3">The details of the cryptanalysis can be found in the paper <span>[<a href="#HiAE" class="cite xref">HiAE</a>]</span>.<a href="#section-6.3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="implementation-considerations">
+<section id="section-7">
+      <h2 id="name-implementation-consideratio">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-implementation-consideratio" class="section-name selfRef">Implementation Considerations</a>
+      </h2>
+<p id="section-7-1">HiAE is designed to balance the performance of XOR and AES instructions across both ARM and x86 architectures while being optimized to push performance to its limits. The algorithm’s XAXX structure enables platform-specific optimizations by exploiting the fundamental differences in how ARM and Intel processors implement AES round functions.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<div id="state-rotation-optimization">
+<section id="section-7.1">
+        <h3 id="name-state-rotation-optimization">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-state-rotation-optimization" class="section-name selfRef">State Rotation Optimization</a>
+        </h3>
+<p id="section-7.1-1">Instead of performing physical rotations with the <code>Rol()</code> function, implementations can use a cycling index (offset) approach to avoid copying the entire 2048-bit state on every rotation. This optimization provides significant performance improvements across all platforms.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<div id="cycling-index-approach">
+<section id="section-7.1.1">
+          <h4 id="name-cycling-index-approach">
+<a href="#section-7.1.1" class="section-number selfRef">7.1.1. </a><a href="#name-cycling-index-approach" class="section-name selfRef">Cycling Index Approach</a>
+          </h4>
+<p id="section-7.1.1-1">The standard <code>Rol()</code> function requires copying all sixteen 128-bit blocks:<a href="#section-7.1.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.1.1-2">
+<pre>
+  t = S0
+ S0 = S1
+ S1 = S2
+ ...
+S15 = t
+</pre><a href="#section-7.1.1-2" class="pilcrow">¶</a>
+</div>
+<p id="section-7.1.1-3">This approach copies 2048 bits of data on every rotation. An optimized implementation can instead:<a href="#section-7.1.1-3" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-7.1.1-4">
+<li id="section-7.1.1-4.1">
+              <p id="section-7.1.1-4.1.1">Keep the state blocks in a fixed array position<a href="#section-7.1.1-4.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-7.1.1-4.2">
+              <p id="section-7.1.1-4.2.1">Maintain an <code>offset</code> variable tracking the logical position of S0<a href="#section-7.1.1-4.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-7.1.1-4.3">
+              <p id="section-7.1.1-4.3.1">Map logical state block Si to physical position <code>(i + offset) mod 16</code><a href="#section-7.1.1-4.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-7.1.1-4.4">
+              <p id="section-7.1.1-4.4.1">Replace the entire <code>Rol()</code> operation with: <code>offset = (offset + 1) mod 16</code><a href="#section-7.1.1-4.4.1" class="pilcrow">¶</a></p>
+</li>
+          </ol>
+</section>
+</div>
+<div id="state-access-pattern">
+<section id="section-7.1.2">
+          <h4 id="name-state-access-pattern">
+<a href="#section-7.1.2" class="section-number selfRef">7.1.2. </a><a href="#name-state-access-pattern" class="section-name selfRef">State Access Pattern</a>
+          </h4>
+<p id="section-7.1.2-1">With this optimization, the logical-to-physical state block mapping becomes:<a href="#section-7.1.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.1.2-2.1">
+              <p id="section-7.1.2-2.1.1">Logical <code>S0</code> maps to physical position <code>offset mod 16</code><a href="#section-7.1.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.2-2.2">
+              <p id="section-7.1.2-2.2.1">Logical <code>S3</code> maps to physical position <code>(3 + offset) mod 16</code><a href="#section-7.1.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.2-2.3">
+              <p id="section-7.1.2-2.3.1">Logical <code>S9</code> maps to physical position <code>(9 + offset) mod 16</code><a href="#section-7.1.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.2-2.4">
+              <p id="section-7.1.2-2.4.1">Logical <code>S13</code> maps to physical position <code>(13 + offset) mod 16</code><a href="#section-7.1.2-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-7.1.2-3">This approach is mathematically equivalent to the specification but eliminates the expensive memory operations associated with state rotation. Since <code>Rol()</code> is called in every <code>Update()</code>, <code>UpdateEnc()</code>, and <code>UpdateDec()</code> operation, this optimization provides substantial performance benefits during encryption and decryption operations.<a href="#section-7.1.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="batch-processing-optimization">
+<section id="section-7.1.3">
+          <h4 id="name-batch-processing-optimizati">
+<a href="#section-7.1.3" class="section-number selfRef">7.1.3. </a><a href="#name-batch-processing-optimizati" class="section-name selfRef">Batch Processing Optimization</a>
+          </h4>
+<p id="section-7.1.3-1">Since the offset cycles back to zero every 16 operations (<code>offset mod 16</code>), implementations may benefit from processing data in batches of 16 blocks. After processing 16 consecutive input blocks, the logical state mapping returns to its original configuration, which can simplify implementation and potentially enable further optimizations such as loop unrolling or vectorization of the batch processing logic.<a href="#section-7.1.3-1" class="pilcrow">¶</a></p>
+<p id="section-7.1.3-2">When the offset is aligned to zero at the start of a batch, implementations can hardcode the specific offset values for each operation within the unrolled batch processing function, eliminating the need for modular arithmetic during the inner loop and providing additional performance benefits.<a href="#section-7.1.3-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="platform-specific-optimizations">
+<section id="section-7.2">
+        <h3 id="name-platform-specific-optimizat">
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-platform-specific-optimizat" class="section-name selfRef">Platform-Specific Optimizations</a>
+        </h3>
+<p id="section-7.2-1">The key to HiAE’s cross-platform efficiency lies in understanding how different architectures implement AES operations.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<p id="section-7.2-2">The following optimizations leverage architectural differences between ARM and Intel processors to maximize HiAE’s performance while maintaining cryptographic correctness.<a href="#section-7.2-2" class="pilcrow">¶</a></p>
+<div id="arm-neon-optimizations">
+<section id="section-7.2.1">
+          <h4 id="name-arm-neon-optimizations">
+<a href="#section-7.2.1" class="section-number selfRef">7.2.1. </a><a href="#name-arm-neon-optimizations" class="section-name selfRef">ARM NEON Optimizations</a>
+          </h4>
+<p id="section-7.2.1-1">ARM processors with NEON SIMD extensions can efficiently compute <code>AESL(x^y)</code> and (with SHA3 extensions) three-way XOR operations. For convenience, the following additional primitives can be defined:<a href="#section-7.2.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.2.1-2.1">
+              <p id="section-7.2.1-2.1.1"><code>XAESL(x,y)</code>: Computes <code>AESL(x^y)</code> in a single fused operation (assembly instruction <code>AESE ∘ AESMC</code>, or equivalently C intrinsic <code>vaesmcq_u8(vaeseq_u8(x,y))</code>)<a href="#section-7.2.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.2.1-2.2">
+              <p id="section-7.2.1-2.2.1"><code>XOR3(x,y,z)</code>: Computes <code>x^y^z</code> in a single three-way XOR instruction (assembly instruction <code>EOR3</code>, or equivalently C intrinsic <code>veor3q_u8(x,y,z)</code>)<a href="#section-7.2.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<div id="arm-optimized-update-function">
+<section id="section-7.2.1.1">
+            <h5 id="name-arm-optimized-update-functi">
+<a href="#section-7.2.1.1" class="section-number selfRef">7.2.1.1. </a><a href="#name-arm-optimized-update-functi" class="section-name selfRef">ARM-Optimized Update Function</a>
+            </h5>
+<p id="section-7.2.1.1-1">Original implementation:<a href="#section-7.2.1.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.1.1-2">
+<pre>
+Update(xi)
+  t = AESL(S0 ^ S1) ^ xi
+ S0 = AESL(S13) ^ t
+ S3 =  S3 ^ xi
+S13 = S13 ^ xi
+Rol()
+</pre><a href="#section-7.2.1.1-2" class="pilcrow">¶</a>
+</div>
+<p id="section-7.2.1.1-3">ARM-optimized implementation:<a href="#section-7.2.1.1-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.1.1-4">
+<pre>
+Update_ARM(xi)
+  t = XAESL(S0, S1) ^ xi
+ S0 = AESL(S13) ^ t
+ S3 = S3 ^ xi
+S13 = S13 ^ xi
+Rol()
+</pre><a href="#section-7.2.1.1-4" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="arm-optimized-updateenc-function">
+<section id="section-7.2.1.2">
+            <h5 id="name-arm-optimized-updateenc-fun">
+<a href="#section-7.2.1.2" class="section-number selfRef">7.2.1.2. </a><a href="#name-arm-optimized-updateenc-fun" class="section-name selfRef">ARM-Optimized UpdateEnc Function</a>
+            </h5>
+<p id="section-7.2.1.2-1">Original implementation:<a href="#section-7.2.1.2-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.1.2-2">
+<pre>
+UpdateEnc(mi)
+  t = AESL(S0 ^ S1) ^ mi
+ ci = t ^ S9
+ S0 = AESL(S13) ^ t
+ S3 =  S3 ^ mi
+S13 = S13 ^ mi
+Rol()
+return ci
+</pre><a href="#section-7.2.1.2-2" class="pilcrow">¶</a>
+</div>
+<p id="section-7.2.1.2-3">ARM-optimized implementation:<a href="#section-7.2.1.2-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.1.2-4">
+<pre>
+UpdateEnc_ARM(mi)
+  t = XAESL(S0, S1) ^ mi
+ ci = t ^ S9
+ S0 = AESL(S13) ^ t
+ S3 = S3 ^ mi
+S13 = S13 ^ mi
+Rol()
+return ci
+</pre><a href="#section-7.2.1.2-4" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="arm-optimized-decpartial-function">
+<section id="section-7.2.1.3">
+            <h5 id="name-arm-optimized-decpartial-fu">
+<a href="#section-7.2.1.3" class="section-number selfRef">7.2.1.3. </a><a href="#name-arm-optimized-decpartial-fu" class="section-name selfRef">ARM-Optimized DecPartial Function</a>
+            </h5>
+<p id="section-7.2.1.3-1">Original implementation:<a href="#section-7.2.1.3-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.1.3-2">
+<pre>
+DecPartial(cn)
+ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
+ci = cn || Tail(ks, 128 - |cn|)
+mi = UpdateDec(ci)
+mn = Truncate(mi, |cn|)
+return mn
+</pre><a href="#section-7.2.1.3-2" class="pilcrow">¶</a>
+</div>
+<p id="section-7.2.1.3-3">ARM-optimized implementation:<a href="#section-7.2.1.3-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.1.3-4">
+<pre>
+DecPartial_ARM(cn)
+ks = XOR3(XAESL(S0, S1), ZeroPad(cn), S9)
+ci = cn || Tail(ks, 128 - |cn|)
+mi = UpdateDec_ARM(ci)
+mn = Truncate(mi, |cn|)
+return mn
+</pre><a href="#section-7.2.1.3-4" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="arm-optimized-updatedec-function">
+<section id="section-7.2.1.4">
+            <h5 id="name-arm-optimized-updatedec-fun">
+<a href="#section-7.2.1.4" class="section-number selfRef">7.2.1.4. </a><a href="#name-arm-optimized-updatedec-fun" class="section-name selfRef">ARM-Optimized UpdateDec Function</a>
+            </h5>
+<p id="section-7.2.1.4-1">Original implementation:<a href="#section-7.2.1.4-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.1.4-2">
+<pre>
+UpdateDec(ci)
+  t = ci ^ S9
+ mi = AESL(S0 ^ S1) ^ t
+ S0 = AESL(S13) ^ t
+ S3 =  S3 ^ mi
+S13 = S13 ^ mi
+Rol()
+return mi
+</pre><a href="#section-7.2.1.4-2" class="pilcrow">¶</a>
+</div>
+<p id="section-7.2.1.4-3">ARM-optimized implementation:<a href="#section-7.2.1.4-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.1.4-4">
+<pre>
+UpdateDec_ARM(ci)
+  t = ci ^ S9
+ mi = XAESL(S0, S1) ^ t
+ S0 = AESL(S13) ^ t
+ S3 =  S3 ^ mi
+S13 = S13 ^ mi
+Rol()
+return mi
+</pre><a href="#section-7.2.1.4-4" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="intel-aes-ni-optimizations">
+<section id="section-7.2.2">
+          <h4 id="name-intel-aes-ni-optimizations">
+<a href="#section-7.2.2" class="section-number selfRef">7.2.2. </a><a href="#name-intel-aes-ni-optimizations" class="section-name selfRef">Intel AES-NI Optimizations</a>
+          </h4>
+<p id="section-7.2.2-1">Intel processors with AES-NI can efficiently compute <code>AESL(y)^z</code> patterns. We can define the following additional function:<a href="#section-7.2.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.2.2-2.1">
+              <p id="section-7.2.2-2.1.1"><code>AESLX(y,z)</code>: Computes <code>AESL(y) ^ z</code> using a single instruction (assembly instruction <code>AESENC</code>, or equivalently C intrinsic <code>_mm_aesenc_si128(y, z)</code>)<a href="#section-7.2.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<div id="intel-optimized-update-function">
+<section id="section-7.2.2.1">
+            <h5 id="name-intel-optimized-update-func">
+<a href="#section-7.2.2.1" class="section-number selfRef">7.2.2.1. </a><a href="#name-intel-optimized-update-func" class="section-name selfRef">Intel-Optimized Update Function</a>
+            </h5>
+<p id="section-7.2.2.1-1">Original implementation:<a href="#section-7.2.2.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.1-2">
+<pre>
+Update(xi)
+  t = AESL(S0 ^ S1) ^ xi
+ S0 = AESL(S13) ^ t
+ S3 =  S3 ^ xi
+S13 = S13 ^ xi
+Rol()
+</pre><a href="#section-7.2.2.1-2" class="pilcrow">¶</a>
+</div>
+<p id="section-7.2.2.1-3">Intel-optimized implementation:<a href="#section-7.2.2.1-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.1-4">
+<pre>
+Update_Intel(xi)
+  t = AESL(S0 ^ S1) ^ xi
+ S0 = AESLX(S13, t)
+ S3 =  S3 ^ xi
+S13 = S13 ^ xi
+Rol()
+</pre><a href="#section-7.2.2.1-4" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="intel-optimized-updateenc-function">
+<section id="section-7.2.2.2">
+            <h5 id="name-intel-optimized-updateenc-f">
+<a href="#section-7.2.2.2" class="section-number selfRef">7.2.2.2. </a><a href="#name-intel-optimized-updateenc-f" class="section-name selfRef">Intel-Optimized UpdateEnc Function</a>
+            </h5>
+<p id="section-7.2.2.2-1">Original implementation:<a href="#section-7.2.2.2-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.2-2">
+<pre>
+UpdateEnc(mi)
+  t = AESL(S0 ^ S1) ^ mi
+ ci = t ^ S9
+ S0 = AESL(S13) ^ t
+ S3 =  S3 ^ mi
+S13 = S13 ^ mi
+Rol()
+return ci
+</pre><a href="#section-7.2.2.2-2" class="pilcrow">¶</a>
+</div>
+<p id="section-7.2.2.2-3">Intel-optimized implementation:<a href="#section-7.2.2.2-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.2-4">
+<pre>
+UpdateEnc_Intel(mi)
+  t = AESL(S0 ^ S1) ^ mi
+ ci = t ^ S9
+ S0 = AESLX(S13, t)
+ S3 =  S3 ^ mi
+S13 = S13 ^ mi
+Rol()
+return ci
+</pre><a href="#section-7.2.2.2-4" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="intel-optimized-decpartial-function">
+<section id="section-7.2.2.3">
+            <h5 id="name-intel-optimized-decpartial-">
+<a href="#section-7.2.2.3" class="section-number selfRef">7.2.2.3. </a><a href="#name-intel-optimized-decpartial-" class="section-name selfRef">Intel-Optimized DecPartial Function</a>
+            </h5>
+<p id="section-7.2.2.3-1">Original implementation:<a href="#section-7.2.2.3-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.3-2">
+<pre>
+DecPartial(cn)
+ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
+ci = cn || Tail(ks, 128 - |cn|)
+mi = UpdateDec(ci)
+mn = Truncate(mi, |cn|)
+return mn
+</pre><a href="#section-7.2.2.3-2" class="pilcrow">¶</a>
+</div>
+<p id="section-7.2.2.3-3">Intel-optimized implementation:<a href="#section-7.2.2.3-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.3-4">
+<pre>
+DecPartial_Intel(cn)
+ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
+ci = cn || Tail(ks, 128 - |cn|)
+mi = UpdateDec_Intel(ci)
+mn = Truncate(mi, |cn|)
+return mn
+</pre><a href="#section-7.2.2.3-4" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="intel-optimized-updatedec-function">
+<section id="section-7.2.2.4">
+            <h5 id="name-intel-optimized-updatedec-f">
+<a href="#section-7.2.2.4" class="section-number selfRef">7.2.2.4. </a><a href="#name-intel-optimized-updatedec-f" class="section-name selfRef">Intel-Optimized UpdateDec Function</a>
+            </h5>
+<p id="section-7.2.2.4-1">Original implementation:<a href="#section-7.2.2.4-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.4-2">
+<pre>
+UpdateDec(ci)
+  t = ci ^ S9
+ mi = AESL(S0 ^ S1) ^ t
+ S0 = AESL(S13) ^ t
+ S3 =  S3 ^ mi
+S13 = S13 ^ mi
+Rol()
+return mi
+</pre><a href="#section-7.2.2.4-2" class="pilcrow">¶</a>
+</div>
+<p id="section-7.2.2.4-3">Intel-optimized implementation:<a href="#section-7.2.2.4-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.4-4">
+<pre>
+UpdateDec_Intel(ci)
+  t = ci ^ S9
+ mi = AESL(S0 ^ S1) ^ t
+ S0 = AESLX(S13, t)
+ S3 =  S3 ^ mi
+S13 = S13 ^ mi
+Rol()
+return mi
+</pre><a href="#section-7.2.2.4-4" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="decryption-performance">
+<section id="section-7.3">
+        <h3 id="name-decryption-performance">
+<a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-decryption-performance" class="section-name selfRef">Decryption Performance</a>
+        </h3>
+<p id="section-7.3-1">It is expected that HiAE decryption will be slower than encryption due to inherent data dependencies in the algorithm. While encryption can process keystream generation and state updates in parallel, decryption must first recover the plaintext before performing any state updates. This sequential dependency chain is a consequence of HiAE’s design, which incorporates plaintext into the internal state to provide strong authentication properties.<a href="#section-7.3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="security-considerations-for-implementations">
+<section id="section-7.4">
+        <h3 id="name-security-considerations-for">
+<a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-security-considerations-for" class="section-name selfRef">Security Considerations for Implementations</a>
+        </h3>
+<p id="section-7.4-1">The security of HiAE against timing and physical attacks is limited by the implementation of the underlying <code>AESL</code> function. Failure to implement <code>AESL</code> in a fashion safe against timing and physical attacks, such as differential power analysis, timing analysis, or fault injection attacks, may lead to leakage of secret key material or state information. The exact mitigations required for timing and physical attacks depend on the threat model in question.<a href="#section-7.4-1" class="pilcrow">¶</a></p>
+<p id="section-7.4-2">When implementing the platform-specific optimizations described above, care must be taken to ensure that:<a href="#section-7.4-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.4-3.1">
+            <p id="section-7.4-3.1.1">All operations complete in constant time<a href="#section-7.4-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.4-3.2">
+            <p id="section-7.4-3.2.1">No secret-dependent memory accesses occur<a href="#section-7.4-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.4-3.3">
+            <p id="section-7.4-3.3.1">The optimization does not introduce timing variations based on input data<a href="#section-7.4-3.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="validation">
+<section id="section-7.5">
+        <h3 id="name-validation">
+<a href="#section-7.5" class="section-number selfRef">7.5. </a><a href="#name-validation" class="section-name selfRef">Validation</a>
+        </h3>
+<p id="section-7.5-1">A complete list of known implementations and integrations is available at <span><a href="https://github.com/hiae-aead/draft-pham-hiae">https://github.com/hiae-aead/draft-pham-hiae</a></span>, including reference implementations. A comprehensive comparison of HiAE’s performance with other high-throughput authenticated encryption schemes on ARM and x86 architectures is also provided, demonstrating the effectiveness of these platform-specific optimizations.<a href="#section-7.5-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-8">
+      <h2 id="name-iana-considerations">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-8-1">IANA is requested to register the following entry in the AEAD Algorithms Registry:<a href="#section-8-1" class="pilcrow">¶</a></p>
+<table class="center" id="table-1">
+        <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
+<thead>
+          <tr>
+            <th class="text-left" rowspan="1" colspan="1">Algorithm Name</th>
+            <th class="text-left" rowspan="1" colspan="1">ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">
+              <code>AEAD_HIAE</code>
+</td>
+            <td class="text-left" rowspan="1" colspan="1"> </td>
+          </tr>
+        </tbody>
+      </table>
+</section>
+</div>
+<div id="sec-combined-references">
+<section id="section-9">
+      <h2 id="name-references">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<div id="sec-normative-references">
+<section id="section-9.1">
+        <h3 id="name-normative-references">
+<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="FIPS-AES">[FIPS-AES]</dt>
+        <dd>
+<span class="refAuthor">National Institute of Standards and Technology (NIST)</span>, <span class="refTitle">"Advanced encryption standard (AES)"</span>, <span class="refContent">Federal Information Processing Standards Publication 197</span>, <time datetime="2001-11" class="refDate">November 2001</time>, <span>&lt;<a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf">https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.irtf-cfrg-aegis-aead">[I-D.irtf-cfrg-aegis-aead]</dt>
+        <dd>
+<span class="refAuthor">Denis, F.</span> and <span class="refAuthor">S. Lucas</span>, <span class="refTitle">"The AEGIS Family of Authenticated Encryption Algorithms"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-irtf-cfrg-aegis-aead-16</span>, <time datetime="2025-02-17" class="refDate">17 February 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-aegis-aead-16">https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-aegis-aead-16</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5116">[RFC5116]</dt>
+        <dd>
+<span class="refAuthor">McGrew, D.</span>, <span class="refTitle">"An Interface and Algorithms for Authenticated Encryption"</span>, <span class="seriesInfo">RFC 5116</span>, <span class="seriesInfo">DOI 10.17487/RFC5116</span>, <time datetime="2008-01" class="refDate">January 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5116">https://www.rfc-editor.org/rfc/rfc5116</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+      <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="sec-informative-references">
+<section id="section-9.2">
+        <h3 id="name-informative-references">
+<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="AES-NI">[AES-NI]</dt>
+        <dd>
+<span class="refAuthor">Gueron, S.</span>, <span class="refTitle">"Intel Advanced Encryption Standard (AES) New Instructions Set"</span>, <time datetime="2010" class="refDate">2010</time>, <span>&lt;<a href="https://www.intel.com/content/dam/doc/white-paper/advanced-encryption-standard-new-instructions-set-paper.pdf">https://www.intel.com/content/dam/doc/white-paper/advanced-encryption-standard-new-instructions-set-paper.pdf</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="HiAE">[HiAE]</dt>
+        <dd>
+<span class="refAuthor">Chen, H.</span>, <span class="refAuthor">Huang, T.</span>, <span class="refAuthor">Pham, P.</span>, and <span class="refAuthor">S. Wu</span>, <span class="refTitle">"HiAE: A High-Throughput Authenticated Encryption Algorithm for Cross-Platform Efficiency"</span>, <span class="refContent">Cryptology ePrint Archive, Paper 2025/377</span>, <time datetime="2025" class="refDate">2025</time>, <span>&lt;<a href="https://eprint.iacr.org/2025/377">https://eprint.iacr.org/2025/377</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="HiAE-Clarification">[HiAE-Clarification]</dt>
+        <dd>
+<span class="refAuthor">Pham, P.</span>, <span class="refAuthor">Prabel, L.</span>, and <span class="refAuthor">S. Wu</span>, <span class="refTitle">"HiAE Remains Secure in Its Intended Model: A Clarification of Claimed Attacks"</span>, <span class="refContent">Cryptology ePrint Archive, Paper 2025/1235</span>, <time datetime="2025" class="refDate">2025</time>, <span>&lt;<a href="https://eprint.iacr.org/2025/1235">https://eprint.iacr.org/2025/1235</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="NIST-LWC">[NIST-LWC]</dt>
+        <dd>
+<span class="refAuthor">National Institute of Standards and Technology (NIST)</span>, <span class="refTitle">"NIST Lightweight Cryptography (LWC)"</span>, <time datetime="2025" class="refDate">2025</time>, <span>&lt;<a href="https://csrc.nist.gov/projects/lightweight-cryptography">https://csrc.nist.gov/projects/lightweight-cryptography</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="ROCCA-S">[ROCCA-S]</dt>
+        <dd>
+<span class="refAuthor">Anand, R.</span>, <span class="refAuthor">Banik, S.</span>, <span class="refAuthor">Caforio, A.</span>, <span class="refAuthor">Fukushima, K.</span>, <span class="refAuthor">Isobe, T.</span>, <span class="refAuthor">Kiyomoto, S.</span>, <span class="refAuthor">Liu, F.</span>, <span class="refAuthor">Nakano, Y.</span>, <span class="refAuthor">Sakamoto, K.</span>, and <span class="refAuthor">N. Takeuchi</span>, <span class="refTitle">"An Ultra-High Throughput AES-Based Authenticated Encryption Scheme for 6G: Design and Implementation"</span>, <span class="refContent">Cryptology and Network Security (CANS 2023)</span>, <span class="seriesInfo">DOI 10.1007/978-3-031-50594-2_12</span>, <time datetime="2024" class="refDate">2024</time>, <span>&lt;<a href="https://doi.org/10.1007/978-3-031-50594-2_12">https://doi.org/10.1007/978-3-031-50594-2_12</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="SNOW-V">[SNOW-V]</dt>
+      <dd>
+<span class="refAuthor">Ekdahl, P.</span>, <span class="refAuthor">Johansson, T.</span>, <span class="refAuthor">Maximov, A.</span>, and <span class="refAuthor">J. Yang</span>, <span class="refTitle">"SNOW-V: an AES-based Stream Cipher for 5G and 6G Communication Systems"</span>, <span class="refContent">IACR Transactions on Symmetric Cryptology, 2019(3)</span>, <span class="seriesInfo">DOI 10.13154/tosc.v2019.i3.1-42</span>, <time datetime="2019" class="refDate">2019</time>, <span>&lt;<a href="https://doi.org/10.13154/tosc.v2019.i3.1-42">https://doi.org/10.13154/tosc.v2019.i3.1-42</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+</div>
+<div id="test-vectors">
+<section id="appendix-A">
+      <h2 id="name-test-vectors">
+<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-test-vectors" class="section-name selfRef">Test Vectors</a>
+      </h2>
+<div id="test-vector-1-empty-plaintext-no-ad">
+<section id="appendix-A.1">
+        <h3 id="name-test-vector-1-empty-plainte">
+<a href="#appendix-A.1" class="section-number selfRef">A.1. </a><a href="#name-test-vector-1-empty-plainte" class="section-name selfRef">Test Vector 1 - Empty plaintext, no AD</a>
+        </h3>
+<div class="lang-test-vectors sourcecode" id="appendix-A.1-1">
+<pre>
+key   : 4b7a9c3ef8d2165a0b3e5f8c9d4a7b1e
+        2c5f8a9d3b6e4c7f0a1d2e5b8c9f4a7d
+
+nonce : a5b8c2d9e3f4a7b1c8d5e9f2a3b6c7d8
+
+ad    :
+
+msg   :
+
+ct    :
+
+tag   : e3b7c5993e804d7e1f95905fe8fa1d74
+</pre><a href="#appendix-A.1-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="test-vector-2-single-block-plaintext-no-ad">
+<section id="appendix-A.2">
+        <h3 id="name-test-vector-2-single-block-">
+<a href="#appendix-A.2" class="section-number selfRef">A.2. </a><a href="#name-test-vector-2-single-block-" class="section-name selfRef">Test Vector 2 - Single block plaintext, no AD</a>
+        </h3>
+<div class="lang-test-vectors sourcecode" id="appendix-A.2-1">
+<pre>
+key   : 2f8e4d7c3b9a5e1f8d2c6b4a9f3e7d5c
+        1b8a6f4e3d2c9b5a8f7e6d4c3b2a1f9e
+
+nonce : 7c3e9f5a1d8b4c6f2e9a5d7b3f8c1e4a
+
+ad    :
+
+msg   : 55f00fcc339669aa55f00fcc339669aa
+
+ct    : 66fc201d96ace3ca550326964c2fa950
+
+tag   : 2e4d9b3bf320283de63ea5547454878d
+</pre><a href="#appendix-A.2-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="test-vector-3-empty-plaintext-with-ad">
+<section id="appendix-A.3">
+        <h3 id="name-test-vector-3-empty-plainte">
+<a href="#appendix-A.3" class="section-number selfRef">A.3. </a><a href="#name-test-vector-3-empty-plainte" class="section-name selfRef">Test Vector 3 - Empty plaintext with AD</a>
+        </h3>
+<div class="lang-test-vectors sourcecode" id="appendix-A.3-1">
+<pre>
+key   : 9f3e7d5c4b8a2f1e9d8c7b6a5f4e3d2c
+        1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6e
+
+nonce : 3d8c7f2a5b9e4c1f8a6d3b7e5c2f9a4d
+
+ad    : 394a5b6c7d8e9fb0c1d2e3f405162738
+        495a6b7c8d9eafc0d1e2f30415263748
+
+msg   :
+
+ct    :
+
+tag   : 531a4d1ed47bda55d01cc510512099e4
+</pre><a href="#appendix-A.3-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="test-vector-4-rate-aligned-plaintext-256-bytes">
+<section id="appendix-A.4">
+        <h3 id="name-test-vector-4-rate-aligned-">
+<a href="#appendix-A.4" class="section-number selfRef">A.4. </a><a href="#name-test-vector-4-rate-aligned-" class="section-name selfRef">Test Vector 4 - Rate-aligned plaintext (256 bytes)</a>
+        </h3>
+<div class="lang-test-vectors sourcecode" id="appendix-A.4-1">
+<pre>
+key   : 6c8f2d5a9e3b7f4c1d8a5e9f3c7b2d6a
+        4f8e1c9b5d3a7e2f4c8b6d9a1e5f3c7d
+
+nonce : 9a5c7e3f1b8d4a6c2e9f5b7d3a8c1e6f
+
+ad    :
+
+msg   : ffffffffffffffffffffffffffffffff
+        ffffffffffffffffffffffffffffffff
+        ffffffffffffffffffffffffffffffff
+        ffffffffffffffffffffffffffffffff
+        ffffffffffffffffffffffffffffffff
+        ffffffffffffffffffffffffffffffff
+        ffffffffffffffffffffffffffffffff
+        ffffffffffffffffffffffffffffffff
+        ffffffffffffffffffffffffffffffff
+        ffffffffffffffffffffffffffffffff
+        ffffffffffffffffffffffffffffffff
+        ffffffffffffffffffffffffffffffff
+        ffffffffffffffffffffffffffffffff
+        ffffffffffffffffffffffffffffffff
+        ffffffffffffffffffffffffffffffff
+        ffffffffffffffffffffffffffffffff
+
+ct    : 2e28f49c20d1a90a5bce3bc85f6eab2f
+        e0d3ee31c293f368ee20e485ec732c90
+        45633aa4d53e271b1f583f4f0b208487
+        6e4b0d2b2f633433e43c48386155d03d
+        00dbf10c07a66159e1bec7859839263a
+        c12e77045c6d718ddf5907297818e4ae
+        0b4ed7b890f57fa585e4a5940525aa2f
+        62e4b6748fa4cd86b75f69eff9dfd4df
+        9b0861ae7d52541ff892aa41d41d55a9
+        a62f4e4fefb718ee13faca582d73c1d1
+        f51592c25c64b0a79d2f24181362dfbb
+        352ac20e1b07be892a05b394eb6b2a9d
+        473c49e6b63e754311fdbb6c476503f0
+        a3570482ece70856ae6e6f8d5aa19cc2
+        7b5bce24ee028e197ed9891b0a54bf02
+        328cb80ceefc44b11043d784594226ab
+
+tag   : f330ae219d6739aba556fe94776b486b
+</pre><a href="#appendix-A.4-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="test-vector-5-rate-1-byte-plaintext">
+<section id="appendix-A.5">
+        <h3 id="name-test-vector-5-rate-1-byte-p">
+<a href="#appendix-A.5" class="section-number selfRef">A.5. </a><a href="#name-test-vector-5-rate-1-byte-p" class="section-name selfRef">Test Vector 5 - Rate + 1 byte plaintext</a>
+        </h3>
+<div class="lang-test-vectors sourcecode" id="appendix-A.5-1">
+<pre>
+key   : 3e9d6c5b4a8f7e2d1c9b8a7f6e5d4c3b
+        2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d
+
+nonce : 6f2e8a5c9b3d7f1e4a8c5b9d3f7e2a6c
+
+ad    : 6778899aabbccddeef00112233445566
+
+msg   : cc339669aa55f00fcc339669aa55f00f
+        cc339669aa55f00fcc339669aa55f00f
+        cc339669aa55f00fcc339669aa55f00f
+        cc339669aa55f00fcc339669aa55f00f
+        cc339669aa55f00fcc339669aa55f00f
+        cc339669aa55f00fcc339669aa55f00f
+        cc339669aa55f00fcc339669aa55f00f
+        cc339669aa55f00fcc339669aa55f00f
+        cc339669aa55f00fcc339669aa55f00f
+        cc339669aa55f00fcc339669aa55f00f
+        cc339669aa55f00fcc339669aa55f00f
+        cc339669aa55f00fcc339669aa55f00f
+        cc339669aa55f00fcc339669aa55f00f
+        cc339669aa55f00fcc339669aa55f00f
+        cc339669aa55f00fcc339669aa55f00f
+        cc339669aa55f00fcc339669aa55f00f
+        cc
+
+ct    : 5d2d2c7f1ff780687c65ed69c08805c2
+        69652b55f5d1ef005f25300d1f644b57
+        e500d5b0d75f9b025fee04cfdf422c6c
+        3c472e6967ac60f69ff730d4d308faed
+        beac375ae88da8ab78d26e496a5226b5
+        ffd7834a2f76ecc495a444ffa3db60d8
+        ec3fb75c0fcaa74966e1caec294c8eb7
+        a4895aa2b1e3976eb6bed2f975ff218d
+        c98f86f7c95996f03842cee71c6c1bc5
+        f7b64374e101b32927ed95432e88f8e3
+        8835f1981325dbcec412a4254e964c22
+        cf82688ee5e471c23a3537de7e51c288
+        92e32c565aa86ab708c70cf01f0d0ee9
+        781251759893d55e60e0d70014cb3afb
+        45e0821ba6e82e0f490ff2efef2f62c5
+        7332c68c11e6ed71ef730b62c3e05edf
+        f6
+
+tag   : 1122dc5bedc7cad4e196f7227b7102f3
+</pre><a href="#appendix-A.5-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="test-vector-6-rate-1-byte-plaintext">
+<section id="appendix-A.6">
+        <h3 id="name-test-vector-6-rate-1-byte-p">
+<a href="#appendix-A.6" class="section-number selfRef">A.6. </a><a href="#name-test-vector-6-rate-1-byte-p" class="section-name selfRef">Test Vector 6 - Rate - 1 byte plaintext</a>
+        </h3>
+<div class="lang-test-vectors sourcecode" id="appendix-A.6-1">
+<pre>
+key   : 8a7f6e5d4c3b2a1f0e9d8c7b6a5f4e3d
+        2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f
+
+nonce : 4d8b2f6a9c3e7f5d1b8a4c6e9f3d5b7a
+
+ad    :
+
+msg   : 00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+        000000000000000000000000000000
+
+ct    : 322970ad70b2af87676d57dd0b27866d
+        8c4f0e251b5162b93672de1ab7aaf20c
+        d91e7751a31e19762aeea4f3811657a3
+        06787ff4ebc06957c1f45b7fd284ef87
+        f3a902922999895ff26fddbd5986eac5
+        ef856f6ae270136315c698ec7fe5a618
+        8aa1847c00a3a870044e8d37e22b1bca
+        b3e493d8ae984c7646f2536032a40910
+        b6c0f317b916d5789189268c00ef4493
+        bcb5fb0135974fa9bec299d473fdbf76
+        f44107ec56b5941404fd4b3352576c31
+        3169662f1664bd5bccf210a710aa6665
+        fb3ec4fa3b4c648411fd09d4cada31b8
+        947fdd486de45a4e4a33c151364e23be
+        6b3fc14f0855b0518e733d5ea9051165
+        25286bb2d6a46ac8ef73144e2046f9
+
+tag   : 7eb4461a035fe51eaf4a1829605e6227
+</pre><a href="#appendix-A.6-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="test-vector-7-medium-plaintext-with-ad">
+<section id="appendix-A.7">
+        <h3 id="name-test-vector-7-medium-plaint">
+<a href="#appendix-A.7" class="section-number selfRef">A.7. </a><a href="#name-test-vector-7-medium-plaint" class="section-name selfRef">Test Vector 7 - Medium plaintext with AD</a>
+        </h3>
+<div class="lang-test-vectors sourcecode" id="appendix-A.7-1">
+<pre>
+key   : 5d9c3b7a8f2e6d4c1b9a8f7e6d5c4b3a
+        2f1e0d9c8b7a6f5e4d3c2b1a0f9e8d7c
+
+nonce : 8c5a7d3f9b1e6c4a2f8d5b9e3c7a1f6d
+
+ad    : 95a6b7c8d9eafb0c1d2e3f5061728394
+        a5b6c7d8e9fa0b1c2d3e4f60718293a4
+        b5c6d7e8f90a1b2c3d4e5f708192a3b4
+        c5d6e7f8091a2b3c4d5e6f8091a2b3c4
+
+msg   : 32e14453e7a776781d4c4e2c3b23bca2
+        441ee4213bc3df25021b5106c22c98e8
+        a7b310142252c8dcff70a91d55cdc910
+        3c1eccd9b5309ef21793a664e0d4b63c
+        83530dcd1a6ad0feda6ff19153e9ee62
+        0325c1cb979d7b32e54f41da3af1c169
+        a24c47c1f6673e115f0cb73e8c507f15
+        eedf155261962f2d175c9ba3832f4933
+        fb330d28ad6aae787f12788706f45c92
+        e72aea146959d2d4fa01869f7d072a7b
+        f43b2e75265e1a000dde451b64658919
+        e93143d2781955fb4ca2a38076ac9eb4
+        9adc2b92b05f0ec7
+
+ct    : ca3b18f0ffb25e4e1a6108abedcfc931
+        841804c22a132a701d2f0b5eb845a380
+        8028e9e1e0978795776c57a0415971cf
+        e87abc72171a24fd11f3c331d1efe306
+        e4ca1d8ede6e79cbd531020502d38026
+        20d9453ffdd5633fe98ff1d12b057edd
+        bd4d99ee6cabf4c8d2c9b4c7ee0d219b
+        3b4145e3c63acde6c45f6d65e08dd06e
+        f9dd2dde090f1f7579a5657720f348ae
+        5761a8df321f20ad711a2c703b1c3f20
+        0e4004da409daaa138f3c20f8f77c89c
+        b6f46df671f25c75a6a7838a5d792d18
+        a59c202fab564f0f
+
+tag   : 74ba4c28296f09101db59c37c4759bcf
+</pre><a href="#appendix-A.7-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="test-vector-8-single-byte-plaintext">
+<section id="appendix-A.8">
+        <h3 id="name-test-vector-8-single-byte-p">
+<a href="#appendix-A.8" class="section-number selfRef">A.8. </a><a href="#name-test-vector-8-single-byte-p" class="section-name selfRef">Test Vector 8 - Single byte plaintext</a>
+        </h3>
+<div class="lang-test-vectors sourcecode" id="appendix-A.8-1">
+<pre>
+key   : 7b6a5f4e3d2c1b0a9f8e7d6c5b4a3f2e
+        1d0c9b8a7f6e5d4c3b2a1f0e9d8c7b6a
+
+nonce : 2e7c9f5d3b8a4c6f1e9b5d7a3f8c2e4a
+
+ad    :
+
+msg   : ff
+
+ct    : 51
+
+tag   : 588535eb70c53ba5cce0d215194cb1c9
+</pre><a href="#appendix-A.8-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="test-vector-9-two-blocks-plaintext">
+<section id="appendix-A.9">
+        <h3 id="name-test-vector-9-two-blocks-pl">
+<a href="#appendix-A.9" class="section-number selfRef">A.9. </a><a href="#name-test-vector-9-two-blocks-pl" class="section-name selfRef">Test Vector 9 - Two blocks plaintext</a>
+        </h3>
+<div class="lang-test-vectors sourcecode" id="appendix-A.9-1">
+<pre>
+key   : 4c8b7a9f3e5d2c6b1a8f9e7d6c5b4a3f
+        2e1d0c9b8a7f6e5d4c3b2a1f0e9d8c7b
+
+nonce : 7e3c9a5f1d8b4e6c2a9f5d7b3e8c1a4f
+
+ad    : c3d4e5f60718293a4b5c6d7e8fa0b1c2
+        d3e4f5061728394a5b6c7d8e9fb0c1d2
+        e3f405162738495a6b7c8d9eafc0d1e2
+
+msg   : aa55f00fcc339669aa55f00fcc339669
+        aa55f00fcc339669aa55f00fcc339669
+
+ct    : 03694107097ff7ea0b1eac408fabb60a
+        cd89df4d0288fa9063309e5e323bf78f
+
+tag   : 2a3144f369a893c3d756f262067e5e59
+</pre><a href="#appendix-A.9-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="test-vector-10-all-zeros-plaintext">
+<section id="appendix-A.10">
+        <h3 id="name-test-vector-10-all-zeros-pl">
+<a href="#appendix-A.10" class="section-number selfRef">A.10. </a><a href="#name-test-vector-10-all-zeros-pl" class="section-name selfRef">Test Vector 10 - All zeros plaintext</a>
+        </h3>
+<div class="lang-test-vectors sourcecode" id="appendix-A.10-1">
+<pre>
+key   : 9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b
+        3a2f1e0d9c8b7a6f5e4d3c2b1a0f9e8d
+
+nonce : 5f9d3b7e2c8a4f6d1b9e5c7a3d8f2b6e
+
+ad    : daebfc0d1e2f405162738495a6b7c8d9
+
+msg   : 00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+        00000000000000000000000000000000
+
+ct    : eef78d00c4de4c557d5c769e499af7b9
+        8e5ad36cdaf1ff775a8629d82751e97e
+        8f98caa0773fe81ee40266f0d52ddbbe
+        f621504863bf39552682b29748f8c244
+        5c176cd63865732141edc59073cff90e
+        5996a23a763f8dd058a6a91ada1d8f83
+        2f5e600b39f799a698228b68d20cd189
+        e5e423b253a44c78060435050698ccae
+
+tag   : 59970b0b35a7822f3b88b63396c2da98
+</pre><a href="#appendix-A.10-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="function-by-function-example">
+<section id="appendix-B">
+      <h2 id="name-function-by-function-exampl">
+<a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-function-by-function-exampl" class="section-name selfRef">Function-by-Function Example</a>
+      </h2>
+<p id="appendix-B-1">This appendix provides step-by-step examples of HiAE internal functions for implementers. All values are in hexadecimal.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
+<div id="initial-values-for-example">
+<section id="appendix-B.1">
+        <h3 id="name-initial-values-for-example">
+<a href="#appendix-B.1" class="section-number selfRef">B.1. </a><a href="#name-initial-values-for-example" class="section-name selfRef">Initial Values for Example</a>
+        </h3>
+<div class="alignLeft art-text artwork" id="appendix-B.1-1">
+<pre>
+Key:   0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+Nonce: 00112233445566778899aabbccddeeff
+AD:    48656c6c6f (5 bytes: "Hello")
+Msg:   576f726c64 (5 bytes: "World")
+</pre><a href="#appendix-B.1-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="aesl-function-example">
+<section id="appendix-B.2">
+        <h3 id="name-aesl-function-example">
+<a href="#appendix-B.2" class="section-number selfRef">B.2. </a><a href="#name-aesl-function-example" class="section-name selfRef">AESL Function Example</a>
+        </h3>
+<p id="appendix-B.2-1">The AESL function performs a single AES encryption round with a zero round key.<a href="#appendix-B.2-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.2-2">
+<pre>
+Input Block:  00112233445566778899aabbccddeeff
+
+Output Block: 6379e6d9f467fb76ad063cf4d2eb8aa3
+</pre><a href="#appendix-B.2-2" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="update-function-example">
+<section id="appendix-B.3">
+        <h3 id="name-update-function-example">
+<a href="#appendix-B.3" class="section-number selfRef">B.3. </a><a href="#name-update-function-example" class="section-name selfRef">Update Function Example</a>
+        </h3>
+<p id="appendix-B.3-1">The Update function modifies the internal state with an input block.<a href="#appendix-B.3-1" class="pilcrow">¶</a></p>
+<div id="example-update">
+<section id="appendix-B.3.1">
+          <h4 id="name-example-update">
+<a href="#appendix-B.3.1" class="section-number selfRef">B.3.1. </a><a href="#name-example-update" class="section-name selfRef">Example: Update</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="appendix-B.3.1-1">
+<pre>
+Initial state: (16 AES blocks after initialization)
+  S0:  7cc0a8cc3b5f3fbce67c59a0c8e64f23
+  S1:  0123456789abcdef0123456789abcdef
+  S2:  00112233445566778899aabbccddeeff
+  S3:  7cc0a8cc3b5f3fbce67c59a0c8e64f23
+  S4:  00000000000000000000000000000000
+  S5:  01224466ccfeaa88899abcfe01224466
+  S6:  00000000000000000000000000000000
+  S7:  d3d0e4c0f95c1d6b3e3dc8c7a6f90001
+  S8:  00112233ccddeeff00112233ccddeeff
+  S9:  00000000000000000000000000000000
+  S10: 0123456789abcdef0123456789abcdef
+  S11: 7cc0a8cc3b5f3fbce67c59a0c8e64f23
+  S12: d3d0e4c0f95c1d6b3e3dc8c7a6f90001
+  S13: 0123456789abcdef0123456789abcdef
+  S14: 00000000000000000000000000000000
+  S15: af104c0cc2f3228758410ff26f1f4e22
+
+Input block: 48656c6c0000000000000000000000000
+
+After applying the Update function:
+  S0:  8a5b7f2c4d9e1a3f6b8c2d5e9f3a7b4c
+  S3:  344582a03b5f3fbce67c59a0c8e64f23
+  S13: 494608236b9ae1a30123456789abcdef
+  (other blocks unchanged)
+</pre><a href="#appendix-B.3.1-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="initialize-function-example">
+<section id="appendix-B.4">
+        <h3 id="name-initialize-function-example">
+<a href="#appendix-B.4" class="section-number selfRef">B.4. </a><a href="#name-initialize-function-example" class="section-name selfRef">Initialize Function Example</a>
+        </h3>
+<p id="appendix-B.4-1">The Initialize function sets up the initial state from key and nonce.<a href="#appendix-B.4-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.4-2">
+<pre>
+Key:   0123456789abcdef0123456789abcdef
+       0123456789abcdef0123456789abcdef
+Nonce: 00112233445566778899aabbccddeeff
+
+Initial State (before diffusion rounds):
+  S0:  7cc0a8cc3b5f3fbce67c59a0c8e64f23
+  S1:  0123456789abcdef0123456789abcdef
+  S2:  00112233445566778899aabbccddeeff
+  S3:  7cc0a8cc3b5f3fbce67c59a0c8e64f23
+  S4:  00000000000000000000000000000000
+  S5:  01224466ccfeaa88899abcfe01224466
+  S6:  00000000000000000000000000000000
+  S7:  d3d0e4c0f95c1d6b3e3dc8c7a6f90001
+  S8:  00112233ccddeeff00112233ccddeeff
+  S9:  00000000000000000000000000000000
+  S10: 0123456789abcdef0123456789abcdef
+  S11: 7cc0a8cc3b5f3fbce67c59a0c8e64f23
+  S12: d3d0e4c0f95c1d6b3e3dc8c7a6f90001
+  S13: 0123456789abcdef0123456789abcdef
+  S14: 00000000000000000000000000000000
+  S15: af104c0cc2f3228758410ff26f1f4e22
+
+After diffusion and final XORs:
+  S0:  3f8a2b5c9d4e7a1b6c2d9e5f3a8b4c7d
+  S1:  e2c8d5f6a3b7914e7d8c2b6a5f9e3d4c
+  S2:  7a4b6e9d2c5f8b3a1d4e7c9b6a5f3e2d
+  S3:  d5f8c2b6a9e3b7d14c5a8f2e6d9b3c7a
+  S4:  1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e
+  S5:  a8b7c6d5e4f3029184736251a0b9c8d7
+  S6:  5e6d7c8b9a0f1e2d3c4b5a6978879695
+  S7:  c2d3e4f506172839a4b5c6d7e8f90102
+  S8:  9a8b7c6d5e4f30214132243546576879
+  S9:  0123456789abcdef0123456789abcdef
+  S10: 7b8c9d0e1f2a3b4c5d6e7f8091a2b3c4
+  S11: e5f607182930a4b5c6d7e8f901234567
+  S12: 3c4d5e6f708192a3b4c5d6e7f8091a2b
+  S13: ccddeeff00112233445566778899aabb
+  S14: a7b8c9d0e1f20314253647589a6b7c8d
+  S15: 2a3b4c5d6e7f809102143526a7b8c9d0
+</pre><a href="#appendix-B.4-2" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="enc-function-example">
+<section id="appendix-B.5">
+        <h3 id="name-enc-function-example">
+<a href="#appendix-B.5" class="section-number selfRef">B.5. </a><a href="#name-enc-function-example" class="section-name selfRef">Enc Function Example</a>
+        </h3>
+<p id="appendix-B.5-1">The Enc function encrypts a single message block.<a href="#appendix-B.5-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.5-2">
+<pre>
+State: (after processing AD "Hello")
+Message Block: 576f726c640000000000000000000000
+
+Ciphertext Block: 8b3a5f2c9d4e7a1b6c2d9e5f3a8b4c7d
+
+Updated State:
+  S0:  modified based on updateEnc
+  S3:  XORed with message block
+  S13: XORed with message block
+</pre><a href="#appendix-B.5-2" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="finalize-function-example">
+<section id="appendix-B.6">
+        <h3 id="name-finalize-function-example">
+<a href="#appendix-B.6" class="section-number selfRef">B.6. </a><a href="#name-finalize-function-example" class="section-name selfRef">Finalize Function Example</a>
+        </h3>
+<p id="appendix-B.6-1">The Finalize function produces the authentication tag.<a href="#appendix-B.6-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.6-2">
+<pre>
+State: (after processing all AD and message)
+AD length:  5 bytes
+Msg length: 5 bytes
+
+Length encoding block: 2800000000000000 2800000000000000
+                      (40 bits)        (40 bits)
+
+After diffusion rounds with length block:
+
+Tag = S0 ^ S1 ^ ... ^ S15 = c4d8f3a2b5e9617d4c8a2f5b3e9d7a16
+</pre><a href="#appendix-B.6-2" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="complete-encryption-example">
+<section id="appendix-B.7">
+        <h3 id="name-complete-encryption-example">
+<a href="#appendix-B.7" class="section-number selfRef">B.7. </a><a href="#name-complete-encryption-example" class="section-name selfRef">Complete Encryption Example</a>
+        </h3>
+<div class="alignLeft art-text artwork" id="appendix-B.7-1">
+<pre>
+Key:       0123456789abcdef0123456789abcdef
+           0123456789abcdef0123456789abcdef
+Nonce:     00112233445566778899aabbccddeeff
+AD:        48656c6c6f ("Hello")
+Plaintext: 576f726c64 ("World")
+
+Ciphertext: 8b3a5f2c9d
+Tag:        c4d8f3a2b5e9617d4c8a2f5b3e9d7a16
+</pre><a href="#appendix-B.7-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-C">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Frank Denis</span></div>
+<div dir="auto" class="left"><span class="org">Fastly Inc.</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:fd@00f.net" class="email">fd@00f.net</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Phuong Pham</span></div>
+<div dir="auto" class="left"><span class="org">Huawei</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:pham.phuong@huawei.com" class="email">pham.phuong@huawei.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Lucas Prabel</span></div>
+<div dir="auto" class="left"><span class="org">Huawei</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:lucas.prabel@huawei.com" class="email">lucas.prabel@huawei.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Shuzhou Sun</span></div>
+<div dir="auto" class="left"><span class="org">Huawei</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:sunshuzhou@huawei.com" class="email">sunshuzhou@huawei.com</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
