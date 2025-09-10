@@ -216,7 +216,7 @@ Cryptographic operations:
 
   Formally: `AESL(x) = MixColumns(ShiftRows(SubBytes(x)))`
 
-  These transformations are as specified in Section 5 of {{FIPS-AES}}. This is NOT the full AES encryption algorithm. It is a single round without the AddRoundKey operation (equivalent to using a zero round key). A test vector for this function is provided in Appendix B.
+  These transformations are as specified in Section 5 of {{FIPS-AES}}. This is NOT the full AES encryption algorithm. It is a single round without the AddRoundKey operation (equivalent to using a zero round key). A test vector for this function is provided in the Test Vectors section.
 
 Control flow and comparison:
 
@@ -256,7 +256,7 @@ The parameters for this algorithm, whose meaning is defined in {{!RFC5116, Secti
 - `P_MAX` (maximum length of the plaintext) is 2<sup>61</sup> - 1 bytes (2<sup>64</sup> - 8 bits).
 - `A_MAX` (maximum length of the associated data) is 2<sup>61</sup> - 1 bytes (2<sup>64</sup> - 8 bits).
 - `N_MIN` (minimum nonce length) = `N_MAX` (maximum nonce length) = 16 bytes (128 bits).
-- `C_MAX` (maximum ciphertext length) = `P_MAX` + tag length = (2<sup>61</sup> - 1) + 16 or 32 bytes (in bits: (2<sup>64</sup> - 8) + 128 bits).
+- `C_MAX` (maximum ciphertext length) = `P_MAX` + tag length = (2<sup>61</sup> - 1) + 16 bytes (in bits: (2<sup>64</sup> - 8) + 128 bits).
 
 Distinct associated data inputs, as described in {{!RFC5116, Section 3}}, MUST be unambiguously encoded as a single input.
 It is up to the application to create a structure in the associated data input if needed.
@@ -304,7 +304,7 @@ for xi in msg_blocks:
 tag = Finalize(|ad|, |msg|)
 ct = Truncate(ct, |msg|)
 
-return ct and tag
+return (ct, tag)
 ~~~
 
 ## Authenticated Decryption
@@ -657,7 +657,7 @@ Steps:
 
 ~~~
 # Step 1: Recover the keystream that would encrypt a full zero block
-ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
+ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
 
 # Step 2: Construct a full 128-bit ciphertext block
 # by appending the appropriate keystream bits
@@ -801,7 +801,7 @@ Finally, HiAE is assumed to be secure against key-committing attacks, but it has
 
 ## Quantum Setting
 
-HiAE targets a security strength of 128 bits against key recovery attacks and forgery attacks in the quantum setting. Security is not claimed against online superposition queries to cryptographic oracle attacks, as such attacks are highly impractical in real-world applications.
+HiAE targets a security strength of 128 bits against key recovery attacks and forgery attacks in the quantum setting. Security is not claimed against online superposition queries to cryptographic oracles, as such attacks are highly impractical in real-world applications.
 
 ## Attack Considerations
 
@@ -935,7 +935,7 @@ Original implementation:
 
 ~~~
 DecPartial(cn)
-ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
+ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
 ci = cn || Tail(ks, 128 - |cn|)
 mi = UpdateDec(ci)
 mn = Truncate(mi, |cn|)
@@ -946,7 +946,7 @@ ARM-optimized implementation:
 
 ~~~
 DecPartial_ARM(cn)
-ks = XOR3(XAESL(S0, S1), ZeroPad(cn), S9)
+ks = XOR3(XAESL(S0, S1), ZeroPad(cn, 128), S9)
 ci = cn || Tail(ks, 128 - |cn|)
 mi = UpdateDec_ARM(ci)
 mn = Truncate(mi, |cn|)
@@ -1045,7 +1045,7 @@ Original implementation:
 
 ~~~
 DecPartial(cn)
-ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
+ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
 ci = cn || Tail(ks, 128 - |cn|)
 mi = UpdateDec(ci)
 mn = Truncate(mi, |cn|)
@@ -1056,7 +1056,7 @@ Intel-optimized implementation:
 
 ~~~
 DecPartial_Intel(cn)
-ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
+ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
 ci = cn || Tail(ks, 128 - |cn|)
 mi = UpdateDec_Intel(ci)
 mn = Truncate(mi, |cn|)
@@ -1107,7 +1107,7 @@ When implementing the platform-specific optimizations described above, care must
 
 ## Validation
 
-A complete list of known implementations and integrations is available at [](https://github.com/hiae-aead/draft-pham-hiae), including reference implementations. A comprehensive comparison of HiAE's performance with other high-throughput authenticated encryption schemes on ARM and x86 architectures is also provided, demonstrating the effectiveness of these platform-specific optimizations.
+A complete list of known implementations and integrations is available at https://github.com/hiae-aead/draft-pham-hiae, including reference implementations. A comprehensive comparison of HiAE's performance with other high-throughput authenticated encryption schemes on ARM and x86 architectures is also provided, demonstrating the effectiveness of these platform-specific optimizations.
 
 # IANA Considerations
 
@@ -1477,7 +1477,7 @@ Initial state: (16 AES blocks after initialization)
   S14: 00000000000000000000000000000000
   S15: af104c0cc2f3228758410ff26f1f4e22
 
-Input block: 48656c6c0000000000000000000000000
+Input block: 48656c6c000000000000000000000000
 
 After applying the Update function:
   S0:  8a5b7f2c4d9e1a3f6b8c2d5e9f3a7b4c
@@ -1543,7 +1543,7 @@ Message Block: 576f726c640000000000000000000000
 Ciphertext Block: 8b3a5f2c9d4e7a1b6c2d9e5f3a8b4c7d
 
 Updated State:
-  S0:  modified based on updateEnc
+  S0:  modified based on UpdateEnc
   S3:  XORed with message block
   S13: XORed with message block
 ~~~
