@@ -5,10 +5,10 @@
 Network Working Group                                           F. Denis
 Internet-Draft                                               Fastly Inc.
 Intended status: Standards Track                                 P. Pham
-Expires: 20 January 2026                                       L. Prabel
+Expires: 14 March 2026                                         L. Prabel
                                                                   S. Sun
                                                                   Huawei
-                                                            19 July 2025
+                                                       10 September 2025
 
 
               The HiAE Authenticated Encryption Algorithm
@@ -42,7 +42,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 20 January 2026.
+   This Internet-Draft will expire on 14 March 2026.
 
 Copyright Notice
 
@@ -234,7 +234,7 @@ Table of Contents
       This is NOT the full AES encryption algorithm.  It is a single
       round without the AddRoundKey operation (equivalent to using a
       zero round key).  A test vector for this function is provided in
-      Appendix B.
+      the Test Vectors section.
 
    Control flow and comparison:
 
@@ -308,7 +308,7 @@ Table of Contents
       bytes (128 bits).
 
    *  C_MAX (maximum ciphertext length) = P_MAX + tag length = (2^61 -
-      1) + 16 or 32 bytes (in bits: (2^64 - 8) + 128 bits).
+      1) + 16 bytes (in bits: (2^64 - 8) + 128 bits).
 
    Distinct associated data inputs, as described in [RFC5116],
    Section 3, MUST be unambiguously encoded as a single input.  It is up
@@ -366,7 +366,7 @@ Table of Contents
    tag = Finalize(|ad|, |msg|)
    ct = Truncate(ct, |msg|)
 
-   return ct and tag
+   return (ct, tag)
 
 3.3.  Authenticated Decryption
 
@@ -724,7 +724,7 @@ Table of Contents
    Steps:
 
 # Step 1: Recover the keystream that would encrypt a full zero block
-ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
+ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
 
 # Step 2: Construct a full 128-bit ciphertext block
 # by appending the appropriate keystream bits
@@ -890,8 +890,8 @@ return mn
 
    HiAE targets a security strength of 128 bits against key recovery
    attacks and forgery attacks in the quantum setting.  Security is not
-   claimed against online superposition queries to cryptographic oracle
-   attacks, as such attacks are highly impractical in real-world
+   claimed against online superposition queries to cryptographic
+   oracles, as such attacks are highly impractical in real-world
    applications.
 
 6.3.  Attack Considerations
@@ -1075,7 +1075,7 @@ return mn
    Original implementation:
 
    DecPartial(cn)
-   ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
+   ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
    ci = cn || Tail(ks, 128 - |cn|)
    mi = UpdateDec(ci)
    mn = Truncate(mi, |cn|)
@@ -1084,7 +1084,7 @@ return mn
    ARM-optimized implementation:
 
    DecPartial_ARM(cn)
-   ks = XOR3(XAESL(S0, S1), ZeroPad(cn), S9)
+   ks = XOR3(XAESL(S0, S1), ZeroPad(cn, 128), S9)
    ci = cn || Tail(ks, 128 - |cn|)
    mi = UpdateDec_ARM(ci)
    mn = Truncate(mi, |cn|)
@@ -1172,7 +1172,7 @@ return mn
    Original implementation:
 
    DecPartial(cn)
-   ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
+   ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
    ci = cn || Tail(ks, 128 - |cn|)
    mi = UpdateDec(ci)
    mn = Truncate(mi, |cn|)
@@ -1181,7 +1181,7 @@ return mn
    Intel-optimized implementation:
 
    DecPartial_Intel(cn)
-   ks = AESL(S0 ^ S1) ^ ZeroPad(cn) ^ S9
+   ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
    ci = cn || Tail(ks, 128 - |cn|)
    mi = UpdateDec_Intel(ci)
    mn = Truncate(mi, |cn|)
@@ -1276,9 +1276,9 @@ return mn
    [I-D.irtf-cfrg-aegis-aead]
               Denis, F. and S. Lucas, "The AEGIS Family of Authenticated
               Encryption Algorithms", Work in Progress, Internet-Draft,
-              draft-irtf-cfrg-aegis-aead-16, 17 February 2025,
+              draft-irtf-cfrg-aegis-aead-17, 10 August 2025,
               <https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-
-              aegis-aead-16>.
+              aegis-aead-17>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -1665,7 +1665,7 @@ B.3.1.  Example: Update
      S14: 00000000000000000000000000000000
      S15: af104c0cc2f3228758410ff26f1f4e22
 
-   Input block: 48656c6c0000000000000000000000000
+   Input block: 48656c6c000000000000000000000000
 
    After applying the Update function:
      S0:  8a5b7f2c4d9e1a3f6b8c2d5e9f3a7b4c
@@ -1727,7 +1727,7 @@ B.5.  Enc Function Example
    Ciphertext Block: 8b3a5f2c9d4e7a1b6c2d9e5f3a8b4c7d
 
    Updated State:
-     S0:  modified based on updateEnc
+     S0:  modified based on UpdateEnc
      S3:  XORed with message block
      S13: XORed with message block
 
