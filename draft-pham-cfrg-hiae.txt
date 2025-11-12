@@ -113,9 +113,8 @@ Table of Contents
    Appendix B.  Function-by-Function Example
      B.1.  Initial Values for Example
      B.2.  AESL Function Example
-     B.3.  Update Function Example
-       B.3.1.  Example: Update
-     B.4.  Initialize Function Example
+     B.3.  Initialize Function Example
+     B.4.  Update Function Example
      B.5.  Enc Function Example
      B.6.  Finalize Function Example
      B.7.  Complete Encryption Example
@@ -1625,11 +1624,6 @@ A.10.  Test Vector 10 - All zeros plaintext
 
 Appendix B.  Function-by-Function Example
 
-   *EDITOR’S NOTE*: The examples in this section need to be regenerated
-   to reflect the recent changes to the initialization function.  The
-   examples below are currently outdated and will be updated in a future
-   revision.
-
    This appendix provides step-by-step examples of HiAE internal
    functions for implementers.  All values are in hexadecimal.
 
@@ -1649,39 +1643,7 @@ B.2.  AESL Function Example
 
    Output Block: 6379e6d9f467fb76ad063cf4d2eb8aa3
 
-B.3.  Update Function Example
-
-   The Update function modifies the internal state with an input block.
-
-B.3.1.  Example: Update
-
-   Initial state: (16 AES blocks after initialization)
-     S0:  7cc0a8cc3b5f3fbce67c59a0c8e64f23
-     S1:  0123456789abcdef0123456789abcdef
-     S2:  00112233445566778899aabbccddeeff
-     S3:  7cc0a8cc3b5f3fbce67c59a0c8e64f23
-     S4:  00000000000000000000000000000000
-     S5:  01224466ccfeaa88899abcfe01224466
-     S6:  00000000000000000000000000000000
-     S7:  d3d0e4c0f95c1d6b3e3dc8c7a6f90001
-     S8:  00112233ccddeeff00112233ccddeeff
-     S9:  00000000000000000000000000000000
-     S10: 0123456789abcdef0123456789abcdef
-     S11: 7cc0a8cc3b5f3fbce67c59a0c8e64f23
-     S12: d3d0e4c0f95c1d6b3e3dc8c7a6f90001
-     S13: 0123456789abcdef0123456789abcdef
-     S14: 00000000000000000000000000000000
-     S15: af104c0cc2f3228758410ff26f1f4e22
-
-   Input block: 48656c6c000000000000000000000000
-
-   After applying the Update function:
-     S0:  8a5b7f2c4d9e1a3f6b8c2d5e9f3a7b4c
-     S3:  344582a03b5f3fbce67c59a0c8e64f23
-     S13: 494608236b9ae1a30123456789abcdef
-     (other blocks unchanged)
-
-B.4.  Initialize Function Example
+B.3.  Initialize Function Example
 
    The Initialize function sets up the initial state from key and nonce.
 
@@ -1690,69 +1652,156 @@ B.4.  Initialize Function Example
    Nonce: 00112233445566778899aabbccddeeff
 
    Initial State (before diffusion rounds):
-     S0:  7cc0a8cc3b5f3fbce67c59a0c8e64f23
+     S0:  3243f6a8885a308d313198a2e0370734
      S1:  0123456789abcdef0123456789abcdef
-     S2:  00112233445566778899aabbccddeeff
-     S3:  7cc0a8cc3b5f3fbce67c59a0c8e64f23
+     S2:  3243f6a8885a308d313198a2e0370734
+     S3:  00112233445566778899aabbccddeeff
      S4:  00000000000000000000000000000000
-     S5:  01224466ccfeaa88899abcfe01224466
+     S5:  0123456789abcdef0123456789abcdef
      S6:  00000000000000000000000000000000
-     S7:  d3d0e4c0f95c1d6b3e3dc8c7a6f90001
-     S8:  00112233ccddeeff00112233ccddeeff
+     S7:  4a4093822299f31d0082efa98ec4e6c8
+     S8:  0123456789abcdef0123456789abcdef
      S9:  00000000000000000000000000000000
-     S10: 0123456789abcdef0123456789abcdef
-     S11: 7cc0a8cc3b5f3fbce67c59a0c8e64f23
-     S12: d3d0e4c0f95c1d6b3e3dc8c7a6f90001
+     S10: 01326754cdfeab9889baefdc45762310
+     S11: 3243f6a8885a308d313198a2e0370734
+     S12: 4a4093822299f31d0082efa98ec4e6c8
      S13: 0123456789abcdef0123456789abcdef
      S14: 00000000000000000000000000000000
-     S15: af104c0cc2f3228758410ff26f1f4e22
+     S15: 7803652aaac3c39031b3770b6ef3e1fc
 
-   After diffusion and final XORs:
-     S0:  3f8a2b5c9d4e7a1b6c2d9e5f3a8b4c7d
-     S1:  e2c8d5f6a3b7914e7d8c2b6a5f9e3d4c
-     S2:  7a4b6e9d2c5f8b3a1d4e7c9b6a5f3e2d
-     S3:  d5f8c2b6a9e3b7d14c5a8f2e6d9b3c7a
-     S4:  1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e
-     S5:  a8b7c6d5e4f3029184736251a0b9c8d7
-     S6:  5e6d7c8b9a0f1e2d3c4b5a6978879695
-     S7:  c2d3e4f506172839a4b5c6d7e8f90102
-     S8:  9a8b7c6d5e4f30214132243546576879
-     S9:  0123456789abcdef0123456789abcdef
-     S10: 7b8c9d0e1f2a3b4c5d6e7f8091a2b3c4
-     S11: e5f607182930a4b5c6d7e8f901234567
-     S12: 3c4d5e6f708192a3b4c5d6e7f8091a2b
-     S13: ccddeeff00112233445566778899aabb
-     S14: a7b8c9d0e1f20314253647589a6b7c8d
-     S15: 2a3b4c5d6e7f809102143526a7b8c9d0
+   State after Init (after diffusion):
+     S0:  2a622bda4d229c9fc4b7d1a25399e321
+     S1:  a04980e6407654f2760e59be74c05f9c
+     S2:  308859e5787ab6c1705abbaecebfc316
+     S3:  04782e5069799e9f3e325836a2ff3bcc
+     S4:  007a12163596057152dc58a0f78cef2c
+     S5:  7ce304cf04de20f8116cef51eea19e24
+     S6:  c554da7a91164fc30e38c76ec038e66a
+     S7:  3edcba33d2a5d02a4b598c5ffa003513
+     S8:  50db6b4f18b7e282b8918311685abc18
+     S9:  4253eebe1b72fec70ac3ec478cf9f2f2
+     S10: 6bc09743dc45ba191c18a0d275ef9a8f
+     S11: 251524aba97200f5b31eeeecb0f0a1c1
+     S12: e1a99d3dd105e14085d6a0200f1d0c35
+     S13: a4730f9d0f36ad7c67880342deed5310
+     S14: 7d6ca34814e6e065c8cb4fa11ba2f8c4
+     S15: 2b545cefe484f2e0ba5fb6359faffeca
+
+B.4.  Update Function Example
+
+   The Update function modifies the internal state with an input block.
+
+   Initial state (after initialization):
+     S0:  2a622bda4d229c9fc4b7d1a25399e321
+     S1:  a04980e6407654f2760e59be74c05f9c
+     S2:  308859e5787ab6c1705abbaecebfc316
+     S3:  04782e5069799e9f3e325836a2ff3bcc
+     S4:  007a12163596057152dc58a0f78cef2c
+     S5:  7ce304cf04de20f8116cef51eea19e24
+     S6:  c554da7a91164fc30e38c76ec038e66a
+     S7:  3edcba33d2a5d02a4b598c5ffa003513
+     S8:  50db6b4f18b7e282b8918311685abc18
+     S9:  4253eebe1b72fec70ac3ec478cf9f2f2
+     S10: 6bc09743dc45ba191c18a0d275ef9a8f
+     S11: 251524aba97200f5b31eeeecb0f0a1c1
+     S12: e1a99d3dd105e14085d6a0200f1d0c35
+     S13: a4730f9d0f36ad7c67880342deed5310
+     S14: 7d6ca34814e6e065c8cb4fa11ba2f8c4
+     S15: 2b545cefe484f2e0ba5fb6359faffeca
+
+   Input block: 48656c6c6f0000000000000000000000
+
+   After applying the Update function:
+     S0:  a04980e6407654f2760e59be74c05f9c
+     S1:  308859e5787ab6c1705abbaecebfc316
+     S2:  4c1d423c06799e9f3e325836a2ff3bcc
+     S3:  007a12163596057152dc58a0f78cef2c
+     S4:  7ce304cf04de20f8116cef51eea19e24
+     S5:  c554da7a91164fc30e38c76ec038e66a
+     S6:  3edcba33d2a5d02a4b598c5ffa003513
+     S7:  50db6b4f18b7e282b8918311685abc18
+     S8:  4253eebe1b72fec70ac3ec478cf9f2f2
+     S9:  6bc09743dc45ba191c18a0d275ef9a8f
+     S10: 251524aba97200f5b31eeeecb0f0a1c1
+     S11: e1a99d3dd105e14085d6a0200f1d0c35
+     S12: ec1663f16036ad7c67880342deed5310
+     S13: 7d6ca34814e6e065c8cb4fa11ba2f8c4
+     S14: 2b545cefe484f2e0ba5fb6359faffeca
+     S15: 4672d0d4a6a8fc93fe85701ff61a9e10
 
 B.5.  Enc Function Example
 
    The Enc function encrypts a single message block.
 
-   State: (after processing AD "Hello")
+   State (after processing AD "Hello"):
+     S0:  a04980e6407654f2760e59be74c05f9c
+     S1:  308859e5787ab6c1705abbaecebfc316
+     S2:  4c1d423c06799e9f3e325836a2ff3bcc
+     S3:  007a12163596057152dc58a0f78cef2c
+     S4:  7ce304cf04de20f8116cef51eea19e24
+     S5:  c554da7a91164fc30e38c76ec038e66a
+     S6:  3edcba33d2a5d02a4b598c5ffa003513
+     S7:  50db6b4f18b7e282b8918311685abc18
+     S8:  4253eebe1b72fec70ac3ec478cf9f2f2
+     S9:  6bc09743dc45ba191c18a0d275ef9a8f
+     S10: 251524aba97200f5b31eeeecb0f0a1c1
+     S11: e1a99d3dd105e14085d6a0200f1d0c35
+     S12: ec1663f16036ad7c67880342deed5310
+     S13: 7d6ca34814e6e065c8cb4fa11ba2f8c4
+     S14: 2b545cefe484f2e0ba5fb6359faffeca
+     S15: 4672d0d4a6a8fc93fe85701ff61a9e10
+
    Message Block: 576f726c640000000000000000000000
 
-   Ciphertext Block: 8b3a5f2c9d4e7a1b6c2d9e5f3a8b4c7d
+   Ciphertext Block: 03e5d2157300b718595429195c9278e7
 
-   Updated State:
-     S0:  modified based on UpdateEnc
-     S3:  XORed with message block
-     S13: XORed with message block
+   Updated State after Enc:
+     S0:  308859e5787ab6c1705abbaecebfc316
+     S1:  4c1d423c06799e9f3e325836a2ff3bcc
+     S2:  5715607a5196057152dc58a0f78cef2c
+     S3:  7ce304cf04de20f8116cef51eea19e24
+     S4:  c554da7a91164fc30e38c76ec038e66a
+     S5:  3edcba33d2a5d02a4b598c5ffa003513
+     S6:  50db6b4f18b7e282b8918311685abc18
+     S7:  4253eebe1b72fec70ac3ec478cf9f2f2
+     S8:  6bc09743dc45ba191c18a0d275ef9a8f
+     S9:  251524aba97200f5b31eeeecb0f0a1c1
+     S10: e1a99d3dd105e14085d6a0200f1d0c35
+     S11: ec1663f16036ad7c67880342deed5310
+     S12: 2a03d12470e6e065c8cb4fa11ba2f8c4
+     S13: 2b545cefe484f2e0ba5fb6359faffeca
+     S14: 4672d0d4a6a8fc93fe85701ff61a9e10
+     S15: 9c56037e72109cee878398424f789257
 
 B.6.  Finalize Function Example
 
    The Finalize function produces the authentication tag.
 
-   State: (after processing all AD and message)
+   State (after processing all AD and message):
+     S0:  308859e5787ab6c1705abbaecebfc316
+     S1:  4c1d423c06799e9f3e325836a2ff3bcc
+     S2:  5715607a5196057152dc58a0f78cef2c
+     S3:  7ce304cf04de20f8116cef51eea19e24
+     S4:  c554da7a91164fc30e38c76ec038e66a
+     S5:  3edcba33d2a5d02a4b598c5ffa003513
+     S6:  50db6b4f18b7e282b8918311685abc18
+     S7:  4253eebe1b72fec70ac3ec478cf9f2f2
+     S8:  6bc09743dc45ba191c18a0d275ef9a8f
+     S9:  251524aba97200f5b31eeeecb0f0a1c1
+     S10: e1a99d3dd105e14085d6a0200f1d0c35
+     S11: ec1663f16036ad7c67880342deed5310
+     S12: 2a03d12470e6e065c8cb4fa11ba2f8c4
+     S13: 2b545cefe484f2e0ba5fb6359faffeca
+     S14: 4672d0d4a6a8fc93fe85701ff61a9e10
+     S15: 9c56037e72109cee878398424f789257
+
    AD length:  5 bytes
    Msg length: 5 bytes
 
    Length encoding block: 2800000000000000 2800000000000000
                          (40 bits)        (40 bits)
 
-   After diffusion rounds with length block:
-
-   Tag = S0 ^ S1 ^ ... ^ S15 = c4d8f3a2b5e9617d4c8a2f5b3e9d7a16
+   Tag = S0 ^ S1 ^ ... ^ S15 = 45178cd06ef0a8bed8e9082fe49ec818
 
 B.7.  Complete Encryption Example
 
@@ -1762,8 +1811,8 @@ B.7.  Complete Encryption Example
    AD:        48656c6c6f ("Hello")
    Plaintext: 576f726c64 ("World")
 
-   Ciphertext: 8b3a5f2c9d
-   Tag:        c4d8f3a2b5e9617d4c8a2f5b3e9d7a16
+   Ciphertext: 03e5d21573
+   Tag:        45178cd06ef0a8bed8e9082fe49ec818
 
 Authors' Addresses
 
