@@ -503,14 +503,15 @@ return mi
 #### The Diffuse Function
 
 ~~~
-Diffuse(x)
+Diffuse(x0, x1)
 ~~~
 
-The `Diffuse` function ensures full state mixing by performing 32 consecutive update operations. This function is critical for security during initialization and finalization phases, guaranteeing that every bit of the key and nonce influences the entire state, and that the authentication tag depends on all state bits.
+The `Diffuse` function ensures full state mixing by performing 32 consecutive update operations, alternating between two input values. This function is critical for security during initialization and finalization phases, guaranteeing that every bit of the key and nonce influences the entire state, and that the authentication tag depends on all state bits.
 
 Inputs:
 
-- `x`: a 128-bit input value.
+- `x0`: a 128-bit input value for even-numbered updates (updates 0, 2, 4, ..., 30).
+- `x1`: a 128-bit input value for odd-numbered updates (updates 1, 3, 5, ..., 31).
 
 Modifies:
 
@@ -519,8 +520,9 @@ Modifies:
 Steps:
 
 ~~~
-Repeat(32,
-  Update(x)
+Repeat(16,
+  Update(x0)
+  Update(x1)
 )
 ~~~
 
@@ -551,26 +553,23 @@ Steps:
 k0, k1 = Split(key, 128)
 
  S0 = C0
- S1 = k1
- S2 = nonce
- S3 = C0
+ S1 = k0
+ S2 = C0
+ S3 = nonce
  S4 = ZeroPad({ 0 }, 128)
- S5 = nonce ^ k0
+ S5 = k0
  S6 = ZeroPad({ 0 }, 128)
  S7 = C1
- S8 = nonce ^ k1
+ S8 = k1
  S9 = ZeroPad({ 0 }, 128)
-S10 = k1
+S10 = nonce ^ k1
 S11 = C0
 S12 = C1
 S13 = k1
 S14 = ZeroPad({ 0 }, 128)
 S15 = C0 ^ C1
 
-Diffuse(C0)
-
- S9 =  S9 ^ k0
-S13 = S13 ^ k1
+Diffuse(k0, k1)
 ~~~
 
 ### The Absorb Function
@@ -693,7 +692,7 @@ Steps:
 
 ~~~
 t = (LE64(ad_len_bits) || LE64(msg_len_bits))
-Diffuse(t)
+Diffuse(t, t)
 
 tag = S0 ^ S1 ^ S2 ^ S3 ^ S4 ^ S5 ^ S6 ^ S7 ^
       S8 ^ S9 ^ S10 ^ S11 ^ S12 ^ S13 ^ S14 ^ S15
@@ -1121,6 +1120,8 @@ IANA is requested to register the following entry in the AEAD Algorithms Registr
 
 # Test Vectors
 
+**EDITOR'S NOTE**: The test vectors in this section need to be regenerated to reflect the recent changes to the initialization function (Diffuse now alternates between two parameters, and the initial state setup has been modified). The test vectors below are currently outdated and will be updated in a future revision.
+
 ## Test Vector 1 - Empty plaintext, no AD
 
 ~~~ test-vectors
@@ -1430,6 +1431,8 @@ tag   : 59970b0b35a7822f3b88b63396c2da98
 ~~~
 
 # Function-by-Function Example
+
+**EDITOR'S NOTE**: The examples in this section need to be regenerated to reflect the recent changes to the initialization function. The examples below are currently outdated and will be updated in a future revision.
 
 This appendix provides step-by-step examples of HiAE internal functions for implementers. All values are in hexadecimal.
 
