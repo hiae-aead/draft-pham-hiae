@@ -261,10 +261,11 @@ class HiAE:
         self.rol()
         return mi
 
-    def diffuse(self, x: bytes):
-        """Apply 32 update rounds for full diffusion"""
-        for _ in range(32):
-            self.update(x)
+    def diffuse(self, x0: bytes, x1: bytes):
+        """Apply 32 update rounds for full diffusion, alternating between x0 and x1"""
+        for _ in range(16):
+            self.update(x0)
+            self.update(x1)
 
     def init(self, key: bytes, nonce: bytes):
         """Initialize state from key and nonce"""
@@ -274,28 +275,24 @@ class HiAE:
 
         # Initialize state blocks
         self.state[0] = C0
-        self.state[1] = k1
-        self.state[2] = nonce
-        self.state[3] = C0
+        self.state[1] = k0
+        self.state[2] = C0
+        self.state[3] = nonce
         self.state[4] = b"\x00" * 16
-        self.state[5] = xor_bytes(nonce, k0)
+        self.state[5] = k0
         self.state[6] = b"\x00" * 16
         self.state[7] = C1
-        self.state[8] = xor_bytes(nonce, k1)
+        self.state[8] = k1
         self.state[9] = b"\x00" * 16
-        self.state[10] = k1
+        self.state[10] = xor_bytes(nonce, k1)
         self.state[11] = C0
         self.state[12] = C1
         self.state[13] = k1
         self.state[14] = b"\x00" * 16
         self.state[15] = xor_bytes(C0, C1)
 
-        # Diffuse with C0
-        self.diffuse(C0)
-
-        # Final XORs
-        self.state[9] = xor_bytes(self.state[9], k0)
-        self.state[13] = xor_bytes(self.state[13], k1)
+        # Diffuse with k0 and k1
+        self.diffuse(k0, k1)
 
     def absorb(self, ai: bytes):
         """Absorb a block of associated data"""
@@ -331,7 +328,7 @@ class HiAE:
     def finalize(self, ad_len_bits: int, msg_len_bits: int) -> bytes:
         """Generate authentication tag"""
         t = le64(ad_len_bits) + le64(msg_len_bits)
-        self.diffuse(t)
+        self.diffuse(t, t)
 
         # XOR all state blocks
         tag = self.state[0]
