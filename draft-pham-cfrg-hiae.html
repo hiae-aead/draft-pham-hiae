@@ -1325,25 +1325,22 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.11.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-function-by-function-exampl" class="internal xref">Function-by-Function Example</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1">
-                <p id="section-toc.1-1.11.2.1.1"><a href="#appendix-B.1" class="auto internal xref">B.1</a>.  <a href="#name-initial-values-for-example" class="internal xref">Initial Values for Example</a></p>
+                <p id="section-toc.1-1.11.2.1.1"><a href="#appendix-B.1" class="auto internal xref">B.1</a>.  <a href="#name-aesl-function-example" class="internal xref">AESL Function Example</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
-                <p id="section-toc.1-1.11.2.2.1"><a href="#appendix-B.2" class="auto internal xref">B.2</a>.  <a href="#name-aesl-function-example" class="internal xref">AESL Function Example</a></p>
+                <p id="section-toc.1-1.11.2.2.1"><a href="#appendix-B.2" class="auto internal xref">B.2</a>.  <a href="#name-initialize-function-example" class="internal xref">Initialize Function Example</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.3">
-                <p id="section-toc.1-1.11.2.3.1"><a href="#appendix-B.3" class="auto internal xref">B.3</a>.  <a href="#name-initialize-function-example" class="internal xref">Initialize Function Example</a></p>
+                <p id="section-toc.1-1.11.2.3.1"><a href="#appendix-B.3" class="auto internal xref">B.3</a>.  <a href="#name-update-function-example" class="internal xref">Update Function Example</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.4">
-                <p id="section-toc.1-1.11.2.4.1"><a href="#appendix-B.4" class="auto internal xref">B.4</a>.  <a href="#name-update-function-example" class="internal xref">Update Function Example</a></p>
+                <p id="section-toc.1-1.11.2.4.1"><a href="#appendix-B.4" class="auto internal xref">B.4</a>.  <a href="#name-enc-function-example" class="internal xref">Enc Function Example</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.5">
-                <p id="section-toc.1-1.11.2.5.1"><a href="#appendix-B.5" class="auto internal xref">B.5</a>.  <a href="#name-enc-function-example" class="internal xref">Enc Function Example</a></p>
+                <p id="section-toc.1-1.11.2.5.1"><a href="#appendix-B.5" class="auto internal xref">B.5</a>.  <a href="#name-finalize-function-example" class="internal xref">Finalize Function Example</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.6">
-                <p id="section-toc.1-1.11.2.6.1"><a href="#appendix-B.6" class="auto internal xref">B.6</a>.  <a href="#name-finalize-function-example" class="internal xref">Finalize Function Example</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.7">
-                <p id="section-toc.1-1.11.2.7.1"><a href="#appendix-B.7" class="auto internal xref">B.7</a>.  <a href="#name-complete-encryption-example" class="internal xref">Complete Encryption Example</a></p>
+                <p id="section-toc.1-1.11.2.6.1"><a href="#appendix-B.6" class="auto internal xref">B.6</a>.  <a href="#name-complete-encryption-example" class="internal xref">Complete Encryption Example</a></p>
 </li>
             </ul>
 </li>
@@ -3198,44 +3195,43 @@ tag   : ad0b841c3d145a6ee86dc7b67338f113
       <h2 id="name-function-by-function-exampl">
 <a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-function-by-function-exampl" class="section-name selfRef">Function-by-Function Example</a>
       </h2>
-<p id="appendix-B-1">This appendix provides step-by-step examples of HiAE internal functions for implementers. All values are in hexadecimal.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
-<div id="initial-values-for-example">
-<section id="appendix-B.1">
-        <h3 id="name-initial-values-for-example">
-<a href="#appendix-B.1" class="section-number selfRef">B.1. </a><a href="#name-initial-values-for-example" class="section-name selfRef">Initial Values for Example</a>
-        </h3>
-<div class="alignLeft art-text artwork" id="appendix-B.1-1">
-<pre>
-Key:   0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
-Nonce: 00112233445566778899aabbccddeeff
-AD:    48656c6c6f (5 bytes: "Hello")
-Msg:   576f726c64 (5 bytes: "World")
-</pre><a href="#appendix-B.1-1" class="pilcrow">¶</a>
-</div>
-</section>
-</div>
+<p id="appendix-B-1">This appendix provides step-by-step examples of HiAE internal functions for implementers. All values are in hexadecimal. The examples use the following test data:<a href="#appendix-B-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B-2.1">
+          <p id="appendix-B-2.1.1">Key: <code>0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef</code><a href="#appendix-B-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-B-2.2">
+          <p id="appendix-B-2.2.1">Nonce: <code>00112233445566778899aabbccddeeff</code><a href="#appendix-B-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-B-2.3">
+          <p id="appendix-B-2.3.1">AD: <code>48656c6c6f</code> (5 bytes: “Hello”)<a href="#appendix-B-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-B-2.4">
+          <p id="appendix-B-2.4.1">Msg: <code>576f726c64</code> (5 bytes: “World”)<a href="#appendix-B-2.4.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
 <div id="aesl-function-example">
-<section id="appendix-B.2">
+<section id="appendix-B.1">
         <h3 id="name-aesl-function-example">
-<a href="#appendix-B.2" class="section-number selfRef">B.2. </a><a href="#name-aesl-function-example" class="section-name selfRef">AESL Function Example</a>
+<a href="#appendix-B.1" class="section-number selfRef">B.1. </a><a href="#name-aesl-function-example" class="section-name selfRef">AESL Function Example</a>
         </h3>
-<p id="appendix-B.2-1">The AESL function performs a single AES encryption round with a zero round key.<a href="#appendix-B.2-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-B.2-2">
+<p id="appendix-B.1-1">The AESL function performs a single AES encryption round with a zero round key.<a href="#appendix-B.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.1-2">
 <pre>
 Input Block:  00112233445566778899aabbccddeeff
 
 Output Block: 6379e6d9f467fb76ad063cf4d2eb8aa3
-</pre><a href="#appendix-B.2-2" class="pilcrow">¶</a>
+</pre><a href="#appendix-B.1-2" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="initialize-function-example">
-<section id="appendix-B.3">
+<section id="appendix-B.2">
         <h3 id="name-initialize-function-example">
-<a href="#appendix-B.3" class="section-number selfRef">B.3. </a><a href="#name-initialize-function-example" class="section-name selfRef">Initialize Function Example</a>
+<a href="#appendix-B.2" class="section-number selfRef">B.2. </a><a href="#name-initialize-function-example" class="section-name selfRef">Initialize Function Example</a>
         </h3>
-<p id="appendix-B.3-1">The Initialize function sets up the initial state from the key and nonce.<a href="#appendix-B.3-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-B.3-2">
+<p id="appendix-B.2-1">The Initialize function sets up the initial state from the key and nonce.<a href="#appendix-B.2-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.2-2">
 <pre>
 Key:   0123456789abcdef0123456789abcdef
        0123456789abcdef0123456789abcdef
@@ -3276,17 +3272,17 @@ State after Init (after diffusion):
   S13: a4730f9d0f36ad7c67880342deed5310
   S14: 7d6ca34814e6e065c8cb4fa11ba2f8c4
   S15: 2b545cefe484f2e0ba5fb6359faffeca
-</pre><a href="#appendix-B.3-2" class="pilcrow">¶</a>
+</pre><a href="#appendix-B.2-2" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="update-function-example">
-<section id="appendix-B.4">
+<section id="appendix-B.3">
         <h3 id="name-update-function-example">
-<a href="#appendix-B.4" class="section-number selfRef">B.4. </a><a href="#name-update-function-example" class="section-name selfRef">Update Function Example</a>
+<a href="#appendix-B.3" class="section-number selfRef">B.3. </a><a href="#name-update-function-example" class="section-name selfRef">Update Function Example</a>
         </h3>
-<p id="appendix-B.4-1">The Update function modifies the internal state with an input block.<a href="#appendix-B.4-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-B.4-2">
+<p id="appendix-B.3-1">The Update function modifies the internal state with an input block.<a href="#appendix-B.3-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.3-2">
 <pre>
 Initial state (after initialization):
   S0:  2a622bda4d229c9fc4b7d1a25399e321
@@ -3325,17 +3321,17 @@ After applying the Update function:
   S13: 7d6ca34814e6e065c8cb4fa11ba2f8c4
   S14: 2b545cefe484f2e0ba5fb6359faffeca
   S15: 4672d0d4a6a8fc93fe85701ff61a9e10
-</pre><a href="#appendix-B.4-2" class="pilcrow">¶</a>
+</pre><a href="#appendix-B.3-2" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="enc-function-example">
-<section id="appendix-B.5">
+<section id="appendix-B.4">
         <h3 id="name-enc-function-example">
-<a href="#appendix-B.5" class="section-number selfRef">B.5. </a><a href="#name-enc-function-example" class="section-name selfRef">Enc Function Example</a>
+<a href="#appendix-B.4" class="section-number selfRef">B.4. </a><a href="#name-enc-function-example" class="section-name selfRef">Enc Function Example</a>
         </h3>
-<p id="appendix-B.5-1">The Enc function encrypts a single message block.<a href="#appendix-B.5-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-B.5-2">
+<p id="appendix-B.4-1">The Enc function encrypts a single message block.<a href="#appendix-B.4-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.4-2">
 <pre>
 State (after processing AD "Hello"):
   S0:  a04980e6407654f2760e59be74c05f9c
@@ -3376,17 +3372,17 @@ Updated State after Enc:
   S13: 2b545cefe484f2e0ba5fb6359faffeca
   S14: 4672d0d4a6a8fc93fe85701ff61a9e10
   S15: 9c56037e72109cee878398424f789257
-</pre><a href="#appendix-B.5-2" class="pilcrow">¶</a>
+</pre><a href="#appendix-B.4-2" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="finalize-function-example">
-<section id="appendix-B.6">
+<section id="appendix-B.5">
         <h3 id="name-finalize-function-example">
-<a href="#appendix-B.6" class="section-number selfRef">B.6. </a><a href="#name-finalize-function-example" class="section-name selfRef">Finalize Function Example</a>
+<a href="#appendix-B.5" class="section-number selfRef">B.5. </a><a href="#name-finalize-function-example" class="section-name selfRef">Finalize Function Example</a>
         </h3>
-<p id="appendix-B.6-1">The Finalize function produces the authentication tag.<a href="#appendix-B.6-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-B.6-2">
+<p id="appendix-B.5-1">The Finalize function produces the authentication tag.<a href="#appendix-B.5-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.5-2">
 <pre>
 State (after processing the AD and message):
   S0:  308859e5787ab6c1705abbaecebfc316
@@ -3413,16 +3409,16 @@ Length encoding block: 2800000000000000 2800000000000000
                       (40 bits)        (40 bits)
 
 Tag = S0 ^ S1 ^ ... ^ S15 = 45178cd06ef0a8bed8e9082fe49ec818
-</pre><a href="#appendix-B.6-2" class="pilcrow">¶</a>
+</pre><a href="#appendix-B.5-2" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="complete-encryption-example">
-<section id="appendix-B.7">
+<section id="appendix-B.6">
         <h3 id="name-complete-encryption-example">
-<a href="#appendix-B.7" class="section-number selfRef">B.7. </a><a href="#name-complete-encryption-example" class="section-name selfRef">Complete Encryption Example</a>
+<a href="#appendix-B.6" class="section-number selfRef">B.6. </a><a href="#name-complete-encryption-example" class="section-name selfRef">Complete Encryption Example</a>
         </h3>
-<div class="alignLeft art-text artwork" id="appendix-B.7-1">
+<div class="alignLeft art-text artwork" id="appendix-B.6-1">
 <pre>
 Key:       0123456789abcdef0123456789abcdef
            0123456789abcdef0123456789abcdef
@@ -3432,7 +3428,7 @@ Plaintext: 576f726c64 ("World")
 
 Ciphertext: 03e5d21573
 Tag:        45178cd06ef0a8bed8e9082fe49ec818
-</pre><a href="#appendix-B.7-1" class="pilcrow">¶</a>
+</pre><a href="#appendix-B.6-1" class="pilcrow">¶</a>
 </div>
 </section>
 </div>

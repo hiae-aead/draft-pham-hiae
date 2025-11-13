@@ -111,13 +111,12 @@ Table of Contents
      A.9.  Test Vector 9 - Two blocks plaintext
      A.10. Test Vector 10 - All zeros plaintext
    Appendix B.  Function-by-Function Example
-     B.1.  Initial Values for Example
-     B.2.  AESL Function Example
-     B.3.  Initialize Function Example
-     B.4.  Update Function Example
-     B.5.  Enc Function Example
-     B.6.  Finalize Function Example
-     B.7.  Complete Encryption Example
+     B.1.  AESL Function Example
+     B.2.  Initialize Function Example
+     B.3.  Update Function Example
+     B.4.  Enc Function Example
+     B.5.  Finalize Function Example
+     B.6.  Complete Encryption Example
    Authors' Addresses
 
 1.  Introduction
@@ -1641,16 +1640,19 @@ A.10.  Test Vector 10 - All zeros plaintext
 Appendix B.  Function-by-Function Example
 
    This appendix provides step-by-step examples of HiAE internal
-   functions for implementers.  All values are in hexadecimal.
+   functions for implementers.  All values are in hexadecimal.  The
+   examples use the following test data:
 
-B.1.  Initial Values for Example
+   *  Key:
+      0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
 
- Key:   0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
- Nonce: 00112233445566778899aabbccddeeff
- AD:    48656c6c6f (5 bytes: "Hello")
- Msg:   576f726c64 (5 bytes: "World")
+   *  Nonce: 00112233445566778899aabbccddeeff
 
-B.2.  AESL Function Example
+   *  AD: 48656c6c6f (5 bytes: “Hello”)
+
+   *  Msg: 576f726c64 (5 bytes: “World”)
+
+B.1.  AESL Function Example
 
    The AESL function performs a single AES encryption round with a zero
    round key.
@@ -1659,7 +1661,7 @@ B.2.  AESL Function Example
 
    Output Block: 6379e6d9f467fb76ad063cf4d2eb8aa3
 
-B.3.  Initialize Function Example
+B.2.  Initialize Function Example
 
    The Initialize function sets up the initial state from the key and
    nonce.
@@ -1704,7 +1706,7 @@ B.3.  Initialize Function Example
      S14: 7d6ca34814e6e065c8cb4fa11ba2f8c4
      S15: 2b545cefe484f2e0ba5fb6359faffeca
 
-B.4.  Update Function Example
+B.3.  Update Function Example
 
    The Update function modifies the internal state with an input block.
 
@@ -1746,7 +1748,7 @@ B.4.  Update Function Example
      S14: 2b545cefe484f2e0ba5fb6359faffeca
      S15: 4672d0d4a6a8fc93fe85701ff61a9e10
 
-B.5.  Enc Function Example
+B.4.  Enc Function Example
 
    The Enc function encrypts a single message block.
 
@@ -1790,7 +1792,7 @@ B.5.  Enc Function Example
      S14: 4672d0d4a6a8fc93fe85701ff61a9e10
      S15: 9c56037e72109cee878398424f789257
 
-B.6.  Finalize Function Example
+B.5.  Finalize Function Example
 
    The Finalize function produces the authentication tag.
 
@@ -1820,7 +1822,7 @@ B.6.  Finalize Function Example
 
    Tag = S0 ^ S1 ^ ... ^ S15 = 45178cd06ef0a8bed8e9082fe49ec818
 
-B.7.  Complete Encryption Example
+B.6.  Complete Encryption Example
 
    Key:       0123456789abcdef0123456789abcdef
               0123456789abcdef0123456789abcdef
