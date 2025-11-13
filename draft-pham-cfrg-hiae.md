@@ -216,11 +216,11 @@ Cryptographic operations:
 
   These transformations are as specified in Section 5 of {{FIPS-AES}}. This is NOT the full AES encryption algorithm. It is a single round without the AddRoundKey operation (equivalent to using a zero round key). A test vector for this function is provided in the Test Vectors section.
 
-  **Implementation Note**: While Intel AES-NI and ARM NEON provide instructions with similar parameters and descriptions (such as `_mm_aesenc_si128` on Intel and `vaesmcq_u8(vaeseq_u8(...))` on ARM), these instructions are not functionally equivalent. The architectural differences in how AES round functions are implemented require platform-specific optimization strategies, as detailed in the Implementation Considerations section.
+  While Intel AES-NI and ARM NEON provide instructions with similar parameters and descriptions (such as `_mm_aesenc_si128` on Intel and `vaesmcq_u8(vaeseq_u8(...))` on ARM), these instructions are not functionally equivalent. The architectural differences in how AES round functions are implemented require platform-specific optimization strategies, as detailed in the Implementation Considerations section.
 
 Control flow and comparison:
 
-- `Repeat(n, F)`: `n` sequential evaluations of the function `F`.
+- `Repeat(n, F)`: `n` sequential evaluations of `F`.
 - `CtEq(a, b)`: compares `a` and `b` in constant-time, returning `True` for an exact match and `False` otherwise.
 
 AES blocks:
