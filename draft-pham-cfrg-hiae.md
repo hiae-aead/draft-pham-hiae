@@ -38,19 +38,21 @@ author:
 normative:
 
   FIPS-AES:
-    title: "Advanced encryption standard (AES)"
-    rc: "Federal Information Processing Standards Publication 197"
-    target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf
+    title: "Advanced Encryption Standard (AES)"
+    rc: "Federal Information Processing Standards Publication 197, Update 1"
+    seriesinfo:
+      DOI: 10.6028/NIST.FIPS.197-upd1
+    target: https://doi.org/10.6028/NIST.FIPS.197-upd1
     author:
       -
         org: National Institute of Standards and Technology (NIST)
-    date: 2001-11
+    date: 2023-05
 
 informative:
 
   ROCCA-S:
     title: "An Ultra-High Throughput AES-Based Authenticated Encryption Scheme for 6G: Design and Implementation"
-    rc: "Cryptology and Network Security (CANS 2023)"
+    rc: "Computer Security – ESORICS 2023"
     seriesinfo:
       DOI: 10.1007/978-3-031-50594-2_12
     author:
@@ -86,7 +88,7 @@ informative:
         name: Nobuyuki Takeuchi
     date: 2024
   SNOW-V:
-    title: "SNOW-V: an AES-based Stream Cipher for 5G and 6G Communication Systems"
+    title: "A new SNOW stream cipher called SNOW-V"
     rc: "IACR Transactions on Symmetric Cryptology, 2019(3)"
     seriesinfo:
       DOI: 10.13154/tosc.v2019.i3.1-42
@@ -139,25 +141,22 @@ informative:
         name: Shuang Wu
         org: Huawei International Pte., Ltd.
     date: 2025
-  NIST-LWC:
-    title: "NIST Lightweight Cryptography (LWC)"
-    target: https://csrc.nist.gov/projects/lightweight-cryptography
-    author:
-      -
-        org: National Institute of Standards and Technology (NIST)
-    date: 2025
   HiAE-Clarification:
     title: "HiAE Remains Secure in Its Intended Model: A Clarification of Claimed Attacks"
     rc: "Cryptology ePrint Archive, Paper 2025/1235"
     target: https://eprint.iacr.org/2025/1235
     author:
       -
-        ins: P. Pham
-        name: Phuong Pham
+        ins: H. Chen
+        name: Han Chen
         org: Huawei International Pte., Ltd.
       -
-        ins: L. Prabel
-        name: Lucas Prabel
+        ins: T. Huang
+        name: Tao Huang
+        org: Huawei International Pte., Ltd.
+      -
+        ins: P. Pham
+        name: Phuong Pham
         org: Huawei International Pte., Ltd.
       -
         ins: S. Wu
@@ -192,6 +191,7 @@ Throughout this document, "byte" is used interchangeably with "octet" and refers
 Basic operations:
 
 - `{}`: an empty bit array.
+- `{ 0 }`: a single zero byte (8 zero bits).
 - `|x|`: the length of `x` in bits.
 - `a ^ b`: the bitwise exclusive OR operation between `a` and `b`.
 - `a || b`: the concatenation of `a` and `b`.
@@ -215,6 +215,8 @@ Cryptographic operations:
   Formally: `AESL(x) = MixColumns(ShiftRows(SubBytes(x)))`
 
   These transformations are as specified in Section 5 of {{FIPS-AES}}. This is NOT the full AES encryption algorithm. It is a single round without the AddRoundKey operation (equivalent to using a zero round key). A test vector for this function is provided in the Test Vectors section.
+
+  **Implementation Note**: While Intel AES-NI and ARM NEON provide instructions with similar parameters and descriptions (such as `_mm_aesenc_si128` on Intel and `vaesmcq_u8(vaeseq_u8(...))` on ARM), these instructions are not functionally equivalent. The architectural differences in how AES round functions are implemented require platform-specific optimization strategies, as detailed in the Implementation Considerations section.
 
 Control flow and comparison:
 
@@ -254,7 +256,7 @@ The parameters for this algorithm, whose meaning is defined in {{!RFC5116, Secti
 - `P_MAX` (maximum length of the plaintext) is 2<sup>61</sup> - 1 bytes (2<sup>64</sup> - 8 bits).
 - `A_MAX` (maximum length of the associated data) is 2<sup>61</sup> - 1 bytes (2<sup>64</sup> - 8 bits).
 - `N_MIN` (minimum nonce length) = `N_MAX` (maximum nonce length) = 16 bytes (128 bits).
-- `C_MAX` (maximum ciphertext length) = `P_MAX` + tag length = (2<sup>61</sup> - 1) + 16 bytes (in bits: (2<sup>64</sup> - 8) + 128 bits).
+- `C_MAX` (maximum ciphertext length) = `P_MAX` + tag length = (2<sup>61</sup> - 1) + 16 bytes ((2<sup>64</sup> - 8) + 128 bits).
 
 Distinct associated data inputs, as described in {{!RFC5116, Section 3}}, MUST be unambiguously encoded as a single input.
 It is up to the application to create a structure in the associated data input if needed.
@@ -296,8 +298,8 @@ for ai in ad_blocks:
     Absorb(ai)
 
 msg_blocks = Split(ZeroPad(msg, 128), 128)
-for xi in msg_blocks:
-    ct = ct || Enc(xi)
+for mi in msg_blocks:
+    ct = ct || Enc(mi)
 
 tag = Finalize(|ad|, |msg|)
 ct = Truncate(ct, |msg|)
@@ -689,7 +691,7 @@ Outputs:
 Steps:
 
 ~~~
-t = (LE64(ad_len_bits) || LE64(msg_len_bits))
+t = LE64(ad_len_bits) || LE64(msg_len_bits)
 Diffuse(t, t)
 
 tag = S0 ^ S1 ^ S2 ^ S3 ^ S4 ^ S5 ^ S6 ^ S7 ^
@@ -721,6 +723,10 @@ Stream(len, key, nonce)
 ~~~
 
 The `Stream` function expands a key and an optional nonce into a variable-length keystream.
+
+Security:
+
+- When the nonce is fixed (including when using the default all-zeros nonce), a unique key MUST be used for each invocation to maintain security.
 
 Inputs:
 
@@ -790,11 +796,13 @@ return tag
 
 HiAE provides 256-bit security against key recovery and state recovery attacks, along with 128-bit security for integrity against forgery attempts.
 
+Tag truncation is not allowed. Implementations MUST use the full 128-bit authentication tag.
+
 It is important to note that the encryption security assumes the attacker cannot successfully forge messages through repeated trials {{HiAE-Clarification}}.
 
 Regarding keystream bias attacks, analysis shows that at least 150-bit security is guaranteed by HiAE.
 
-Finally, HiAE is assumed to be secure against key-committing attacks, but it has not been proven to be secure in the everything-committing setting.
+Finally, HiAE is assumed to be secure against key-committing attacks at the birthday bound security level (64 bits), but it is not secure in the context-committing setting.
 
 ## Quantum Setting
 
@@ -812,8 +820,8 @@ HiAE is assumed to be secure against the following attacks:
     * Guess-and-Determine Attack: The time complexity of the guess-and-determine attack cannot be lower than 2<sup>256</sup>.
     * Algebraic Attack: The system of equations to recover HiAE states cannot be solved with time complexity lower than 2<sup>256</sup>.
 6. Linear Bias: At least 150-bit security against statistical attacks.
-7. Key-Committing Attacks: Secure in the FROB, CMT1, and CMT2 models.
-8. Everything-Committing Attacks: Security is not claimed in the CMT3 model.
+7. Key-Committing Attacks: Secure in the FROB, CMT-1, and CMT-2 models at the birthday bound security level.
+8. Context-Committing Attacks: Security is not claimed in the CMT-3 model.
 
 The details of the cryptanalysis can be found in the paper {{HiAE}}.
 
@@ -871,8 +879,8 @@ The following optimizations leverage architectural differences between ARM and I
 
 ARM processors with NEON SIMD extensions can efficiently compute `AESL(x^y)` and (with SHA3 extensions) three-way XOR operations. For convenience, the following additional primitives can be defined:
 
-- `XAESL(x,y)`: Computes `AESL(x^y)` in a single fused operation (assembly instruction `AESE ∘ AESMC`, or equivalently C intrinsic `vaesmcq_u8(vaeseq_u8(x,y))`)
-- `XOR3(x,y,z)`: Computes `x^y^z` in a single three-way XOR instruction (assembly instruction `EOR3`, or equivalently C intrinsic `veor3q_u8(x,y,z)`)
+- `XAESL(x, y)`: Computes `AESL(x^y)` in a single fused operation (assembly instruction `AESE ∘ AESMC`, or equivalently C intrinsic `vaesmcq_u8(vaeseq_u8(x, y))`)
+- `XOR3(x, y, z)`: Computes `x^y^z` in a single three-way XOR instruction (assembly instruction `EOR3`, or equivalently C intrinsic `veor3q_u8(x, y, z)`)
 
 #### ARM-Optimized Update Function
 
@@ -982,7 +990,7 @@ return mi
 
 Intel processors with AES-NI can efficiently compute `AESL(y)^z` patterns. We can define the following additional function:
 
-- `AESLX(y,z)`: Computes `AESL(y) ^ z` using a single instruction (assembly instruction `AESENC`, or equivalently C intrinsic `_mm_aesenc_si128(y, z)`)
+- `AESLX(y, z)`: Computes `AESL(y) ^ z` using a single instruction (assembly instruction `AESENC`, or equivalently C intrinsic `_mm_aesenc_si128(y, z)`)
 
 #### Intel-Optimized Update Function
 
