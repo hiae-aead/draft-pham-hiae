@@ -183,8 +183,6 @@ The transition to 6G networks amplifies these challenges. Next-generation wirele
 
 This document presents HiAE (High-throughput Authenticated Encryption), an authenticated encryption algorithm explicitly designed to address these cross-platform performance challenges. Through careful algorithmic design, HiAE delivers high performance on both x86 and ARM architectures by efficiently utilizing the capabilities of each platform without being overly dependent on architecture-specific features.
 
-The remainder of this document is organized as follows: Section 2 establishes notation and conventions. Section 3 provides the complete specification of the HiAE algorithm for authenticated encryption. Section 4 describes encoding of ciphertext and authentication tags. Section 5 details alternative operating modes as a stream cipher and MAC. Section 6 analyzes security considerations, while Section 7 discusses implementation aspects. The appendix provides comprehensive test vectors for validation.
-
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}
