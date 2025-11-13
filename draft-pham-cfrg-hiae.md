@@ -230,6 +230,7 @@ AES blocks:
 - `{Si, ...Sj}`: the vector of the `i`-th AES block of the current state to the `j`-th block of the current state.
 - `C0`: an AES block built from the following bytes in hexadecimal format: `{ 0x32, 0x43, 0xf6, 0xa8, 0x88, 0x5a, 0x30, 0x8d, 0x31, 0x31, 0x98, 0xa2, 0xe0, 0x37, 0x07, 0x34 }`.
 - `C1`: an AES block built from the following bytes in hexadecimal format: `{ 0x4a, 0x40, 0x93, 0x82, 0x22, 0x99, 0xf3, 0x1d, 0x00, 0x82, 0xef, 0xa9, 0x8e, 0xc4, 0xe6, 0xc8 }`.
+- `ZERO`: an AES block of all zeros (128 zero bits).
 
 The constants C0 and C1 are domain separation constants derived from the fractional parts of π and e, respectively.
 
@@ -556,17 +557,17 @@ k0, k1 = Split(key, 128)
  S1 = k0
  S2 = C0
  S3 = nonce
- S4 = ZeroPad({ 0 }, 128)
+ S4 = ZERO
  S5 = k0
- S6 = ZeroPad({ 0 }, 128)
+ S6 = ZERO
  S7 = C1
  S8 = k1
- S9 = ZeroPad({ 0 }, 128)
+ S9 = ZERO
 S10 = nonce ^ k1
 S11 = C0
 S12 = C1
 S13 = k1
-S14 = ZeroPad({ 0 }, 128)
+S14 = ZERO
 S15 = C0 ^ C1
 
 Diffuse(k0, k1)
@@ -758,6 +759,8 @@ After initialization, the `Update` function is called with constant parameters, 
 
 In MAC mode, HiAE processes input data without generating ciphertext, producing only an authentication tag. This mode is useful when data authenticity is required without confidentiality.
 
+Note: Implementations of the `Encrypt` and `Decrypt` functions are not required to support MAC-only mode. This is an optional feature that can be implemented separately.
+
 ~~~
 Mac(data, key, nonce)
 ~~~
@@ -783,10 +786,13 @@ Steps:
 
 ~~~
 Init(key, nonce)
+
 data_blocks = Split(ZeroPad(data, 128), 128)
 for di in data_blocks:
     Absorb(di)
+
 tag = Finalize(|data|, 0)
+
 return tag
 ~~~
 
@@ -1459,14 +1465,14 @@ Output Block: 6379e6d9f467fb76ad063cf4d2eb8aa3
 
 ## Initialize Function Example
 
-The Initialize function sets up the initial state from key and nonce.
+The Initialize function sets up the initial state from the key and nonce.
 
 ~~~
 Key:   0123456789abcdef0123456789abcdef
        0123456789abcdef0123456789abcdef
 Nonce: 00112233445566778899aabbccddeeff
 
-Initial State (before diffusion rounds):
+Initial state (before diffusion rounds):
   S0:  3243f6a8885a308d313198a2e0370734
   S1:  0123456789abcdef0123456789abcdef
   S2:  3243f6a8885a308d313198a2e0370734
@@ -1598,7 +1604,7 @@ Updated State after Enc:
 The Finalize function produces the authentication tag.
 
 ~~~
-State (after processing all AD and message):
+State (after processing the AD and message):
   S0:  308859e5787ab6c1705abbaecebfc316
   S1:  4c1d423c06799e9f3e325836a2ff3bcc
   S2:  5715607a5196057152dc58a0f78cef2c
@@ -1616,8 +1622,8 @@ State (after processing all AD and message):
   S14: 4672d0d4a6a8fc93fe85701ff61a9e10
   S15: 9c56037e72109cee878398424f789257
 
-AD length:  5 bytes
-Msg length: 5 bytes
+AD length:  5 bytes (40 bits)
+Msg length: 5 bytes (40 bits)
 
 Length encoding block: 2800000000000000 2800000000000000
                       (40 bits)        (40 bits)
