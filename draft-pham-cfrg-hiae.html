@@ -1463,6 +1463,9 @@ These transformations are as specified in Section 5 of <span>[<a href="#FIPS-AES
         <li class="normal" id="section-2-12.5">
           <p id="section-2-12.5.1"><code>C1</code>: an AES block built from the following bytes in hexadecimal format: <code>{ 0x4a, 0x40, 0x93, 0x82, 0x22, 0x99, 0xf3, 0x1d, 0x00, 0x82, 0xef, 0xa9, 0x8e, 0xc4, 0xe6, 0xc8 }</code>.<a href="#section-2-12.5.1" class="pilcrow">¶</a></p>
 </li>
+        <li class="normal" id="section-2-12.6">
+          <p id="section-2-12.6.1"><code>ZERO</code>: an AES block of all zeros (128 zero bits).<a href="#section-2-12.6.1" class="pilcrow">¶</a></p>
+</li>
       </ul>
 <p id="section-2-13">The constants C0 and C1 are domain separation constants derived from the fractional parts of π and e, respectively.<a href="#section-2-13" class="pilcrow">¶</a></p>
 <p id="section-2-14">Input and output values:<a href="#section-2-14" class="pilcrow">¶</a></p>
@@ -1927,17 +1930,17 @@ k0, k1 = Split(key, 128)
  S1 = k0
  S2 = C0
  S3 = nonce
- S4 = ZeroPad({ 0 }, 128)
+ S4 = ZERO
  S5 = k0
- S6 = ZeroPad({ 0 }, 128)
+ S6 = ZERO
  S7 = C1
  S8 = k1
- S9 = ZeroPad({ 0 }, 128)
+ S9 = ZERO
 S10 = nonce ^ k1
 S11 = C0
 S12 = C1
 S13 = k1
-S14 = ZeroPad({ 0 }, 128)
+S14 = ZERO
 S15 = C0 ^ C1
 
 Diffuse(k0, k1)
@@ -2199,51 +2202,55 @@ else:
 <a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-hiae-as-a-message-authentic" class="section-name selfRef">HiAE as a Message Authentication Code</a>
         </h3>
 <p id="section-5.2-1">In MAC mode, HiAE processes input data without generating ciphertext, producing only an authentication tag. This mode is useful when data authenticity is required without confidentiality.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-5.2-2">
+<p id="section-5.2-2">Note: Implementations of the <code>Encrypt</code> and <code>Decrypt</code> functions are not required to support MAC-only mode. This is an optional feature that can be implemented separately.<a href="#section-5.2-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5.2-3">
 <pre>
 Mac(data, key, nonce)
-</pre><a href="#section-5.2-2" class="pilcrow">¶</a>
+</pre><a href="#section-5.2-3" class="pilcrow">¶</a>
 </div>
-<p id="section-5.2-3">Security:<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+<p id="section-5.2-4">Security:<a href="#section-5.2-4" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5.2-4.1">
-            <p id="section-5.2-4.1.1">This is the only function that allows the reuse of <code>(key, nonce)</code> pairs with different inputs.<a href="#section-5.2-4.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-5.2-5.1">
+            <p id="section-5.2-5.1.1">This is the only function that allows the reuse of <code>(key, nonce)</code> pairs with different inputs.<a href="#section-5.2-5.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-5.2-4.2">
-            <p id="section-5.2-4.2.1">HiAE-based MAC functions <span class="bcp14">MUST NOT</span> be used as hash functions: if the key is known, inputs causing state collisions can easily be crafted.<a href="#section-5.2-4.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-5.2-5.2">
+            <p id="section-5.2-5.2.1">HiAE-based MAC functions <span class="bcp14">MUST NOT</span> be used as hash functions: if the key is known, inputs causing state collisions can easily be crafted.<a href="#section-5.2-5.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-5.2-4.3">
-            <p id="section-5.2-4.3.1">Unlike hash-based MACs, tags <span class="bcp14">MUST NOT</span> be used for key derivation as there is no guarantee that they are uniformly random.<a href="#section-5.2-4.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-5.2-5.3">
+            <p id="section-5.2-5.3.1">Unlike hash-based MACs, tags <span class="bcp14">MUST NOT</span> be used for key derivation as there is no guarantee that they are uniformly random.<a href="#section-5.2-5.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-5.2-5">Inputs:<a href="#section-5.2-5" class="pilcrow">¶</a></p>
+<p id="section-5.2-6">Inputs:<a href="#section-5.2-6" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5.2-6.1">
-            <p id="section-5.2-6.1.1"><code>data</code>: the input data to authenticate (length <span class="bcp14">MUST</span> be less than or equal to <code>A_MAX</code>).<a href="#section-5.2-6.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-5.2-7.1">
+            <p id="section-5.2-7.1.1"><code>data</code>: the input data to authenticate (length <span class="bcp14">MUST</span> be less than or equal to <code>A_MAX</code>).<a href="#section-5.2-7.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-5.2-6.2">
-            <p id="section-5.2-6.2.1"><code>key</code>: the secret key.<a href="#section-5.2-6.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-5.2-7.2">
+            <p id="section-5.2-7.2.1"><code>key</code>: the secret key.<a href="#section-5.2-7.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-5.2-6.3">
-            <p id="section-5.2-6.3.1"><code>nonce</code>: the public nonce.<a href="#section-5.2-6.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-5.2-7.3">
+            <p id="section-5.2-7.3.1"><code>nonce</code>: the public nonce.<a href="#section-5.2-7.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-5.2-7">Outputs:<a href="#section-5.2-7" class="pilcrow">¶</a></p>
+<p id="section-5.2-8">Outputs:<a href="#section-5.2-8" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5.2-8.1">
-            <p id="section-5.2-8.1.1"><code>tag</code>: the authentication tag.<a href="#section-5.2-8.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-5.2-9.1">
+            <p id="section-5.2-9.1.1"><code>tag</code>: the authentication tag.<a href="#section-5.2-9.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-5.2-9">Steps:<a href="#section-5.2-9" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-5.2-10">
+<p id="section-5.2-10">Steps:<a href="#section-5.2-10" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5.2-11">
 <pre>
 Init(key, nonce)
+
 data_blocks = Split(ZeroPad(data, 128), 128)
 for di in data_blocks:
     Absorb(di)
+
 tag = Finalize(|data|, 0)
+
 return tag
-</pre><a href="#section-5.2-10" class="pilcrow">¶</a>
+</pre><a href="#section-5.2-11" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
@@ -3227,14 +3234,14 @@ Output Block: 6379e6d9f467fb76ad063cf4d2eb8aa3
         <h3 id="name-initialize-function-example">
 <a href="#appendix-B.3" class="section-number selfRef">B.3. </a><a href="#name-initialize-function-example" class="section-name selfRef">Initialize Function Example</a>
         </h3>
-<p id="appendix-B.3-1">The Initialize function sets up the initial state from key and nonce.<a href="#appendix-B.3-1" class="pilcrow">¶</a></p>
+<p id="appendix-B.3-1">The Initialize function sets up the initial state from the key and nonce.<a href="#appendix-B.3-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="appendix-B.3-2">
 <pre>
 Key:   0123456789abcdef0123456789abcdef
        0123456789abcdef0123456789abcdef
 Nonce: 00112233445566778899aabbccddeeff
 
-Initial State (before diffusion rounds):
+Initial state (before diffusion rounds):
   S0:  3243f6a8885a308d313198a2e0370734
   S1:  0123456789abcdef0123456789abcdef
   S2:  3243f6a8885a308d313198a2e0370734
@@ -3381,7 +3388,7 @@ Updated State after Enc:
 <p id="appendix-B.6-1">The Finalize function produces the authentication tag.<a href="#appendix-B.6-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="appendix-B.6-2">
 <pre>
-State (after processing all AD and message):
+State (after processing the AD and message):
   S0:  308859e5787ab6c1705abbaecebfc316
   S1:  4c1d423c06799e9f3e325836a2ff3bcc
   S2:  5715607a5196057152dc58a0f78cef2c
@@ -3399,8 +3406,8 @@ State (after processing all AD and message):
   S14: 4672d0d4a6a8fc93fe85701ff61a9e10
   S15: 9c56037e72109cee878398424f789257
 
-AD length:  5 bytes
-Msg length: 5 bytes
+AD length:  5 bytes (40 bits)
+Msg length: 5 bytes (40 bits)
 
 Length encoding block: 2800000000000000 2800000000000000
                       (40 bits)        (40 bits)
