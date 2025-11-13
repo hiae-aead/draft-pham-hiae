@@ -1664,3 +1664,10 @@ Plaintext: 576f726c64 ("World")
 Ciphertext: 03e5d21573
 Tag:        45178cd06ef0a8bed8e9082fe49ec818
 ~~~
+
+# Acknowledgments
+{:numbered="false"}
+
+The HiAE algorithm leverages the AES permutation invented by Joan Daemen and Vincent Rijmen.
+
+We would like to thank Samuel Lucas for his review of the draft.
