@@ -2264,10 +2264,21 @@ return tag
 <a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-classic-setting" class="section-name selfRef">Classic Setting</a>
         </h3>
 <p id="section-6.1-1">HiAE provides 256-bit security against key recovery and state recovery attacks, along with 128-bit security for integrity against forgery attempts.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
-<p id="section-6.1-2">Tag truncation is not allowed. Implementations <span class="bcp14">MUST</span> use the full 128-bit authentication tag.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
-<p id="section-6.1-3">It is important to note that the encryption security assumes the attacker cannot successfully forge messages through repeated trials <span>[<a href="#HiAE-Clarification" class="cite xref">HiAE-Clarification</a>]</span>.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
-<p id="section-6.1-4">Regarding keystream bias attacks, analysis shows that at least 150-bit security is guaranteed by HiAE.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
-<p id="section-6.1-5">Finally, HiAE is assumed to be secure against key-committing attacks at the birthday bound security level (64 bits), but it is not secure in the context-committing setting.<a href="#section-6.1-5" class="pilcrow">¶</a></p>
+<p id="section-6.1-2">Usage constraints:<a href="#section-6.1-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6.1-3.1">
+            <p id="section-6.1-3.1.1">Tag truncation is not allowed. Implementations <span class="bcp14">MUST</span> use the full 128-bit authentication tag.<a href="#section-6.1-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-6.1-3.2">
+            <p id="section-6.1-3.2.1">A single key <span class="bcp14">MUST NOT</span> be used to protect more than 2<sup>64</sup> messages.<a href="#section-6.1-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-6.1-3.3">
+            <p id="section-6.1-3.3.1">For a given key, the nonce <span class="bcp14">MUST NOT</span> be reused under any circumstances (as specified in the Authenticated Encryption section).<a href="#section-6.1-3.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-6.1-4">It is important to note that the encryption security assumes the attacker cannot successfully forge messages through repeated trials <span>[<a href="#HiAE-Clarification" class="cite xref">HiAE-Clarification</a>]</span>.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
+<p id="section-6.1-5">Regarding keystream bias attacks, analysis shows that at least 150-bit security is guaranteed by HiAE.<a href="#section-6.1-5" class="pilcrow">¶</a></p>
+<p id="section-6.1-6">Finally, HiAE is assumed to be secure against key-committing attacks at the birthday bound security level (64 bits), but it is not secure in the context-committing setting.<a href="#section-6.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="quantum-setting">
