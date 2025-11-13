@@ -1442,16 +1442,12 @@ tag   : ad0b841c3d145a6ee86dc7b67338f113
 
 # Function-by-Function Example
 
-This appendix provides step-by-step examples of HiAE internal functions for implementers. All values are in hexadecimal.
+This appendix provides step-by-step examples of HiAE internal functions for implementers. All values are in hexadecimal. The examples use the following test data:
 
-## Initial Values for Example
-
-~~~
-Key:   0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
-Nonce: 00112233445566778899aabbccddeeff
-AD:    48656c6c6f (5 bytes: "Hello")
-Msg:   576f726c64 (5 bytes: "World")
-~~~
+- Key: `0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef`
+- Nonce: `00112233445566778899aabbccddeeff`
+- AD: `48656c6c6f` (5 bytes: "Hello")
+- Msg: `576f726c64` (5 bytes: "World")
 
 ## AESL Function Example
 
