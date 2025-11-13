@@ -1091,27 +1091,7 @@ return mn
    Rol()
    return ci
 
-7.2.1.3.  ARM-Optimized DecPartial Function
-
-   Original implementation:
-
-   DecPartial(cn)
-   ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
-   ci = cn || Tail(ks, 128 - |cn|)
-   mi = UpdateDec(ci)
-   mn = Truncate(mi, |cn|)
-   return mn
-
-   ARM-optimized implementation:
-
-   DecPartial_ARM(cn)
-   ks = XOR3(XAESL(S0, S1), ZeroPad(cn, 128), S9)
-   ci = cn || Tail(ks, 128 - |cn|)
-   mi = UpdateDec_ARM(ci)
-   mn = Truncate(mi, |cn|)
-   return mn
-
-7.2.1.4.  ARM-Optimized UpdateDec Function
+7.2.1.3.  ARM-Optimized UpdateDec Function
 
    Original implementation:
 
@@ -1134,6 +1114,26 @@ return mn
    S13 = S13 ^ mi
    Rol()
    return mi
+
+7.2.1.4.  ARM-Optimized DecPartial Function
+
+   Original implementation:
+
+   DecPartial(cn)
+   ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
+   ci = cn || Tail(ks, 128 - |cn|)
+   mi = UpdateDec(ci)
+   mn = Truncate(mi, |cn|)
+   return mn
+
+   ARM-optimized implementation:
+
+   DecPartial_ARM(cn)
+   ks = XOR3(XAESL(S0, S1), ZeroPad(cn, 128), S9)
+   ci = cn || Tail(ks, 128 - |cn|)
+   mi = UpdateDec_ARM(ci)
+   mn = Truncate(mi, |cn|)
+   return mn
 
 7.2.2.  Intel AES-NI Optimizations
 
@@ -1188,27 +1188,7 @@ return mn
    Rol()
    return ci
 
-7.2.2.3.  Intel-Optimized DecPartial Function
-
-   Original implementation:
-
-   DecPartial(cn)
-   ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
-   ci = cn || Tail(ks, 128 - |cn|)
-   mi = UpdateDec(ci)
-   mn = Truncate(mi, |cn|)
-   return mn
-
-   Intel-optimized implementation:
-
-   DecPartial_Intel(cn)
-   ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
-   ci = cn || Tail(ks, 128 - |cn|)
-   mi = UpdateDec_Intel(ci)
-   mn = Truncate(mi, |cn|)
-   return mn
-
-7.2.2.4.  Intel-Optimized UpdateDec Function
+7.2.2.3.  Intel-Optimized UpdateDec Function
 
    Original implementation:
 
@@ -1231,6 +1211,26 @@ return mn
    S13 = S13 ^ mi
    Rol()
    return mi
+
+7.2.2.4.  Intel-Optimized DecPartial Function
+
+   Original implementation:
+
+   DecPartial(cn)
+   ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
+   ci = cn || Tail(ks, 128 - |cn|)
+   mi = UpdateDec(ci)
+   mn = Truncate(mi, |cn|)
+   return mn
+
+   Intel-optimized implementation:
+
+   DecPartial_Intel(cn)
+   ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
+   ci = cn || Tail(ks, 128 - |cn|)
+   mi = UpdateDec_Intel(ci)
+   mn = Truncate(mi, |cn|)
+   return mn
 
 7.3.  Decryption Performance
 

@@ -2484,42 +2484,13 @@ return ci
 </div>
 </section>
 </div>
-<div id="arm-optimized-decpartial-function">
+<div id="arm-optimized-updatedec-function">
 <section id="section-7.2.1.3">
-            <h5 id="name-arm-optimized-decpartial-fu">
-<a href="#section-7.2.1.3" class="section-number selfRef">7.2.1.3. </a><a href="#name-arm-optimized-decpartial-fu" class="section-name selfRef">ARM-Optimized DecPartial Function</a>
+            <h5 id="name-arm-optimized-updatedec-fun">
+<a href="#section-7.2.1.3" class="section-number selfRef">7.2.1.3. </a><a href="#name-arm-optimized-updatedec-fun" class="section-name selfRef">ARM-Optimized UpdateDec Function</a>
             </h5>
 <p id="section-7.2.1.3-1">Original implementation:<a href="#section-7.2.1.3-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-7.2.1.3-2">
-<pre>
-DecPartial(cn)
-ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
-ci = cn || Tail(ks, 128 - |cn|)
-mi = UpdateDec(ci)
-mn = Truncate(mi, |cn|)
-return mn
-</pre><a href="#section-7.2.1.3-2" class="pilcrow">¶</a>
-</div>
-<p id="section-7.2.1.3-3">ARM-optimized implementation:<a href="#section-7.2.1.3-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.1.3-4">
-<pre>
-DecPartial_ARM(cn)
-ks = XOR3(XAESL(S0, S1), ZeroPad(cn, 128), S9)
-ci = cn || Tail(ks, 128 - |cn|)
-mi = UpdateDec_ARM(ci)
-mn = Truncate(mi, |cn|)
-return mn
-</pre><a href="#section-7.2.1.3-4" class="pilcrow">¶</a>
-</div>
-</section>
-</div>
-<div id="arm-optimized-updatedec-function">
-<section id="section-7.2.1.4">
-            <h5 id="name-arm-optimized-updatedec-fun">
-<a href="#section-7.2.1.4" class="section-number selfRef">7.2.1.4. </a><a href="#name-arm-optimized-updatedec-fun" class="section-name selfRef">ARM-Optimized UpdateDec Function</a>
-            </h5>
-<p id="section-7.2.1.4-1">Original implementation:<a href="#section-7.2.1.4-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.1.4-2">
 <pre>
 UpdateDec(ci)
   t = ci ^ S9
@@ -2529,10 +2500,10 @@ UpdateDec(ci)
 S13 = S13 ^ mi
 Rol()
 return mi
-</pre><a href="#section-7.2.1.4-2" class="pilcrow">¶</a>
+</pre><a href="#section-7.2.1.3-2" class="pilcrow">¶</a>
 </div>
-<p id="section-7.2.1.4-3">ARM-optimized implementation:<a href="#section-7.2.1.4-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.1.4-4">
+<p id="section-7.2.1.3-3">ARM-optimized implementation:<a href="#section-7.2.1.3-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.1.3-4">
 <pre>
 UpdateDec_ARM(ci)
   t = ci ^ S9
@@ -2542,6 +2513,35 @@ UpdateDec_ARM(ci)
 S13 = S13 ^ mi
 Rol()
 return mi
+</pre><a href="#section-7.2.1.3-4" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="arm-optimized-decpartial-function">
+<section id="section-7.2.1.4">
+            <h5 id="name-arm-optimized-decpartial-fu">
+<a href="#section-7.2.1.4" class="section-number selfRef">7.2.1.4. </a><a href="#name-arm-optimized-decpartial-fu" class="section-name selfRef">ARM-Optimized DecPartial Function</a>
+            </h5>
+<p id="section-7.2.1.4-1">Original implementation:<a href="#section-7.2.1.4-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.1.4-2">
+<pre>
+DecPartial(cn)
+ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
+ci = cn || Tail(ks, 128 - |cn|)
+mi = UpdateDec(ci)
+mn = Truncate(mi, |cn|)
+return mn
+</pre><a href="#section-7.2.1.4-2" class="pilcrow">¶</a>
+</div>
+<p id="section-7.2.1.4-3">ARM-optimized implementation:<a href="#section-7.2.1.4-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.1.4-4">
+<pre>
+DecPartial_ARM(cn)
+ks = XOR3(XAESL(S0, S1), ZeroPad(cn, 128), S9)
+ci = cn || Tail(ks, 128 - |cn|)
+mi = UpdateDec_ARM(ci)
+mn = Truncate(mi, |cn|)
+return mn
 </pre><a href="#section-7.2.1.4-4" class="pilcrow">¶</a>
 </div>
 </section>
@@ -2621,42 +2621,13 @@ return ci
 </div>
 </section>
 </div>
-<div id="intel-optimized-decpartial-function">
+<div id="intel-optimized-updatedec-function">
 <section id="section-7.2.2.3">
-            <h5 id="name-intel-optimized-decpartial-">
-<a href="#section-7.2.2.3" class="section-number selfRef">7.2.2.3. </a><a href="#name-intel-optimized-decpartial-" class="section-name selfRef">Intel-Optimized DecPartial Function</a>
+            <h5 id="name-intel-optimized-updatedec-f">
+<a href="#section-7.2.2.3" class="section-number selfRef">7.2.2.3. </a><a href="#name-intel-optimized-updatedec-f" class="section-name selfRef">Intel-Optimized UpdateDec Function</a>
             </h5>
 <p id="section-7.2.2.3-1">Original implementation:<a href="#section-7.2.2.3-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-7.2.2.3-2">
-<pre>
-DecPartial(cn)
-ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
-ci = cn || Tail(ks, 128 - |cn|)
-mi = UpdateDec(ci)
-mn = Truncate(mi, |cn|)
-return mn
-</pre><a href="#section-7.2.2.3-2" class="pilcrow">¶</a>
-</div>
-<p id="section-7.2.2.3-3">Intel-optimized implementation:<a href="#section-7.2.2.3-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.2.3-4">
-<pre>
-DecPartial_Intel(cn)
-ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
-ci = cn || Tail(ks, 128 - |cn|)
-mi = UpdateDec_Intel(ci)
-mn = Truncate(mi, |cn|)
-return mn
-</pre><a href="#section-7.2.2.3-4" class="pilcrow">¶</a>
-</div>
-</section>
-</div>
-<div id="intel-optimized-updatedec-function">
-<section id="section-7.2.2.4">
-            <h5 id="name-intel-optimized-updatedec-f">
-<a href="#section-7.2.2.4" class="section-number selfRef">7.2.2.4. </a><a href="#name-intel-optimized-updatedec-f" class="section-name selfRef">Intel-Optimized UpdateDec Function</a>
-            </h5>
-<p id="section-7.2.2.4-1">Original implementation:<a href="#section-7.2.2.4-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.2.4-2">
 <pre>
 UpdateDec(ci)
   t = ci ^ S9
@@ -2666,10 +2637,10 @@ UpdateDec(ci)
 S13 = S13 ^ mi
 Rol()
 return mi
-</pre><a href="#section-7.2.2.4-2" class="pilcrow">¶</a>
+</pre><a href="#section-7.2.2.3-2" class="pilcrow">¶</a>
 </div>
-<p id="section-7.2.2.4-3">Intel-optimized implementation:<a href="#section-7.2.2.4-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.2.4-4">
+<p id="section-7.2.2.3-3">Intel-optimized implementation:<a href="#section-7.2.2.3-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.3-4">
 <pre>
 UpdateDec_Intel(ci)
   t = ci ^ S9
@@ -2679,6 +2650,35 @@ UpdateDec_Intel(ci)
 S13 = S13 ^ mi
 Rol()
 return mi
+</pre><a href="#section-7.2.2.3-4" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="intel-optimized-decpartial-function">
+<section id="section-7.2.2.4">
+            <h5 id="name-intel-optimized-decpartial-">
+<a href="#section-7.2.2.4" class="section-number selfRef">7.2.2.4. </a><a href="#name-intel-optimized-decpartial-" class="section-name selfRef">Intel-Optimized DecPartial Function</a>
+            </h5>
+<p id="section-7.2.2.4-1">Original implementation:<a href="#section-7.2.2.4-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.4-2">
+<pre>
+DecPartial(cn)
+ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
+ci = cn || Tail(ks, 128 - |cn|)
+mi = UpdateDec(ci)
+mn = Truncate(mi, |cn|)
+return mn
+</pre><a href="#section-7.2.2.4-2" class="pilcrow">¶</a>
+</div>
+<p id="section-7.2.2.4-3">Intel-optimized implementation:<a href="#section-7.2.2.4-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.2.2.4-4">
+<pre>
+DecPartial_Intel(cn)
+ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
+ci = cn || Tail(ks, 128 - |cn|)
+mi = UpdateDec_Intel(ci)
+mn = Truncate(mi, |cn|)
+return mn
 </pre><a href="#section-7.2.2.4-4" class="pilcrow">¶</a>
 </div>
 </section>
