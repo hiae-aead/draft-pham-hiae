@@ -1019,7 +1019,7 @@ Intel-optimized implementation:
 
 ~~~
 Update_Intel(xi)
-  t = AESL(S0 ^ S1) ^ xi
+  t = AESLX(S0 ^ S1, xi)
  S0 = AESLX(S13, t)
  S3 =  S3 ^ xi
 S13 = S13 ^ xi
@@ -1045,8 +1045,8 @@ Intel-optimized implementation:
 
 ~~~
 UpdateEnc_Intel(mi)
-  t = AESL(S0 ^ S1) ^ mi
- ci = t ^ S9
+ ci = AESLX(S0 ^ S1, mi ^ S9)
+  t = ci ^ S9
  S0 = AESLX(S13, t)
  S3 =  S3 ^ mi
 S13 = S13 ^ mi
@@ -1074,7 +1074,7 @@ Intel-optimized implementation:
 ~~~
 UpdateDec_Intel(ci)
   t = ci ^ S9
- mi = AESL(S0 ^ S1) ^ t
+ mi = AESLX(S0 ^ S1, t)
  S0 = AESLX(S13, t)
  S3 =  S3 ^ mi
 S13 = S13 ^ mi
@@ -1099,7 +1099,7 @@ Intel-optimized implementation:
 
 ~~~
 DecPartial_Intel(cn)
-ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
+ks = AESLX(S0 ^ S1, ZeroPad(cn, 128) ^ S9)
 ci = cn || Tail(ks, 128 - |cn|)
 mi = UpdateDec_Intel(ci)
 mn = Truncate(mi, |cn|)
