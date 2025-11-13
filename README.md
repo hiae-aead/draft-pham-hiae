@@ -25,7 +25,7 @@ HiAE is an AES-based AEAD cipher optimized for cross-platform efficiency (ARM an
 | [Reference implementation](https://github.com/Concyclics/HiAE/tree/main)                                       | C          |
 | [libhiae](https://github.com/hiae-aead/libhiae)                                                                | C          |
 | [zig-hiae](https://github.com/hiae-aead/zig-hiae)                                                              | Zig        |
-| [hias.js)](https://github.com/hiae-aead/hiae.js)                                                               | JavaScript |
+| [hias.js](https://github.com/hiae-aead/hiae.js)                                                                | JavaScript |
 | [rust-hiae](https://github.com/jedisct1/rust-hiae)                                                             | Rust       |
 | [go-hiae](https://github.com/hiae-aead/go-hiae)                                                                | Go         |
 
