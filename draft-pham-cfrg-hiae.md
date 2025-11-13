@@ -940,30 +940,6 @@ Rol()
 return ci
 ~~~
 
-#### ARM-Optimized DecPartial Function
-
-Original implementation:
-
-~~~
-DecPartial(cn)
-ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
-ci = cn || Tail(ks, 128 - |cn|)
-mi = UpdateDec(ci)
-mn = Truncate(mi, |cn|)
-return mn
-~~~
-
-ARM-optimized implementation:
-
-~~~
-DecPartial_ARM(cn)
-ks = XOR3(XAESL(S0, S1), ZeroPad(cn, 128), S9)
-ci = cn || Tail(ks, 128 - |cn|)
-mi = UpdateDec_ARM(ci)
-mn = Truncate(mi, |cn|)
-return mn
-~~~
-
 #### ARM-Optimized UpdateDec Function
 
 Original implementation:
@@ -990,6 +966,30 @@ UpdateDec_ARM(ci)
 S13 = S13 ^ mi
 Rol()
 return mi
+~~~
+
+#### ARM-Optimized DecPartial Function
+
+Original implementation:
+
+~~~
+DecPartial(cn)
+ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
+ci = cn || Tail(ks, 128 - |cn|)
+mi = UpdateDec(ci)
+mn = Truncate(mi, |cn|)
+return mn
+~~~
+
+ARM-optimized implementation:
+
+~~~
+DecPartial_ARM(cn)
+ks = XOR3(XAESL(S0, S1), ZeroPad(cn, 128), S9)
+ci = cn || Tail(ks, 128 - |cn|)
+mi = UpdateDec_ARM(ci)
+mn = Truncate(mi, |cn|)
+return mn
 ~~~
 
 ### Intel AES-NI Optimizations
@@ -1050,30 +1050,6 @@ Rol()
 return ci
 ~~~
 
-#### Intel-Optimized DecPartial Function
-
-Original implementation:
-
-~~~
-DecPartial(cn)
-ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
-ci = cn || Tail(ks, 128 - |cn|)
-mi = UpdateDec(ci)
-mn = Truncate(mi, |cn|)
-return mn
-~~~
-
-Intel-optimized implementation:
-
-~~~
-DecPartial_Intel(cn)
-ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
-ci = cn || Tail(ks, 128 - |cn|)
-mi = UpdateDec_Intel(ci)
-mn = Truncate(mi, |cn|)
-return mn
-~~~
-
 #### Intel-Optimized UpdateDec Function
 
 Original implementation:
@@ -1100,6 +1076,30 @@ UpdateDec_Intel(ci)
 S13 = S13 ^ mi
 Rol()
 return mi
+~~~
+
+#### Intel-Optimized DecPartial Function
+
+Original implementation:
+
+~~~
+DecPartial(cn)
+ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
+ci = cn || Tail(ks, 128 - |cn|)
+mi = UpdateDec(ci)
+mn = Truncate(mi, |cn|)
+return mn
+~~~
+
+Intel-optimized implementation:
+
+~~~
+DecPartial_Intel(cn)
+ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
+ci = cn || Tail(ks, 128 - |cn|)
+mi = UpdateDec_Intel(ci)
+mn = Truncate(mi, |cn|)
+return mn
 ~~~
 
 ## Decryption Performance
