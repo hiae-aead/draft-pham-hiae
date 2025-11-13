@@ -110,6 +110,7 @@ Table of Contents
      A.8.  Test Vector 8 - Single byte plaintext
      A.9.  Test Vector 9 - Two blocks plaintext
      A.10. Test Vector 10 - All zeros plaintext
+     A.11. Test Vector 11 - Partial-block AD (padding demonstration)
    Appendix B.  Function-by-Function Example
      B.1.  AESL Function Example
      B.2.  Initialize Function Example
@@ -1644,6 +1645,28 @@ A.10.  Test Vector 10 - All zeros plaintext
            216f4442bfa32d1dfccdc9c4020baec9
 
    tag   : ad0b841c3d145a6ee86dc7b67338f113
+
+A.11.  Test Vector 11 - Partial-block AD (padding demonstration)
+
+   This test vector specifically demonstrates the padding behavior when
+   associated data length is not a multiple of the block size (128
+   bits).  The AD is 13 bytes (104 bits), which requires 3 bytes (24
+   bits) of zero padding to reach the next block boundary.
+
+   key   : 1122334455667788112233445566778811
+           223344556677881122334455667788
+
+   nonce : aabbccddeeff0011aabbccddeeff0011
+
+   ad    : 0102030405060708090a0b0c0d
+           (13 bytes - padded to 16 bytes with zeros)
+
+   msg   : 48656c6c6f576f726c64
+           (10 bytes)
+
+   ct    : 1fb0e0348c6a3a917133
+
+   tag   : 7d292173b55ba02dae56ac1224b7e775
 
 Appendix B.  Function-by-Function Example
 

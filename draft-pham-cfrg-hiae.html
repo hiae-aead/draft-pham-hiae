@@ -1319,6 +1319,9 @@ svg :is([fill="white"], [fill^="#fff"]) {
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.10">
                 <p id="section-toc.1-1.10.2.10.1"><a href="#appendix-A.10" class="auto internal xref">A.10</a>. <a href="#name-test-vector-10-all-zeros-pl" class="internal xref">Test Vector 10 - All zeros plaintext</a></p>
 </li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.11">
+                <p id="section-toc.1-1.10.2.11.1"><a href="#appendix-A.11" class="auto internal xref">A.11</a>. <a href="#name-test-vector-11-partial-bloc" class="internal xref">Test Vector 11 - Partial-block AD (padding demonstration)</a></p>
+</li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
@@ -3196,6 +3199,32 @@ ct    : fc7f1142f681399099c5008980e73420
 
 tag   : ad0b841c3d145a6ee86dc7b67338f113
 </pre><a href="#appendix-A.10-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="test-vector-11-partial-block-ad-padding-demonstration">
+<section id="appendix-A.11">
+        <h3 id="name-test-vector-11-partial-bloc">
+<a href="#appendix-A.11" class="section-number selfRef">A.11. </a><a href="#name-test-vector-11-partial-bloc" class="section-name selfRef">Test Vector 11 - Partial-block AD (padding demonstration)</a>
+        </h3>
+<p id="appendix-A.11-1">This test vector specifically demonstrates the padding behavior when associated data length is not a multiple of the block size (128 bits). The AD is 13 bytes (104 bits), which requires 3 bytes (24 bits) of zero padding to reach the next block boundary.<a href="#appendix-A.11-1" class="pilcrow">¶</a></p>
+<div class="lang-test-vectors sourcecode" id="appendix-A.11-2">
+<pre>
+key   : 1122334455667788112233445566778811
+        223344556677881122334455667788
+
+nonce : aabbccddeeff0011aabbccddeeff0011
+
+ad    : 0102030405060708090a0b0c0d
+        (13 bytes - padded to 16 bytes with zeros)
+
+msg   : 48656c6c6f576f726c64
+        (10 bytes)
+
+ct    : 1fb0e0348c6a3a917133
+
+tag   : 7d292173b55ba02dae56ac1224b7e775
+</pre><a href="#appendix-A.11-2" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
