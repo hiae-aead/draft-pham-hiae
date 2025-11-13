@@ -802,7 +802,11 @@ return tag
 
 HiAE provides 256-bit security against key recovery and state recovery attacks, along with 128-bit security for integrity against forgery attempts.
 
-Tag truncation is not allowed. Implementations MUST use the full 128-bit authentication tag.
+Usage constraints:
+
+- Tag truncation is not allowed. Implementations MUST use the full 128-bit authentication tag.
+- A single key MUST NOT be used to protect more than 2<sup>64</sup> messages.
+- For a given key, the nonce MUST NOT be reused under any circumstances (as specified in the Authenticated Encryption section).
 
 It is important to note that the encryption security assumes the attacker cannot successfully forge messages through repeated trials {{HiAE-Clarification}}.
 
