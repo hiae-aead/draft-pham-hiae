@@ -280,6 +280,18 @@ d388bf15faacdb7a68be19dddc8a5b74
     )
     all_passed &= passed
 
+    # Test Vector 11 - Partial-block AD (padding demonstration)
+    passed = run_test(
+        test_num=11,
+        key="1122334455667788112233445566778811223344556677881122334455667788",
+        nonce="aabbccddeeff0011aabbccddeeff0011",
+        ad="0102030405060708090a0b0c0d",
+        msg="48656c6c6f576f726c64",
+        expected_ct="1fb0e0348c6a3a917133",
+        expected_tag="7d292173b55ba02dae56ac1224b7e775"
+    )
+    all_passed &= passed
+
     print("\n" + "="*50)
     if all_passed:
         print("ALL TESTS PASSED!")

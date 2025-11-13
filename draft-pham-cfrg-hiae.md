@@ -1444,6 +1444,27 @@ ct    : fc7f1142f681399099c5008980e73420
 tag   : ad0b841c3d145a6ee86dc7b67338f113
 ~~~
 
+## Test Vector 11 - Partial-block AD (padding demonstration)
+
+This test vector specifically demonstrates the padding behavior when associated data length is not a multiple of the block size (128 bits). The AD is 13 bytes (104 bits), which requires 3 bytes (24 bits) of zero padding to reach the next block boundary.
+
+~~~ test-vectors
+key   : 1122334455667788112233445566778811
+        223344556677881122334455667788
+
+nonce : aabbccddeeff0011aabbccddeeff0011
+
+ad    : 0102030405060708090a0b0c0d
+        (13 bytes - padded to 16 bytes with zeros)
+
+msg   : 48656c6c6f576f726c64
+        (10 bytes)
+
+ct    : 1fb0e0348c6a3a917133
+
+tag   : 7d292173b55ba02dae56ac1224b7e775
+~~~
+
 # Function-by-Function Example
 
 This appendix provides step-by-step examples of HiAE internal functions for implementers. All values are in hexadecimal. The examples use the following test data:
