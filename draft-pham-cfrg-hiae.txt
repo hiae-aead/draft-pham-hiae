@@ -5,10 +5,10 @@
 Network Working Group                                           F. Denis
 Internet-Draft                                               Fastly Inc.
 Intended status: Standards Track                                 P. Pham
-Expires: 16 May 2026                                           L. Prabel
+Expires: 17 May 2026                                           L. Prabel
                                                                   S. Sun
                                                                   Huawei
-                                                        12 November 2025
+                                                        13 November 2025
 
 
               The HiAE Authenticated Encryption Algorithm
@@ -42,7 +42,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 16 May 2026.
+   This Internet-Draft will expire on 17 May 2026.
 
 Copyright Notice
 
@@ -169,10 +169,11 @@ Table of Contents
 
    The remainder of this document is organized as follows: Section 2
    establishes notation and conventions.  Section 3 provides the
-   complete specification of the HiAE algorithm, including its three
-   operational modes.  Sections 4–6 detail the specific use cases as an
-   AEAD cipher, stream cipher, and MAC.  Section 7 analyzes security
-   considerations, while Section 8 discusses implementation aspects.
+   complete specification of the HiAE algorithm for authenticated
+   encryption.  Section 4 describes encoding of ciphertext and
+   authentication tags.  Section 5 details alternative operating modes
+   as a stream cipher and MAC.  Section 6 analyzes security
+   considerations, while Section 7 discusses implementation aspects.
    The appendix provides comprehensive test vectors for validation.
 
 2.  Conventions and Definitions
