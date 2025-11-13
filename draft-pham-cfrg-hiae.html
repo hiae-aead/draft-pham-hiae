@@ -1382,16 +1382,19 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
           <p id="section-2-4.1.1"><code>{}</code>: an empty bit array.<a href="#section-2-4.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-4.2">
-          <p id="section-2-4.2.1"><code>|x|</code>: the length of <code>x</code> in bits.<a href="#section-2-4.2.1" class="pilcrow">¶</a></p>
+          <p id="section-2-4.2.1"><code>{ 0 }</code>: a single zero byte (8 zero bits).<a href="#section-2-4.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-4.3">
-          <p id="section-2-4.3.1"><code>a ^ b</code>: the bitwise exclusive OR operation between <code>a</code> and <code>b</code>.<a href="#section-2-4.3.1" class="pilcrow">¶</a></p>
+          <p id="section-2-4.3.1"><code>|x|</code>: the length of <code>x</code> in bits.<a href="#section-2-4.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-4.4">
-          <p id="section-2-4.4.1"><code>a || b</code>: the concatenation of <code>a</code> and <code>b</code>.<a href="#section-2-4.4.1" class="pilcrow">¶</a></p>
+          <p id="section-2-4.4.1"><code>a ^ b</code>: the bitwise exclusive OR operation between <code>a</code> and <code>b</code>.<a href="#section-2-4.4.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-4.5">
-          <p id="section-2-4.5.1"><code>a mod b</code>: the remainder of the Euclidean division between <code>a</code> as the dividend and <code>b</code> as the divisor.<a href="#section-2-4.5.1" class="pilcrow">¶</a></p>
+          <p id="section-2-4.5.1"><code>a || b</code>: the concatenation of <code>a</code> and <code>b</code>.<a href="#section-2-4.5.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-4.6">
+          <p id="section-2-4.6.1"><code>a mod b</code>: the remainder of the Euclidean division between <code>a</code> as the dividend and <code>b</code> as the divisor.<a href="#section-2-4.6.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-2-5">Data manipulation:<a href="#section-2-5" class="pilcrow">¶</a></p>
@@ -1431,6 +1434,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 Formally: <code>AESL(x) = MixColumns(ShiftRows(SubBytes(x)))</code><a href="#section-2-8.1.3" class="pilcrow">¶</a></p>
 <p id="section-2-8.1.4">
 These transformations are as specified in Section 5 of <span>[<a href="#FIPS-AES" class="cite xref">FIPS-AES</a>]</span>. This is NOT the full AES encryption algorithm. It is a single round without the AddRoundKey operation (equivalent to using a zero round key). A test vector for this function is provided in the Test Vectors section.<a href="#section-2-8.1.4" class="pilcrow">¶</a></p>
+<p id="section-2-8.1.5"><strong>Implementation Note</strong>: While Intel AES-NI and ARM NEON provide instructions with similar parameters and descriptions (such as <code>_mm_aesenc_si128</code> on Intel and <code>vaesmcq_u8(vaeseq_u8(...))</code> on ARM), these instructions are not functionally equivalent. The architectural differences in how AES round functions are implemented require platform-specific optimization strategies, as detailed in the Implementation Considerations section.<a href="#section-2-8.1.5" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-2-9">Control flow and comparison:<a href="#section-2-9" class="pilcrow">¶</a></p>
@@ -1511,7 +1515,7 @@ These transformations are as specified in Section 5 of <span>[<a href="#FIPS-AES
             <p id="section-3.1-3.4.1"><code>N_MIN</code> (minimum nonce length) = <code>N_MAX</code> (maximum nonce length) = 16 bytes (128 bits).<a href="#section-3.1-3.4.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-3.1-3.5">
-            <p id="section-3.1-3.5.1"><code>C_MAX</code> (maximum ciphertext length) = <code>P_MAX</code> + tag length = (2<sup>61</sup> - 1) + 16 bytes (in bits: (2<sup>64</sup> - 8) + 128 bits).<a href="#section-3.1-3.5.1" class="pilcrow">¶</a></p>
+            <p id="section-3.1-3.5.1"><code>C_MAX</code> (maximum ciphertext length) = <code>P_MAX</code> + tag length = (2<sup>61</sup> - 1) + 16 bytes ((2<sup>64</sup> - 8) + 128 bits).<a href="#section-3.1-3.5.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-3.1-4">Distinct associated data inputs, as described in <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>], <a href="https://rfc-editor.org/rfc/rfc5116#section-3" class="relref">Section 3</a></span>, <span class="bcp14">MUST</span> be unambiguously encoded as a single input.
@@ -1574,8 +1578,8 @@ for ai in ad_blocks:
     Absorb(ai)
 
 msg_blocks = Split(ZeroPad(msg, 128), 128)
-for xi in msg_blocks:
-    ct = ct || Enc(xi)
+for mi in msg_blocks:
+    ct = ct || Enc(mi)
 
 tag = Finalize(|ad|, |msg|)
 ct = Truncate(ct, |msg|)
@@ -2103,7 +2107,7 @@ Finalize(ad_len_bits, msg_len_bits)
 <p id="section-3.5.6-7">Steps:<a href="#section-3.5.6-7" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.5.6-8">
 <pre>
-t = (LE64(ad_len_bits) || LE64(msg_len_bits))
+t = LE64(ad_len_bits) || LE64(msg_len_bits)
 Diffuse(t, t)
 
 tag = S0 ^ S1 ^ S2 ^ S3 ^ S4 ^ S5 ^ S6 ^ S7 ^
@@ -2150,37 +2154,43 @@ Stream(len, key, nonce)
 </pre><a href="#section-5.1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-5.1-3">The <code>Stream</code> function expands a key and an optional nonce into a variable-length keystream.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
-<p id="section-5.1-4">Inputs:<a href="#section-5.1-4" class="pilcrow">¶</a></p>
+<p id="section-5.1-4">Security:<a href="#section-5.1-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-5.1-5.1">
-            <p id="section-5.1-5.1.1"><code>len</code>: the length of the keystream to generate in bits.<a href="#section-5.1-5.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-5.1-5.2">
-            <p id="section-5.1-5.2.1"><code>key</code>: the HiAE key.<a href="#section-5.1-5.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-5.1-5.3">
-            <p id="section-5.1-5.3.1"><code>nonce</code>: the HiAE nonce. If unspecified, it is set to <code>N_MAX</code> zero bytes.<a href="#section-5.1-5.3.1" class="pilcrow">¶</a></p>
+            <p id="section-5.1-5.1.1">When the nonce is fixed (including when using the default all-zeros nonce), a unique key <span class="bcp14">MUST</span> be used for each invocation to maintain security.<a href="#section-5.1-5.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-5.1-6">Outputs:<a href="#section-5.1-6" class="pilcrow">¶</a></p>
+<p id="section-5.1-6">Inputs:<a href="#section-5.1-6" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-5.1-7.1">
-            <p id="section-5.1-7.1.1"><code>stream</code>: the keystream.<a href="#section-5.1-7.1.1" class="pilcrow">¶</a></p>
+            <p id="section-5.1-7.1.1"><code>len</code>: the length of the keystream to generate in bits.<a href="#section-5.1-7.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.1-7.2">
+            <p id="section-5.1-7.2.1"><code>key</code>: the HiAE key.<a href="#section-5.1-7.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.1-7.3">
+            <p id="section-5.1-7.3.1"><code>nonce</code>: the HiAE nonce. If unspecified, it is set to <code>N_MAX</code> zero bytes.<a href="#section-5.1-7.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-5.1-8">Steps:<a href="#section-5.1-8" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-5.1-9">
+<p id="section-5.1-8">Outputs:<a href="#section-5.1-8" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.1-9.1">
+            <p id="section-5.1-9.1.1"><code>stream</code>: the keystream.<a href="#section-5.1-9.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-5.1-10">Steps:<a href="#section-5.1-10" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5.1-11">
 <pre>
 if len == 0:
     return {}
 else:
     stream, tag = Encrypt(ZeroPad({ 0 }, len), {}, key, nonce)
     return stream
-</pre><a href="#section-5.1-9" class="pilcrow">¶</a>
+</pre><a href="#section-5.1-11" class="pilcrow">¶</a>
 </div>
-<p id="section-5.1-10">This is equivalent to encrypting a message of <code>len</code> zero bits without associated data and discarding the authentication tag.<a href="#section-5.1-10" class="pilcrow">¶</a></p>
-<p id="section-5.1-11">Instead of relying on the generic <code>Encrypt</code> function, implementations can omit the <code>Finalize</code> function.<a href="#section-5.1-11" class="pilcrow">¶</a></p>
-<p id="section-5.1-12">After initialization, the <code>Update</code> function is called with constant parameters, allowing further optimizations.<a href="#section-5.1-12" class="pilcrow">¶</a></p>
+<p id="section-5.1-12">This is equivalent to encrypting a message of <code>len</code> zero bits without associated data and discarding the authentication tag.<a href="#section-5.1-12" class="pilcrow">¶</a></p>
+<p id="section-5.1-13">Instead of relying on the generic <code>Encrypt</code> function, implementations can omit the <code>Finalize</code> function.<a href="#section-5.1-13" class="pilcrow">¶</a></p>
+<p id="section-5.1-14">After initialization, the <code>Update</code> function is called with constant parameters, allowing further optimizations.<a href="#section-5.1-14" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="hiae-as-a-message-authentication-code">
@@ -2250,9 +2260,10 @@ return tag
 <a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-classic-setting" class="section-name selfRef">Classic Setting</a>
         </h3>
 <p id="section-6.1-1">HiAE provides 256-bit security against key recovery and state recovery attacks, along with 128-bit security for integrity against forgery attempts.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
-<p id="section-6.1-2">It is important to note that the encryption security assumes the attacker cannot successfully forge messages through repeated trials <span>[<a href="#HiAE-Clarification" class="cite xref">HiAE-Clarification</a>]</span>.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
-<p id="section-6.1-3">Regarding keystream bias attacks, analysis shows that at least 150-bit security is guaranteed by HiAE.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
-<p id="section-6.1-4">Finally, HiAE is assumed to be secure against key-committing attacks, but it has not been proven to be secure in the everything-committing setting.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
+<p id="section-6.1-2">Tag truncation is not allowed. Implementations <span class="bcp14">MUST</span> use the full 128-bit authentication tag.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
+<p id="section-6.1-3">It is important to note that the encryption security assumes the attacker cannot successfully forge messages through repeated trials <span>[<a href="#HiAE-Clarification" class="cite xref">HiAE-Clarification</a>]</span>.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
+<p id="section-6.1-4">Regarding keystream bias attacks, analysis shows that at least 150-bit security is guaranteed by HiAE.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
+<p id="section-6.1-5">Finally, HiAE is assumed to be secure against key-committing attacks at the birthday bound security level (64 bits), but it is not secure in the context-committing setting.<a href="#section-6.1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="quantum-setting">
@@ -2297,10 +2308,10 @@ return tag
             <p id="section-6.3-2.6.1">Linear Bias: At least 150-bit security against statistical attacks.<a href="#section-6.3-2.6.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.3-2.7">
-            <p id="section-6.3-2.7.1">Key-Committing Attacks: Secure in the FROB, CMT1, and CMT2 models.<a href="#section-6.3-2.7.1" class="pilcrow">¶</a></p>
+            <p id="section-6.3-2.7.1">Key-Committing Attacks: Secure in the FROB, CMT-1, and CMT-2 models at the birthday bound security level.<a href="#section-6.3-2.7.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.3-2.8">
-            <p id="section-6.3-2.8.1">Everything-Committing Attacks: Security is not claimed in the CMT3 model.<a href="#section-6.3-2.8.1" class="pilcrow">¶</a></p>
+            <p id="section-6.3-2.8.1">Context-Committing Attacks: Security is not claimed in the CMT-3 model.<a href="#section-6.3-2.8.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 <p id="section-6.3-3">The details of the cryptanalysis can be found in the paper <span>[<a href="#HiAE" class="cite xref">HiAE</a>]</span>.<a href="#section-6.3-3" class="pilcrow">¶</a></p>
@@ -2401,10 +2412,10 @@ S15 = t
 <p id="section-7.2.1-1">ARM processors with NEON SIMD extensions can efficiently compute <code>AESL(x^y)</code> and (with SHA3 extensions) three-way XOR operations. For convenience, the following additional primitives can be defined:<a href="#section-7.2.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7.2.1-2.1">
-              <p id="section-7.2.1-2.1.1"><code>XAESL(x,y)</code>: Computes <code>AESL(x^y)</code> in a single fused operation (assembly instruction <code>AESE ∘ AESMC</code>, or equivalently C intrinsic <code>vaesmcq_u8(vaeseq_u8(x,y))</code>)<a href="#section-7.2.1-2.1.1" class="pilcrow">¶</a></p>
+              <p id="section-7.2.1-2.1.1"><code>XAESL(x, y)</code>: Computes <code>AESL(x^y)</code> in a single fused operation (assembly instruction <code>AESE ∘ AESMC</code>, or equivalently C intrinsic <code>vaesmcq_u8(vaeseq_u8(x, y))</code>)<a href="#section-7.2.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-7.2.1-2.2">
-              <p id="section-7.2.1-2.2.1"><code>XOR3(x,y,z)</code>: Computes <code>x^y^z</code> in a single three-way XOR instruction (assembly instruction <code>EOR3</code>, or equivalently C intrinsic <code>veor3q_u8(x,y,z)</code>)<a href="#section-7.2.1-2.2.1" class="pilcrow">¶</a></p>
+              <p id="section-7.2.1-2.2.1"><code>XOR3(x, y, z)</code>: Computes <code>x^y^z</code> in a single three-way XOR instruction (assembly instruction <code>EOR3</code>, or equivalently C intrinsic <code>veor3q_u8(x, y, z)</code>)<a href="#section-7.2.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <div id="arm-optimized-update-function">
@@ -2541,7 +2552,7 @@ return mi
 <p id="section-7.2.2-1">Intel processors with AES-NI can efficiently compute <code>AESL(y)^z</code> patterns. We can define the following additional function:<a href="#section-7.2.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7.2.2-2.1">
-              <p id="section-7.2.2-2.1.1"><code>AESLX(y,z)</code>: Computes <code>AESL(y) ^ z</code> using a single instruction (assembly instruction <code>AESENC</code>, or equivalently C intrinsic <code>_mm_aesenc_si128(y, z)</code>)<a href="#section-7.2.2-2.1.1" class="pilcrow">¶</a></p>
+              <p id="section-7.2.2-2.1.1"><code>AESLX(y, z)</code>: Computes <code>AESL(y) ^ z</code> using a single instruction (assembly instruction <code>AESENC</code>, or equivalently C intrinsic <code>_mm_aesenc_si128(y, z)</code>)<a href="#section-7.2.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <div id="intel-optimized-update-function">
@@ -2748,7 +2759,7 @@ return mi
 <dl class="references">
 <dt id="FIPS-AES">[FIPS-AES]</dt>
         <dd>
-<span class="refAuthor">National Institute of Standards and Technology (NIST)</span>, <span class="refTitle">"Advanced encryption standard (AES)"</span>, <span class="refContent">Federal Information Processing Standards Publication 197</span>, <time datetime="2001-11" class="refDate">November 2001</time>, <span>&lt;<a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf">https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf</a>&gt;</span>. </dd>
+<span class="refAuthor">National Institute of Standards and Technology (NIST)</span>, <span class="refTitle">"Advanced Encryption Standard (AES)"</span>, <span class="refContent">Federal Information Processing Standards Publication 197, Update 1</span>, <span class="seriesInfo">DOI 10.6028/NIST.FIPS.197-upd1</span>, <time datetime="2023-05" class="refDate">May 2023</time>, <span>&lt;<a href="https://doi.org/10.6028/NIST.FIPS.197-upd1">https://doi.org/10.6028/NIST.FIPS.197-upd1</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.irtf-cfrg-aegis-aead">[I-D.irtf-cfrg-aegis-aead]</dt>
         <dd>
@@ -2785,19 +2796,15 @@ return mi
 <dd class="break"></dd>
 <dt id="HiAE-Clarification">[HiAE-Clarification]</dt>
         <dd>
-<span class="refAuthor">Pham, P.</span>, <span class="refAuthor">Prabel, L.</span>, and <span class="refAuthor">S. Wu</span>, <span class="refTitle">"HiAE Remains Secure in Its Intended Model: A Clarification of Claimed Attacks"</span>, <span class="refContent">Cryptology ePrint Archive, Paper 2025/1235</span>, <time datetime="2025" class="refDate">2025</time>, <span>&lt;<a href="https://eprint.iacr.org/2025/1235">https://eprint.iacr.org/2025/1235</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="NIST-LWC">[NIST-LWC]</dt>
-        <dd>
-<span class="refAuthor">National Institute of Standards and Technology (NIST)</span>, <span class="refTitle">"NIST Lightweight Cryptography (LWC)"</span>, <time datetime="2025" class="refDate">2025</time>, <span>&lt;<a href="https://csrc.nist.gov/projects/lightweight-cryptography">https://csrc.nist.gov/projects/lightweight-cryptography</a>&gt;</span>. </dd>
+<span class="refAuthor">Chen, H.</span>, <span class="refAuthor">Huang, T.</span>, <span class="refAuthor">Pham, P.</span>, and <span class="refAuthor">S. Wu</span>, <span class="refTitle">"HiAE Remains Secure in Its Intended Model: A Clarification of Claimed Attacks"</span>, <span class="refContent">Cryptology ePrint Archive, Paper 2025/1235</span>, <time datetime="2025" class="refDate">2025</time>, <span>&lt;<a href="https://eprint.iacr.org/2025/1235">https://eprint.iacr.org/2025/1235</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="ROCCA-S">[ROCCA-S]</dt>
         <dd>
-<span class="refAuthor">Anand, R.</span>, <span class="refAuthor">Banik, S.</span>, <span class="refAuthor">Caforio, A.</span>, <span class="refAuthor">Fukushima, K.</span>, <span class="refAuthor">Isobe, T.</span>, <span class="refAuthor">Kiyomoto, S.</span>, <span class="refAuthor">Liu, F.</span>, <span class="refAuthor">Nakano, Y.</span>, <span class="refAuthor">Sakamoto, K.</span>, and <span class="refAuthor">N. Takeuchi</span>, <span class="refTitle">"An Ultra-High Throughput AES-Based Authenticated Encryption Scheme for 6G: Design and Implementation"</span>, <span class="refContent">Cryptology and Network Security (CANS 2023)</span>, <span class="seriesInfo">DOI 10.1007/978-3-031-50594-2_12</span>, <time datetime="2024" class="refDate">2024</time>, <span>&lt;<a href="https://doi.org/10.1007/978-3-031-50594-2_12">https://doi.org/10.1007/978-3-031-50594-2_12</a>&gt;</span>. </dd>
+<span class="refAuthor">Anand, R.</span>, <span class="refAuthor">Banik, S.</span>, <span class="refAuthor">Caforio, A.</span>, <span class="refAuthor">Fukushima, K.</span>, <span class="refAuthor">Isobe, T.</span>, <span class="refAuthor">Kiyomoto, S.</span>, <span class="refAuthor">Liu, F.</span>, <span class="refAuthor">Nakano, Y.</span>, <span class="refAuthor">Sakamoto, K.</span>, and <span class="refAuthor">N. Takeuchi</span>, <span class="refTitle">"An Ultra-High Throughput AES-Based Authenticated Encryption Scheme for 6G: Design and Implementation"</span>, <span class="refContent">Computer Security – ESORICS 2023</span>, <span class="seriesInfo">DOI 10.1007/978-3-031-50594-2_12</span>, <time datetime="2024" class="refDate">2024</time>, <span>&lt;<a href="https://doi.org/10.1007/978-3-031-50594-2_12">https://doi.org/10.1007/978-3-031-50594-2_12</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="SNOW-V">[SNOW-V]</dt>
       <dd>
-<span class="refAuthor">Ekdahl, P.</span>, <span class="refAuthor">Johansson, T.</span>, <span class="refAuthor">Maximov, A.</span>, and <span class="refAuthor">J. Yang</span>, <span class="refTitle">"SNOW-V: an AES-based Stream Cipher for 5G and 6G Communication Systems"</span>, <span class="refContent">IACR Transactions on Symmetric Cryptology, 2019(3)</span>, <span class="seriesInfo">DOI 10.13154/tosc.v2019.i3.1-42</span>, <time datetime="2019" class="refDate">2019</time>, <span>&lt;<a href="https://doi.org/10.13154/tosc.v2019.i3.1-42">https://doi.org/10.13154/tosc.v2019.i3.1-42</a>&gt;</span>. </dd>
+<span class="refAuthor">Ekdahl, P.</span>, <span class="refAuthor">Johansson, T.</span>, <span class="refAuthor">Maximov, A.</span>, and <span class="refAuthor">J. Yang</span>, <span class="refTitle">"A new SNOW stream cipher called SNOW-V"</span>, <span class="refContent">IACR Transactions on Symmetric Cryptology, 2019(3)</span>, <span class="seriesInfo">DOI 10.13154/tosc.v2019.i3.1-42</span>, <time datetime="2019" class="refDate">2019</time>, <span>&lt;<a href="https://doi.org/10.13154/tosc.v2019.i3.1-42">https://doi.org/10.13154/tosc.v2019.i3.1-42</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>

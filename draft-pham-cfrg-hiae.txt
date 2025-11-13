@@ -182,6 +182,8 @@ Table of Contents
 
    *  {}: an empty bit array.
 
+   *  { 0 }: a single zero byte (8 zero bits).
+
    *  |x|: the length of x in bits.
 
    *  a ^ b: the bitwise exclusive OR operation between a and b.
@@ -226,6 +228,14 @@ Table of Contents
       round without the AddRoundKey operation (equivalent to using a
       zero round key).  A test vector for this function is provided in
       the Test Vectors section.
+
+      *Implementation Note*: While Intel AES-NI and ARM NEON provide
+      instructions with similar parameters and descriptions (such as
+      _mm_aesenc_si128 on Intel and vaesmcq_u8(vaeseq_u8(...)) on ARM),
+      these instructions are not functionally equivalent.  The
+      architectural differences in how AES round functions are
+      implemented require platform-specific optimization strategies, as
+      detailed in the Implementation Considerations section.
 
    Control flow and comparison:
 
@@ -299,7 +309,7 @@ Table of Contents
       bytes (128 bits).
 
    *  C_MAX (maximum ciphertext length) = P_MAX + tag length = (2^61 -
-      1) + 16 bytes (in bits: (2^64 - 8) + 128 bits).
+      1) + 16 bytes ((2^64 - 8) + 128 bits).
 
    Distinct associated data inputs, as described in [RFC5116],
    Section 3, MUST be unambiguously encoded as a single input.  It is up
@@ -351,8 +361,8 @@ Table of Contents
        Absorb(ai)
 
    msg_blocks = Split(ZeroPad(msg, 128), 128)
-   for xi in msg_blocks:
-       ct = ct || Enc(xi)
+   for mi in msg_blocks:
+       ct = ct || Enc(mi)
 
    tag = Finalize(|ad|, |msg|)
    ct = Truncate(ct, |msg|)
@@ -754,7 +764,7 @@ return mn
 
    Steps:
 
-   t = (LE64(ad_len_bits) || LE64(msg_len_bits))
+   t = LE64(ad_len_bits) || LE64(msg_len_bits)
    Diffuse(t, t)
 
    tag = S0 ^ S1 ^ S2 ^ S3 ^ S4 ^ S5 ^ S6 ^ S7 ^
@@ -788,6 +798,12 @@ return mn
 
    The Stream function expands a key and an optional nonce into a
    variable-length keystream.
+
+   Security:
+
+   *  When the nonce is fixed (including when using the default all-
+      zeros nonce), a unique key MUST be used for each invocation to
+      maintain security.
 
    Inputs:
 
@@ -869,6 +885,9 @@ return mn
    recovery attacks, along with 128-bit security for integrity against
    forgery attempts.
 
+   Tag truncation is not allowed.  Implementations MUST use the full
+   128-bit authentication tag.
+
    It is important to note that the encryption security assumes the
    attacker cannot successfully forge messages through repeated trials
    [HiAE-Clarification].
@@ -876,9 +895,9 @@ return mn
    Regarding keystream bias attacks, analysis shows that at least
    150-bit security is guaranteed by HiAE.
 
-   Finally, HiAE is assumed to be secure against key-committing attacks,
-   but it has not been proven to be secure in the everything-committing
-   setting.
+   Finally, HiAE is assumed to be secure against key-committing attacks
+   at the birthday bound security level (64 bits), but it is not secure
+   in the context-committing setting.
 
 6.2.  Quantum Setting
 
@@ -913,11 +932,11 @@ return mn
    6.  Linear Bias: At least 150-bit security against statistical
        attacks.
 
-   7.  Key-Committing Attacks: Secure in the FROB, CMT1, and CMT2
-       models.
+   7.  Key-Committing Attacks: Secure in the FROB, CMT-1, and CMT-2
+       models at the birthday bound security level.
 
-   8.  Everything-Committing Attacks: Security is not claimed in the
-       CMT3 model.
+   8.  Context-Committing Attacks: Security is not claimed in the CMT-3
+       model.
 
    The details of the cryptanalysis can be found in the paper [HiAE].
 
@@ -1012,13 +1031,13 @@ return mn
    AESL(x^y) and (with SHA3 extensions) three-way XOR operations.  For
    convenience, the following additional primitives can be defined:
 
-   *  XAESL(x,y): Computes AESL(x^y) in a single fused operation
+   *  XAESL(x, y): Computes AESL(x^y) in a single fused operation
       (assembly instruction AESE ∘ AESMC, or equivalently C intrinsic
-      vaesmcq_u8(vaeseq_u8(x,y)))
+      vaesmcq_u8(vaeseq_u8(x, y)))
 
-   *  XOR3(x,y,z): Computes x^y^z in a single three-way XOR instruction
-      (assembly instruction EOR3, or equivalently C intrinsic
-      veor3q_u8(x,y,z))
+   *  XOR3(x, y, z): Computes x^y^z in a single three-way XOR
+      instruction (assembly instruction EOR3, or equivalently C
+      intrinsic veor3q_u8(x, y, z))
 
 7.2.1.1.  ARM-Optimized Update Function
 
@@ -1113,7 +1132,7 @@ return mn
    Intel processors with AES-NI can efficiently compute AESL(y)^z
    patterns.  We can define the following additional function:
 
-   *  AESLX(y,z): Computes AESL(y) ^ z using a single instruction
+   *  AESLX(y, z): Computes AESL(y) ^ z using a single instruction
       (assembly instruction AESENC, or equivalently C intrinsic
       _mm_aesenc_si128(y, z))
 
@@ -1262,10 +1281,10 @@ return mn
 9.1.  Normative References
 
    [FIPS-AES] National Institute of Standards and Technology (NIST),
-              "Advanced encryption standard (AES)", Federal Information
-              Processing Standards Publication 197, November 2001,
-              <https://nvlpubs.nist.gov/nistpubs/FIPS/
-              NIST.FIPS.197.pdf>.
+              "Advanced Encryption Standard (AES)", Federal Information
+              Processing Standards Publication 197, Update 1,
+              DOI 10.6028/NIST.FIPS.197-upd1, May 2023,
+              <https://doi.org/10.6028/NIST.FIPS.197-upd1>.
 
    [I-D.irtf-cfrg-aegis-aead]
               Denis, F. and S. Lucas, "The AEGIS Family of Authenticated
@@ -1301,28 +1320,24 @@ return mn
               2025/377, 2025, <https://eprint.iacr.org/2025/377>.
 
    [HiAE-Clarification]
-              Pham, P., Prabel, L., and S. Wu, "HiAE Remains Secure in
-              Its Intended Model: A Clarification of Claimed Attacks",
-              Cryptology ePrint Archive, Paper 2025/1235, 2025,
-              <https://eprint.iacr.org/2025/1235>.
-
-   [NIST-LWC] National Institute of Standards and Technology (NIST),
-              "NIST Lightweight Cryptography (LWC)", 2025,
-              <https://csrc.nist.gov/projects/lightweight-cryptography>.
+              Chen, H., Huang, T., Pham, P., and S. Wu, "HiAE Remains
+              Secure in Its Intended Model: A Clarification of Claimed
+              Attacks", Cryptology ePrint Archive, Paper 2025/1235,
+              2025, <https://eprint.iacr.org/2025/1235>.
 
    [ROCCA-S]  Anand, R., Banik, S., Caforio, A., Fukushima, K., Isobe,
               T., Kiyomoto, S., Liu, F., Nakano, Y., Sakamoto, K., and
               N. Takeuchi, "An Ultra-High Throughput AES-Based
               Authenticated Encryption Scheme for 6G: Design and
-              Implementation", Cryptology and Network Security (CANS
-              2023), DOI 10.1007/978-3-031-50594-2_12, 2024,
+              Implementation", Computer Security – ESORICS 2023,
+              DOI 10.1007/978-3-031-50594-2_12, 2024,
               <https://doi.org/10.1007/978-3-031-50594-2_12>.
 
-   [SNOW-V]   Ekdahl, P., Johansson, T., Maximov, A., and J. Yang,
-              "SNOW-V: an AES-based Stream Cipher for 5G and 6G
-              Communication Systems", IACR Transactions on Symmetric
-              Cryptology, 2019(3), DOI 10.13154/tosc.v2019.i3.1-42,
-              2019, <https://doi.org/10.13154/tosc.v2019.i3.1-42>.
+   [SNOW-V]   Ekdahl, P., Johansson, T., Maximov, A., and J. Yang, "A
+              new SNOW stream cipher called SNOW-V", IACR Transactions
+              on Symmetric Cryptology, 2019(3),
+              DOI 10.13154/tosc.v2019.i3.1-42, 2019,
+              <https://doi.org/10.13154/tosc.v2019.i3.1-42>.
 
 Appendix A.  Test Vectors
 
