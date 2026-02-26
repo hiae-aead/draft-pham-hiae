@@ -230,12 +230,13 @@ Table of Contents
       the Test Vectors section.
 
       While Intel AES-NI and ARM NEON provide instructions with similar
-      parameters and descriptions (such as _mm_aesenc_si128 on Intel and
+      purposes (such as _mm_aesenc_si128 on Intel and
       vaesmcq_u8(vaeseq_u8(...)) on ARM), these instructions are not
-      functionally equivalent.  The architectural differences in how AES
-      round functions are implemented require platform-specific
-      optimization strategies, as detailed in the Implementation
-      Considerations section.
+      directly interchangeable at the API and code-generation levels.
+      The architectural differences in how AES round functions are
+      exposed and optimized require platform-specific implementation
+      strategies, as detailed in the Implementation Considerations
+      section.
 
    Control flow and comparison:
 
@@ -392,7 +393,7 @@ Table of Contents
    Inputs:
 
    *  ct: the ciphertext to decrypt (length MUST be less than or equal
-      to C_MAX).
+      to P_MAX).
 
    *  tag: the authentication tag.
 
@@ -804,7 +805,7 @@ return mn
    Security:
 
    *  When the nonce is fixed (including when using the default all-
-      zeros nonce), a unique key MUST be used for each invocation to
+      zeros nonce), a distinct key MUST be used for each invocation to
       maintain security.
 
    Inputs:
@@ -822,10 +823,13 @@ return mn
 
    Steps:
 
+   if nonce is unspecified:
+       nonce = 16 zero bytes
+
    if len == 0:
        return {}
    else:
-       stream, tag = Encrypt(ZeroPad({ 0 }, len), {}, key, nonce)
+       stream, tag = Encrypt(0 repeated len times, {}, key, nonce)
        return stream
 
    This is equivalent to encrypting a message of len zero bits without
@@ -988,7 +992,7 @@ return mn
    This approach copies 2048 bits of data on every rotation.  An
    optimized implementation can instead:
 
-   1.  Keep the state blocks in a fixed array position
+   1.  Keep the state blocks in fixed array positions
 
    2.  Maintain an offset variable tracking the logical position of S0
 
@@ -1274,11 +1278,12 @@ return mn
 7.5.  Validation
 
    A complete list of known implementations and integrations is
-   available at https://github.com/hiae-aead/draft-pham-hiae, including
-   reference implementations.  A comprehensive comparison of HiAE’s
-   performance with other high-throughput authenticated encryption
-   schemes on ARM and x86 architectures is also provided, demonstrating
-   the effectiveness of these platform-specific optimizations.
+   available at https://github.com/hiae-aead/draft-pham-cfrg-hiae,
+   including reference implementations.  A comprehensive comparison of
+   HiAE’s performance with other high-throughput authenticated
+   encryption schemes on ARM and x86 architectures is also provided,
+   demonstrating the effectiveness of these platform-specific
+   optimizations.
 
 8.  IANA Considerations
 
@@ -1653,8 +1658,8 @@ A.11.  Test Vector 11 - Partial-block AD (padding demonstration)
    bits).  The AD is 13 bytes (104 bits), which requires 3 bytes (24
    bits) of zero padding to reach the next block boundary.
 
-   key   : 1122334455667788112233445566778811
-           223344556677881122334455667788
+   key   : 11223344556677881122334455667788
+           11223344556677881122334455667788
 
    nonce : aabbccddeeff0011aabbccddeeff0011
 
