@@ -216,7 +216,7 @@ Cryptographic operations:
 
   These transformations are as specified in Section 5 of {{FIPS-AES}}. This is NOT the full AES encryption algorithm. It is a single round without the AddRoundKey operation (equivalent to using a zero round key). A test vector for this function is provided in the Test Vectors section.
 
-  While Intel AES-NI and ARM NEON provide instructions with similar parameters and descriptions (such as `_mm_aesenc_si128` on Intel and `vaesmcq_u8(vaeseq_u8(...))` on ARM), these instructions are not functionally equivalent. The architectural differences in how AES round functions are implemented require platform-specific optimization strategies, as detailed in the Implementation Considerations section.
+  While Intel AES-NI and ARM NEON provide instructions with similar purposes (such as `_mm_aesenc_si128` on Intel and `vaesmcq_u8(vaeseq_u8(...))` on ARM), these instructions are not directly interchangeable at the API and code-generation levels. The architectural differences in how AES round functions are exposed and optimized require platform-specific implementation strategies, as detailed in the Implementation Considerations section.
 
 Control flow and comparison:
 
@@ -323,7 +323,7 @@ Security:
 
 Inputs:
 
-- `ct`: the ciphertext to decrypt (length MUST be less than or equal to `C_MAX`).
+- `ct`: the ciphertext to decrypt (length MUST be less than or equal to `P_MAX`).
 - `tag`: the authentication tag.
 - `ad`: the associated data to authenticate (length MUST be less than or equal to `A_MAX`).
 - `key`: the encryption key.
@@ -727,7 +727,7 @@ The `Stream` function expands a key and an optional nonce into a variable-length
 
 Security:
 
-- When the nonce is fixed (including when using the default all-zeros nonce), a unique key MUST be used for each invocation to maintain security.
+- When the nonce is fixed (including when using the default all-zeros nonce), a distinct key MUST be used for each invocation to maintain security.
 
 Inputs:
 
@@ -742,10 +742,13 @@ Outputs:
 Steps:
 
 ~~~
+if nonce is unspecified:
+    nonce = 16 zero bytes
+
 if len == 0:
     return {}
 else:
-    stream, tag = Encrypt(ZeroPad({ 0 }, len), {}, key, nonce)
+    stream, tag = Encrypt(0 repeated len times, {}, key, nonce)
     return stream
 ~~~
 
@@ -857,7 +860,7 @@ S15 = t
 
 This approach copies 2048 bits of data on every rotation. An optimized implementation can instead:
 
-1. Keep the state blocks in a fixed array position
+1. Keep the state blocks in fixed array positions
 2. Maintain an `offset` variable tracking the logical position of S0
 3. Map logical state block Si to physical position `(i + offset) mod 16`
 4. Replace the entire `Rol()` operation with: `offset = (offset + 1) mod 16`
@@ -1122,7 +1125,7 @@ When implementing the platform-specific optimizations described above, care must
 
 ## Validation
 
-A complete list of known implementations and integrations is available at https://github.com/hiae-aead/draft-pham-hiae, including reference implementations. A comprehensive comparison of HiAE's performance with other high-throughput authenticated encryption schemes on ARM and x86 architectures is also provided, demonstrating the effectiveness of these platform-specific optimizations.
+A complete list of known implementations and integrations is available at https://github.com/hiae-aead/draft-pham-cfrg-hiae, including reference implementations. A comprehensive comparison of HiAE's performance with other high-throughput authenticated encryption schemes on ARM and x86 architectures is also provided, demonstrating the effectiveness of these platform-specific optimizations.
 
 # IANA Considerations
 
@@ -1449,8 +1452,8 @@ tag   : ad0b841c3d145a6ee86dc7b67338f113
 This test vector specifically demonstrates the padding behavior when associated data length is not a multiple of the block size (128 bits). The AD is 13 bytes (104 bits), which requires 3 bytes (24 bits) of zero padding to reach the next block boundary.
 
 ~~~ test-vectors
-key   : 1122334455667788112233445566778811
-        223344556677881122334455667788
+key   : 11223344556677881122334455667788
+        11223344556677881122334455667788
 
 nonce : aabbccddeeff0011aabbccddeeff0011
 
