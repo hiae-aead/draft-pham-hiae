@@ -186,7 +186,7 @@ This document presents HiAE (High-throughput Authenticated Encryption), an authe
 
 {::boilerplate bcp14-tagged}
 
-Throughout this document, "byte" is used interchangeably with "octet" and refers to an 8-bit sequence.
+Throughout this document, "byte" refers to an 8-bit sequence.
 
 Basic operations:
 
