@@ -5,10 +5,10 @@
 Network Working Group                                           F. Denis
 Internet-Draft                                               Fastly Inc.
 Intended status: Standards Track                                 P. Pham
-Expires: 17 May 2026                                           L. Prabel
+Expires: 30 August 2026                                        L. Prabel
                                                                   S. Sun
                                                                   Huawei
-                                                        13 November 2025
+                                                        26 February 2026
 
 
               The HiAE Authenticated Encryption Algorithm
@@ -42,11 +42,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 17 May 2026.
+   This Internet-Draft will expire on 30 August 2026.
 
 Copyright Notice
 
-   Copyright (c) 2025 IETF Trust and the persons identified as the
+   Copyright (c) 2026 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -176,8 +176,7 @@ Table of Contents
    BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
    capitals, as shown here.
 
-   Throughout this document, “byte” is used interchangeably with “octet”
-   and refers to an 8-bit sequence.
+   Throughout this document, “byte” refers to an 8-bit sequence.
 
    Basic operations:
 
