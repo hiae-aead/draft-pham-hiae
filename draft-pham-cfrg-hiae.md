@@ -18,7 +18,7 @@ author:
     ins: F. Denis
     name: Frank Denis
     organization: Fastly Inc.
-    email: fd@00f.net
+    email: fde@00f.net
  -
     ins: P. Pham
     name: Phuong Pham
