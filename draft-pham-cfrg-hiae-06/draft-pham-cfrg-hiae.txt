@@ -1880,7 +1880,7 @@ Authors' Addresses
 
    Frank Denis
    Fastly Inc.
-   Email: fd@00f.net
+   Email: fde@00f.net
 
 
    Phuong Pham
