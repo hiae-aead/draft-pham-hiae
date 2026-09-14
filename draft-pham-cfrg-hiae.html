@@ -10,24 +10,30 @@
 <meta content="Lucas Prabel" name="author">
 <meta content="Shuzhou Sun" name="author">
 <meta content="
-       This document describes HiAE, a high-throughput authenticated encryption algorithm designed for next-generation wireless systems (6G) and high-speed data transmission applications. 
+       This document describes HiAE, a high-throughput authenticated encryption with associated data (AEAD) algorithm.
+It targets next-generation wireless systems (6G) and high-speed data transmission applications.
+This document also specifies its use as a stream cipher and a message authentication code (MAC). 
     " name="description">
-<meta content="xml2rfc 3.33.0" name="generator">
-<meta content="Internet-Draft" name="keyword">
+<meta content="xml2rfc 3.34.0" name="generator">
+<meta content="AEAD" name="keyword">
+<meta content="AES" name="keyword">
+<meta content="stream cipher" name="keyword">
+<meta content="Message Authentication Code (MAC)" name="keyword">
 <meta content="draft-pham-cfrg-hiae-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.33.0
-    Python 3.12.13
-    ConfigArgParse 1.7
+  xml2rfc 3.34.0
+    Python 3.14.7
+    ConfigArgParse 1.7.5
     google-i18n-address 3.1.1
     intervaltree 3.2.1
     Jinja2 3.1.6
-    lxml 6.0.2
-    platformdirs 4.9.6
+    lxml 6.1.1
+    natsort 8.4.0
+    platformdirs 4.11.7
     pycountry 24.6.1
     PyYAML 6.0.3
     requests 2.33.1
-    wcwidth 0.7.0
+    wcwidth 0.8.3
 -->
 <link href="draft-pham-cfrg-hiae.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -63,7 +69,6 @@
   src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
   unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
-
 @font-face {
   font-family: 'Lora';
   font-style: italic;
@@ -112,7 +117,6 @@
   src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
-
 @font-face {
   font-family: 'Lora';
   font-style: normal;
@@ -177,7 +181,6 @@
   font-display: swap;
   src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
 }
 
 @font-face {
@@ -294,16 +297,19 @@ h1, h2, h3, h4, h5, h6 {
   font-size-adjust: 0.5;
   color: var(--title-color);
 }
-h1#title {
-  font-size: 32px;
-  line-height: 40px;
-  clear: both;
-}
-h1#title, h1#rfcnum {
-  margin: 1.5em 0 0.2em;
-}
-h1#rfcnum + h1#title {
-  margin: 0.2em 0;
+h1 {
+  &#title {
+    font-size: 32px;
+    line-height: 40px;
+    clear: both;
+    margin: 1.5em 0 0.2em;
+  }
+  &#rfcnum {
+    margin: 1.5em 0 0.2em;
+    & + h1#title {
+      margin: 0.2em 0;
+    }
+  }
 }
 
 h1, h2, h3 {
@@ -323,10 +329,10 @@ h4, h5, h6 {
 #abstract+p {
   font-size: 18px;
   line-height: 24px;
-}
-#abstract+p code, #abstract+p samp, #abstract+p tt {
-  font-size: 16px;
-  line-height: 0;
+  & code, & samp, & tt {
+    font-size: 16px;
+    line-height: 0;
+  }
 }
 
 p {
@@ -337,59 +343,59 @@ p {
 div {
   margin: 0;
 }
-.alignRight.art-text {
-  background-color: var(--highlight-color);
-  border: 1px solid var(--line-color);
-  border-radius: 3px;
-  padding: 0.5em 1em 0;
-  margin-bottom: 0.5em;
-}
-.alignRight.art-text pre {
-  padding: 0;
-  width: auto;
-}
 .alignRight {
   margin: 1em 0;
-}
-.alignRight > *:first-child {
-  border: none;
-  margin: 0;
-  float: right;
-  clear: both;
-}
-.alignRight > *:nth-child(2) {
-  clear: both;
-  display: block;
-  border: none;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    margin: 0;
+    float: right;
+    clear: both;
+  }
+  & > *:nth-child(2) {
+    clear: both;
+    display: block;
+    border: none;
+  }
 }
 svg {
   display: block;
-}
-/* font-family isn't space-separated, but =~ will have to do */
-svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
-  font-family: var(--font-mono);
-}
-.alignCenter.art-text {
-  background-color: var(--highlight-color);
-  border: 1px solid var(--line-color);
-  border-radius: 3px;
-  padding: 0.5em 1em 0;
-  margin-bottom: 0.5em;
-}
-.alignCenter.art-text pre {
-  padding: 0;
-  width: auto;
+  /* font-family isn't space-separated, but =~ will have to do */
+  &[font-family~="monospace" i], & [font-family~="monospace" i] {
+    font-family: var(--font-mono);
+  }
 }
 .alignCenter {
   margin: 1em 0;
-}
-.alignCenter > *:first-child {
-  border: none;
-  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
-     support flexbox yet.
-  */
-  display: table;
-  margin: 0 auto;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+       support flexbox yet.
+    */
+    display: table;
+    margin: 0 auto;
+  }
 }
 
 /* lists */
@@ -427,26 +433,25 @@ dl {
     --indent: 5ch;
     & > dt {
       min-width: calc(var(--indent) - 2ch);
+      float: none;
     }
-  }
-  &.olPercent > dt {
-    float: none;
   }
 
   dl > dd > & {
     margin-top: 0.5em;
     margin-bottom: 0;
   }
-}
-dl:not(.dlNewline) > dt {
-  float: left;
-  margin-right: 2ch;
-  min-width: 8ch;
-}
-dl > dd {
-  margin-bottom: .8em;
-  margin-left: var(--indent) !important; /* stupid element overrides */
-  min-height: 2ex;
+
+  &:not(.dlNewline) > dt {
+    float: left;
+    margin-right: 2ch;
+    min-width: 8ch;
+  }
+  & > dd {
+    margin-bottom: .8em;
+    margin-left: var(--indent) !important; /* stupid element overrides */
+    min-height: 2ex;
+  }
 }
 :is(dl.compact, .dlCompact) > dd {
   margin-bottom: 0;
@@ -462,20 +467,22 @@ dl > dd {
 }
 
 /* links */
-a, a[href].selfRef:hover {
+a {
   text-decoration: none;
+  &[href] {
+    color: var(--link-color);
+    &:hover { text-decoration: underline; }
+    &.selfRef {
+      color: var(--text-color);
+      &:hover {
+        text-decoration: none;
+        background-color: var(--highlight-color);
+      }
+    }
+  }
 }
-a[href] {
-  color: var(--link-color);
-}
-a[href].selfRef, .iref + a[href].internal {
+.iref + a[href].internal {
   color: var(--text-color);
-}
-a[href]:hover {
-  text-decoration: underline;
-}
-a[href].selfRef:hover {
-  background-color: var(--highlight-color);
 }
 a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
   white-space: nowrap;
@@ -511,9 +518,9 @@ img {
 figure {
   margin: 0.5em 0;
   padding: 0;
-}
-figure blockquote {
-  margin: 0.8em 0.4em 0.4em;
+  & blockquote {
+    margin: 0.8em 0.4em 0.4em;
+  }
 }
 figcaption, caption {
   font-style: italic;
@@ -523,17 +530,19 @@ figcaption, caption {
 }
 @media screen {
   /* Auto-collapse boilerplate. */
-  :is(#status-of-memo, #copyright) p {
-    margin: -2px 0;
-    max-height: 0;
-    transition: max-height 2s ease, margin 0.5s ease 0.5s;
-    overflow: hidden;
-  }
-  :is(#status-of-memo, #copyright):hover p,
-  :is(#status-of-memo, #copyright) h2:target ~ p {
-    margin: 0.5em 0;
-    max-height: 500px;
-    overflow: auto;
+  :is(#status-of-memo, #copyright) {
+    & p {
+      margin: -2px 0;
+      max-height: 0;
+      transition: max-height 2s ease, margin 0.5s ease 0.5s;
+      overflow: hidden;
+    }
+    &:hover p,
+    & h2:target ~ p {
+      margin: 0.5em 0;
+      max-height: 500px;
+      overflow: auto;
+    }
   }
   pre, svg {
     display: inline-block;
@@ -583,25 +592,17 @@ table {
   max-width: 100%;
   margin: 0 0 1em;
   border-collapse: collapse;
-}
-table.right {
-  margin-left: auto;
-}
-table.center {
-  margin-left: auto;
-  margin-right: auto;
-}
-table.left {
-  margin-right: auto;
-}
-table .text-left {
-  text-align: left;
-}
-table .text-center {
-  text-align: center;
-}
-table .text-right {
-  text-align: right;
+  &.right { margin-left: auto; }
+  &.center { margin-left: auto; margin-right: auto; }
+  &.left { margin-right: auto; }
+  & .text-left { text-align: left; }
+  & .text-center { text-align: center; }
+  & .text-right { text-align: right; }
+  & caption {
+    margin: 0;
+    padding: 3px 0 3px 1em;
+  }
+  & p { margin: 0; }
 }
 
 thead, tbody {
@@ -621,13 +622,6 @@ th {
 :is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
   background-color: var(--highlight-color);
 }
-table caption {
-  margin: 0;
-  padding: 3px 0 3px 1em;
-}
-table p {
-  margin: 0;
-}
 
 /* pilcrow */
 a.pilcrow {
@@ -638,18 +632,16 @@ a.pilcrow {
     color: var(--pilcrow-weak);
     &:hover { text-decoration: none; }
   }
-}
-@media not print {
-  :hover > a.pilcrow, a.pilcrow:focus {
-    opacity: 1;
+  @media not print {
+    :hover > &, &:focus {
+      opacity: 1;
+    }
+    &[href]:hover {
+      color: var(--pilcrow-strong);
+      background-color: transparent;
+    }
   }
-  a.pilcrow[href]:hover {
-    color: var(--pilcrow-strong);
-    background-color: transparent;
-  }
-}
-@media print {
-  a.pilcrow {
+  @media print {
     display: none;
   }
 }
@@ -708,9 +700,9 @@ sub, sup {
   font-size: 0.9em;
   font-style: italic;
   margin-top: 2em;
-}
-.docInfo .prepared {
-  float: right;
+  & .prepared {
+    float: right;
+  }
 }
 
 /* table of contents */
@@ -800,23 +792,27 @@ hr.addr {
   max-width: calc(100% - 16px);
 }
 @media (min-width: 500px) {
-  #authors-addresses > section {
-    column-count: 2;
-    column-gap: 20px;
-  }
-  #authors-addresses > section > h2 {
-    column-span: all;
-  }
-  /* hack for break-inside: avoid-column */
-  #authors-addresses address {
-    display: inline-block;
-    break-inside: avoid-column;
+  #authors-addresses {
+    & > section {
+      column-count: 2;
+      column-gap: 20px;
+    }
+    & > section > h2 {
+      column-span: all;
+    }
+    /* hack for break-inside: avoid-column */
+    & address {
+      display: inline-block;
+      break-inside: avoid-column;
+    }
   }
 }
 
 /* Comments */
-.rfcEditorRemove p:first-of-type {
-  font-style: italic;
+.rfcEditorRemove {
+  & p:first-of-type {
+    font-style: italic;
+  }
 }
 .cref {
   background-color: rgba(249, 232, 105, 0.3);
@@ -827,19 +823,21 @@ hr.addr {
 }
 
 @media screen {
-  #toc nav {
-    font-family: var(--font-title);
-    font-weight: 360;
-    & > ul { margin-bottom: 2em; }
-    & ul {
-      margin: 0 0 0 4px;
-      & :is(p, li) {
-        margin: 2px 0;
+  #toc {
+    & nav {
+      font-family: var(--font-title);
+      font-weight: 360;
+      & > ul { margin-bottom: 2em; }
+      & ul {
+        margin: 0 0 0 4px;
+        & :is(p, li) {
+          margin: 2px 0;
+        }
       }
     }
-  }
-  #toc a.toplink {
-    float: right;
+    & a.toplink {
+      float: right;
+    }
   }
 }
 @media not screen {
@@ -860,54 +858,54 @@ hr.addr {
     margin: 0;
     border-bottom: 1px solid #ccc;
     opacity: 0.6;
-  }
-  #toc h2 {
-    margin: 0;
-    padding: 2px 0 2px 6px;
-    padding-right: 1em;
-    font-size: 18px;
-    line-height: 24px;
-    min-width: 190px;
-    text-align: right;
-    background-color: #444;
-    color: white;
-    cursor: pointer;
-    &::before { /* css hamburger */
-      float: right;
-      position: relative;
-      width: 1em;
-      height: 1px;
-      left: -164px;
-      margin: 8px 0 0 0;
-      background: white none repeat scroll 0 0;
-      box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
-      content: "";
+    & h2 {
+      margin: 0;
+      padding: 2px 0 2px 6px;
+      padding-right: 1em;
+      font-size: 18px;
+      line-height: 24px;
+      min-width: 190px;
+      text-align: right;
+      background-color: #444;
+      color: white;
+      cursor: pointer;
+      &::before { /* css hamburger */
+        float: right;
+        position: relative;
+        width: 1em;
+        height: 1px;
+        left: -164px;
+        margin: 8px 0 0 0;
+        background: white none repeat scroll 0 0;
+        box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+        content: "";
+      }
     }
-  }
-  #toc nav {
-    display: none;
-    background-color: var(--background-color);
-    padding: 0.5em 1em 1em;
-    overflow: auto;
-    overscroll-behavior: contain;
-    height: calc(100vh - 48px);
-    border-left: 1px solid #ddd;
-  }
-  #toc.active {
-    opacity: 1;
-    & nav { display: block; }
-  }
-  /* Make the collapsed ToC header render white on gray also when it's a link */
-  #toc h2 a,
-  #toc h2 a:is(:link, :focus, :hover),
-  #toc a.toplink,
-  #toc a.toplink:hover {
-    color: white;
-    background-color: #444;
-    text-decoration: none;
-  }
-  #toc a.toplink {
-    margin: 2px 0.5em 0;
+    & nav {
+      display: none;
+      background-color: var(--background-color);
+      padding: 0.5em 1em 1em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      height: calc(100vh - 48px);
+      border-left: 1px solid #ddd;
+    }
+    &.active {
+      opacity: 1;
+      & nav { display: block; }
+    }
+    /* Make the collapsed ToC header render white on gray also when it's a link */
+    & h2 a,
+    & h2 a:is(:link, :focus, :hover),
+    & a.toplink,
+    & a.toplink:hover {
+      color: white;
+      background-color: #444;
+      text-decoration: none;
+    }
+    & a.toplink {
+      margin: 2px 0.5em 0;
+    }
   }
 }
 
@@ -926,26 +924,26 @@ hr.addr {
     margin: 0;
     padding: 0;
     z-index: 1;
-  }
-  #toc h2 {
-    margin: 0;
-    padding: 0.25em 1em 1em 0;
-  }
-  #toc nav {
-    display: block;
-    height: calc(90vh - 84px);
-    bottom: 0;
-    padding: 0.5em 0 2em;
-    overflow: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
+    & h2 {
+      margin: 0;
+      padding: 0.25em 1em 1em 0;
+    }
+    & nav {
+      display: block;
+      height: calc(90vh - 84px);
+      bottom: 0;
+      padding: 0.5em 0 2em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+    }
+    & a.toplink {
+      margin: 8px 0.5em 0;
+    }
   }
   img { /* future proofing */
     max-width: 100%;
     height: auto;
-  }
-  #toc a.toplink {
-    margin: 8px 0.5em 0;
   }
 }
 
@@ -961,12 +959,13 @@ hr.addr {
   #n-copyright-notice {
     border-bottom: none;
   }
-  #toc, #n-introduction {
-    page-break-before: always;
-  }
   #toc {
+    page-break-before: always;
     border-top: none;
     padding-top: 0;
+  }
+  #n-introduction {
+    page-break-before: always;
   }
   figure, pre, .vcard {
     page-break-inside: avoid;
@@ -1028,17 +1027,19 @@ hr.addr {
 }
 
 /* SVG Trick: a prefix match works because only black and white are allowed */
-svg :is([stroke="black"], [stroke^="#000"]) {
-  stroke: var(--text-color);
-}
-svg :is([stroke="white"], [stroke^="#fff"]) {
-  stroke: var(--background-color);
-}
-svg :is([fill="black"], [fill^="#000"], :not([fill])) {
-  fill: var(--text-color);
-}
-svg :is([fill="white"], [fill^="#fff"]) {
-  fill: var(--background-color);
+svg {
+  & :is([stroke="black"], [stroke^="#000"]) {
+    stroke: var(--text-color);
+  }
+  & :is([stroke="white"], [stroke^="#fff"]) {
+    stroke: var(--background-color);
+  }
+  & :is([fill="black"], [fill^="#000"], :not([fill])) {
+    fill: var(--text-color);
+  }
+  & :is([fill="white"], [fill^="#fff"]) {
+    fill: var(--background-color);
+  }
 }
 </style>
 
@@ -1048,11 +1049,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">HiAE</td>
-<td class="right">May 2026</td>
+<td class="right">September 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Denis, et al.</td>
-<td class="center">Expires 11 November 2026</td>
+<td class="center">Expires 18 March 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1065,12 +1066,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-pham-cfrg-hiae-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-05-10" class="published">10 May 2026</time>
+<time datetime="2026-09-14" class="published">14 September 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-11-11">11 November 2026</time></dd>
+<dd class="expires"><time datetime="2027-03-18">18 March 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1095,7 +1096,9 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">The HiAE Authenticated Encryption Algorithm</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document describes HiAE, a high-throughput authenticated encryption algorithm designed for next-generation wireless systems (6G) and high-speed data transmission applications.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document describes HiAE, a high-throughput authenticated encryption with associated data (AEAD) algorithm.
+It targets next-generation wireless systems (6G) and high-speed data transmission applications.
+This document also specifies its use as a stream cipher and a message authentication code (MAC).<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-discussion-venues">
@@ -1124,7 +1127,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 11 November 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 18 March 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1399,7 +1402,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
           <p id="section-2-4.5.1"><code>a || b</code>: the concatenation of <code>a</code> and <code>b</code>.<a href="#section-2-4.5.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-4.6">
-          <p id="section-2-4.6.1"><code>a mod b</code>: the remainder of the Euclidean division between <code>a</code> as the dividend and <code>b</code> as the divisor.<a href="#section-2-4.6.1" class="pilcrow">¶</a></p>
+          <p id="section-2-4.6.1"><code>a mod b</code>: the remainder obtained when dividing <code>a</code> (the dividend) by <code>b</code> (the divisor) using Euclidean division.<a href="#section-2-4.6.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-2-5">Data manipulation:<a href="#section-2-5" class="pilcrow">¶</a></p>
@@ -1408,16 +1411,19 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
           <p id="section-2-6.1.1"><code>LE64(x)</code>: returns the little-endian encoding of unsigned 64-bit integer <code>x</code>.<a href="#section-2-6.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-6.2">
-          <p id="section-2-6.2.1"><code>ZeroPad(x, n)</code>: returns <code>x</code> after appending zeros until its length is a multiple of <code>n</code> bits. No padding is added if the length of <code>x</code> is already a multiple of <code>n</code>, including when <code>x</code> is empty.<a href="#section-2-6.2.1" class="pilcrow">¶</a></p>
+          <p id="section-2-6.2.1"><code>Zeros(n)</code>: returns an <code>n</code>-bit array containing only zero bits.<a href="#section-2-6.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-6.3">
-          <p id="section-2-6.3.1"><code>Truncate(x, n)</code>: returns the first <code>n</code> bits of <code>x</code>.<a href="#section-2-6.3.1" class="pilcrow">¶</a></p>
+          <p id="section-2-6.3.1"><code>ZeroPad(x, n)</code>: returns <code>x</code> after appending zeros until its length is a multiple of <code>n</code> bits. No padding is added if the length of <code>x</code> is already a multiple of <code>n</code>, including when <code>x</code> is empty.<a href="#section-2-6.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-6.4">
-          <p id="section-2-6.4.1"><code>Tail(x, n)</code>: returns the last <code>n</code> bits of <code>x</code>.<a href="#section-2-6.4.1" class="pilcrow">¶</a></p>
+          <p id="section-2-6.4.1"><code>Truncate(x, n)</code>: returns the first <code>n</code> bits of <code>x</code>.<a href="#section-2-6.4.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-6.5">
-          <p id="section-2-6.5.1"><code>Split(x, n)</code>: returns <code>x</code> split into <code>n</code>-bit blocks, ignoring partial blocks.<a href="#section-2-6.5.1" class="pilcrow">¶</a></p>
+          <p id="section-2-6.5.1"><code>Tail(x, n)</code>: returns the last <code>n</code> bits of <code>x</code>. <code>Tail(x, 0)</code> returns <code>{}</code>.<a href="#section-2-6.5.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-6.6">
+          <p id="section-2-6.6.1"><code>Split(x, n)</code>: returns <code>x</code> split into <code>n</code>-bit blocks, ignoring partial blocks.<a href="#section-2-6.6.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-2-7">Cryptographic operations:<a href="#section-2-7" class="pilcrow">¶</a></p>
@@ -1449,7 +1455,7 @@ While Intel AES-NI and ARM NEON provide instructions with similar purposes (such
           <p id="section-2-10.1.1"><code>Repeat(n, F)</code>: <code>n</code> sequential evaluations of <code>F</code>.<a href="#section-2-10.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-10.2">
-          <p id="section-2-10.2.1"><code>CtEq(a, b)</code>: compares <code>a</code> and <code>b</code> in constant-time, returning <code>True</code> for an exact match and <code>False</code> otherwise.<a href="#section-2-10.2.1" class="pilcrow">¶</a></p>
+          <p id="section-2-10.2.1"><code>CtEq(a, b)</code>: compares <code>a</code> and <code>b</code> in constant time. Returns <code>True</code> for an exact match and <code>False</code> otherwise.<a href="#section-2-10.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-2-11">AES blocks:<a href="#section-2-11" class="pilcrow">¶</a></p>
@@ -1509,7 +1515,7 @@ While Intel AES-NI and ARM NEON provide instructions with similar purposes (such
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-algorithm-parameters" class="section-name selfRef">Algorithm Parameters</a>
         </h3>
 <p id="section-3.1-1">HiAE maintains a 2048-bit state organized as sixteen 128-bit blocks denoted <code>{S0, S1, S2, ..., S15}</code>. Each block Si represents a 128-bit AES state that can be processed independently by AES round functions. This large state size provides security margins while enabling efficient parallel processing on modern architectures.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.1-2">The parameters for this algorithm, whose meaning is defined in <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>], <a href="https://rfc-editor.org/rfc/rfc5116#section-4" class="relref">Section 4</a></span>, are:<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">The parameters for this algorithm, as defined in <span><a href="https://rfc-editor.org/rfc/rfc5116#section-4" class="relref">Section 4</a> of [<a href="#RFC5116" class="cite xref">RFC5116</a>]</span>, are:<a href="#section-3.1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3.1-3.1">
             <p id="section-3.1-3.1.1"><code>K_LEN</code> (key length) is 32 bytes (256 bits).<a href="#section-3.1-3.1.1" class="pilcrow">¶</a></p>
@@ -1524,10 +1530,10 @@ While Intel AES-NI and ARM NEON provide instructions with similar purposes (such
             <p id="section-3.1-3.4.1"><code>N_MIN</code> (minimum nonce length) = <code>N_MAX</code> (maximum nonce length) = 16 bytes (128 bits).<a href="#section-3.1-3.4.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-3.1-3.5">
-            <p id="section-3.1-3.5.1"><code>C_MAX</code> (maximum ciphertext length) = <code>P_MAX</code> + tag length = (2<sup>61</sup> - 1) + 16 bytes ((2<sup>64</sup> - 8) + 128 bits).<a href="#section-3.1-3.5.1" class="pilcrow">¶</a></p>
+            <p id="section-3.1-3.5.1"><code>C_MAX</code> (maximum ciphertext length, including the tag) is <code>P_MAX</code> + 16 bytes. In bits, this limit is (2<sup>64</sup> - 8) + 128.<a href="#section-3.1-3.5.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-3.1-4">Distinct associated data inputs, as described in <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>], <a href="https://rfc-editor.org/rfc/rfc5116#section-3" class="relref">Section 3</a></span>, <span class="bcp14">MUST</span> be unambiguously encoded as a single input.
+<p id="section-3.1-4">Distinct associated data inputs, as described in <span><a href="https://rfc-editor.org/rfc/rfc5116#section-3" class="relref">Section 3</a> of [<a href="#RFC5116" class="cite xref">RFC5116</a>]</span>, <span class="bcp14">MUST</span> be unambiguously encoded as a single input.
 It is up to the application to create a structure in the associated data input if needed.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1536,7 +1542,7 @@ It is up to the application to create a structure in the associated data input i
         <h3 id="name-authenticated-encryption">
 <a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-authenticated-encryption" class="section-name selfRef">Authenticated Encryption</a>
         </h3>
-<div class="alignLeft art-text artwork" id="section-3.2-1">
+<div class="lang-pseudocode sourcecode" id="section-3.2-1">
 <pre>
 Encrypt(msg, ad, key, nonce)
 </pre><a href="#section-3.2-1" class="pilcrow">¶</a>
@@ -1576,7 +1582,7 @@ Encrypt(msg, ad, key, nonce)
 </li>
         </ul>
 <p id="section-3.2-9">Steps:<a href="#section-3.2-9" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.2-10">
+<div class="lang-pseudocode sourcecode" id="section-3.2-10">
 <pre>
 Init(key, nonce)
 
@@ -1603,7 +1609,7 @@ return (ct, tag)
         <h3 id="name-authenticated-decryption">
 <a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-authenticated-decryption" class="section-name selfRef">Authenticated Decryption</a>
         </h3>
-<div class="alignLeft art-text artwork" id="section-3.3-1">
+<div class="lang-pseudocode sourcecode" id="section-3.3-1">
 <pre>
 Decrypt(ct, tag, ad, key, nonce)
 </pre><a href="#section-3.3-1" class="pilcrow">¶</a>
@@ -1643,7 +1649,7 @@ Decrypt(ct, tag, ad, key, nonce)
 </li>
         </ul>
 <p id="section-3.3-9">Steps:<a href="#section-3.3-9" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.3-10">
+<div class="lang-pseudocode sourcecode" id="section-3.3-10">
 <pre>
 Init(key, nonce)
 
@@ -1685,7 +1691,7 @@ else:
           <h4 id="name-the-state-rotation-function">
 <a href="#section-3.4.1" class="section-number selfRef">3.4.1. </a><a href="#name-the-state-rotation-function" class="section-name selfRef">The State Rotation Function</a>
           </h4>
-<div class="alignLeft art-text artwork" id="section-3.4.1-1">
+<div class="lang-pseudocode sourcecode" id="section-3.4.1-1">
 <pre>
 Rol()
 </pre><a href="#section-3.4.1-1" class="pilcrow">¶</a>
@@ -1698,7 +1704,7 @@ Rol()
 </li>
           </ul>
 <p id="section-3.4.1-5">Steps:<a href="#section-3.4.1-5" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.4.1-6">
+<div class="lang-pseudocode sourcecode" id="section-3.4.1-6">
 <pre>
   t = S0
  S0 = S1
@@ -1732,7 +1738,7 @@ S15 = t
             <h5 id="name-the-update-function">
 <a href="#section-3.4.2.1" class="section-number selfRef">3.4.2.1. </a><a href="#name-the-update-function" class="section-name selfRef">The Update Function</a>
             </h5>
-<div class="alignLeft art-text artwork" id="section-3.4.2.1-1">
+<div class="lang-pseudocode sourcecode" id="section-3.4.2.1-1">
 <pre>
 Update(xi)
 </pre><a href="#section-3.4.2.1-1" class="pilcrow">¶</a>
@@ -1752,7 +1758,7 @@ It updates the state <code>{S0, ...S15}</code> using a 128-bit value.<a href="#s
 </li>
             </ul>
 <p id="section-3.4.2.1-7">Steps:<a href="#section-3.4.2.1-7" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.4.2.1-8">
+<div class="lang-pseudocode sourcecode" id="section-3.4.2.1-8">
 <pre>
   t = AESL(S0 ^ S1) ^ xi
  S0 = AESL(S13) ^ t
@@ -1769,7 +1775,7 @@ Rol()
             <h5 id="name-the-updateenc-function">
 <a href="#section-3.4.2.2" class="section-number selfRef">3.4.2.2. </a><a href="#name-the-updateenc-function" class="section-name selfRef">The UpdateEnc Function</a>
             </h5>
-<div class="alignLeft art-text artwork" id="section-3.4.2.2-1">
+<div class="lang-pseudocode sourcecode" id="section-3.4.2.2-1">
 <pre>
 UpdateEnc(mi)
 </pre><a href="#section-3.4.2.2-1" class="pilcrow">¶</a>
@@ -1794,7 +1800,7 @@ UpdateEnc(mi)
 </li>
             </ul>
 <p id="section-3.4.2.2-9">Steps:<a href="#section-3.4.2.2-9" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.4.2.2-10">
+<div class="lang-pseudocode sourcecode" id="section-3.4.2.2-10">
 <pre>
   t = AESL(S0 ^ S1) ^ mi
  ci = t ^ S9
@@ -1814,7 +1820,7 @@ return ci
             <h5 id="name-the-updatedec-function">
 <a href="#section-3.4.2.3" class="section-number selfRef">3.4.2.3. </a><a href="#name-the-updatedec-function" class="section-name selfRef">The UpdateDec Function</a>
             </h5>
-<div class="alignLeft art-text artwork" id="section-3.4.2.3-1">
+<div class="lang-pseudocode sourcecode" id="section-3.4.2.3-1">
 <pre>
 UpdateDec(ci)
 </pre><a href="#section-3.4.2.3-1" class="pilcrow">¶</a>
@@ -1839,7 +1845,7 @@ UpdateDec(ci)
 </li>
             </ul>
 <p id="section-3.4.2.3-9">Steps:<a href="#section-3.4.2.3-9" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.4.2.3-10">
+<div class="lang-pseudocode sourcecode" id="section-3.4.2.3-10">
 <pre>
   t = ci ^ S9
  mi = AESL(S0 ^ S1) ^ t
@@ -1859,7 +1865,7 @@ return mi
             <h5 id="name-the-diffuse-function">
 <a href="#section-3.4.2.4" class="section-number selfRef">3.4.2.4. </a><a href="#name-the-diffuse-function" class="section-name selfRef">The Diffuse Function</a>
             </h5>
-<div class="alignLeft art-text artwork" id="section-3.4.2.4-1">
+<div class="lang-pseudocode sourcecode" id="section-3.4.2.4-1">
 <pre>
 Diffuse(x0, x1)
 </pre><a href="#section-3.4.2.4-1" class="pilcrow">¶</a>
@@ -1881,7 +1887,7 @@ Diffuse(x0, x1)
 </li>
             </ul>
 <p id="section-3.4.2.4-7">Steps:<a href="#section-3.4.2.4-7" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.4.2.4-8">
+<div class="lang-pseudocode sourcecode" id="section-3.4.2.4-8">
 <pre>
 Repeat(16,
   Update(x0)
@@ -1906,7 +1912,7 @@ Repeat(16,
           <h4 id="name-the-init-function">
 <a href="#section-3.5.1" class="section-number selfRef">3.5.1. </a><a href="#name-the-init-function" class="section-name selfRef">The Init Function</a>
           </h4>
-<div class="alignLeft art-text artwork" id="section-3.5.1-1">
+<div class="lang-pseudocode sourcecode" id="section-3.5.1-1">
 <pre>
 Init(key, nonce)
 </pre><a href="#section-3.5.1-1" class="pilcrow">¶</a>
@@ -1928,7 +1934,7 @@ Init(key, nonce)
 </li>
           </ul>
 <p id="section-3.5.1-7">Steps:<a href="#section-3.5.1-7" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.5.1-8">
+<div class="lang-pseudocode sourcecode" id="section-3.5.1-8">
 <pre>
 k0, k1 = Split(key, 128)
 
@@ -1959,7 +1965,7 @@ Diffuse(k0, k1)
           <h4 id="name-the-absorb-function">
 <a href="#section-3.5.2" class="section-number selfRef">3.5.2. </a><a href="#name-the-absorb-function" class="section-name selfRef">The Absorb Function</a>
           </h4>
-<div class="alignLeft art-text artwork" id="section-3.5.2-1">
+<div class="lang-pseudocode sourcecode" id="section-3.5.2-1">
 <pre>
 Absorb(ai)
 </pre><a href="#section-3.5.2-1" class="pilcrow">¶</a>
@@ -1972,7 +1978,7 @@ Absorb(ai)
 </li>
           </ul>
 <p id="section-3.5.2-5">Steps:<a href="#section-3.5.2-5" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.5.2-6">
+<div class="lang-pseudocode sourcecode" id="section-3.5.2-6">
 <pre>
 Update(ai)
 </pre><a href="#section-3.5.2-6" class="pilcrow">¶</a>
@@ -1984,7 +1990,7 @@ Update(ai)
           <h4 id="name-the-enc-function">
 <a href="#section-3.5.3" class="section-number selfRef">3.5.3. </a><a href="#name-the-enc-function" class="section-name selfRef">The Enc Function</a>
           </h4>
-<div class="alignLeft art-text artwork" id="section-3.5.3-1">
+<div class="lang-pseudocode sourcecode" id="section-3.5.3-1">
 <pre>
 Enc(mi)
 </pre><a href="#section-3.5.3-1" class="pilcrow">¶</a>
@@ -2003,7 +2009,7 @@ Enc(mi)
 </li>
           </ul>
 <p id="section-3.5.3-7">Steps:<a href="#section-3.5.3-7" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.5.3-8">
+<div class="lang-pseudocode sourcecode" id="section-3.5.3-8">
 <pre>
 ci = UpdateEnc(mi)
 return ci
@@ -2016,7 +2022,7 @@ return ci
           <h4 id="name-the-dec-function">
 <a href="#section-3.5.4" class="section-number selfRef">3.5.4. </a><a href="#name-the-dec-function" class="section-name selfRef">The Dec Function</a>
           </h4>
-<div class="alignLeft art-text artwork" id="section-3.5.4-1">
+<div class="lang-pseudocode sourcecode" id="section-3.5.4-1">
 <pre>
 Dec(ci)
 </pre><a href="#section-3.5.4-1" class="pilcrow">¶</a>
@@ -2035,7 +2041,7 @@ Dec(ci)
 </li>
           </ul>
 <p id="section-3.5.4-7">Steps:<a href="#section-3.5.4-7" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.5.4-8">
+<div class="lang-pseudocode sourcecode" id="section-3.5.4-8">
 <pre>
 mi = UpdateDec(ci)
 return mi
@@ -2048,7 +2054,7 @@ return mi
           <h4 id="name-the-decpartial-function">
 <a href="#section-3.5.5" class="section-number selfRef">3.5.5. </a><a href="#name-the-decpartial-function" class="section-name selfRef">The DecPartial Function</a>
           </h4>
-<div class="alignLeft art-text artwork" id="section-3.5.5-1">
+<div class="lang-pseudocode sourcecode" id="section-3.5.5-1">
 <pre>
 DecPartial(cn)
 </pre><a href="#section-3.5.5-1" class="pilcrow">¶</a>
@@ -2057,7 +2063,7 @@ DecPartial(cn)
 <p id="section-3.5.5-3">Inputs:<a href="#section-3.5.5-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3.5.5-4.1">
-              <p id="section-3.5.5-4.1.1"><code>cn</code>: the encrypted input.<a href="#section-3.5.5-4.1.1" class="pilcrow">¶</a></p>
+              <p id="section-3.5.5-4.1.1"><code>cn</code>: a non-empty final ciphertext block shorter than 128 bits.<a href="#section-3.5.5-4.1.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <p id="section-3.5.5-5">Outputs:<a href="#section-3.5.5-5" class="pilcrow">¶</a></p>
@@ -2067,7 +2073,7 @@ DecPartial(cn)
 </li>
           </ul>
 <p id="section-3.5.5-7">Steps:<a href="#section-3.5.5-7" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.5.5-8">
+<div class="lang-pseudocode sourcecode" id="section-3.5.5-8">
 <pre>
 # Step 1: Recover the keystream that would encrypt a full zero block
 ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
@@ -2092,7 +2098,7 @@ return mn
           <h4 id="name-the-finalize-function">
 <a href="#section-3.5.6" class="section-number selfRef">3.5.6. </a><a href="#name-the-finalize-function" class="section-name selfRef">The Finalize Function</a>
           </h4>
-<div class="alignLeft art-text artwork" id="section-3.5.6-1">
+<div class="lang-pseudocode sourcecode" id="section-3.5.6-1">
 <pre>
 Finalize(ad_len_bits, msg_len_bits)
 </pre><a href="#section-3.5.6-1" class="pilcrow">¶</a>
@@ -2114,7 +2120,7 @@ Finalize(ad_len_bits, msg_len_bits)
 </li>
           </ul>
 <p id="section-3.5.6-7">Steps:<a href="#section-3.5.6-7" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.5.6-8">
+<div class="lang-pseudocode sourcecode" id="section-3.5.6-8">
 <pre>
 t = LE64(ad_len_bits) || LE64(msg_len_bits)
 Diffuse(t, t)
@@ -2138,11 +2144,12 @@ return tag
       </h2>
 <p id="section-4-1">Applications <span class="bcp14">MAY</span> keep the ciphertext and the authentication tag in distinct structures or encode both as a single string.<a href="#section-4-1" class="pilcrow">¶</a></p>
 <p id="section-4-2">In the latter case, the tag <span class="bcp14">MUST</span> immediately follow the ciphertext:<a href="#section-4-2" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4-3">
+<div class="lang-pseudocode sourcecode" id="section-4-3">
 <pre>
 combined_ct = ct || tag
 </pre><a href="#section-4-3" class="pilcrow">¶</a>
 </div>
+<p id="section-4-4">The length of <code>combined_ct</code> <span class="bcp14">MUST</span> be less than or equal to <code>C_MAX</code>.<a href="#section-4-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="alternative-operating-modes">
@@ -2157,7 +2164,7 @@ combined_ct = ct || tag
 <a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-hiae-as-a-stream-cipher" class="section-name selfRef">HiAE as a Stream Cipher</a>
         </h3>
 <p id="section-5.1-1">The stream cipher mode of HiAE generates a keystream by encrypting an all-zero message.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-5.1-2">
+<div class="lang-pseudocode sourcecode" id="section-5.1-2">
 <pre>
 Stream(len, key, nonce)
 </pre><a href="#section-5.1-2" class="pilcrow">¶</a>
@@ -2188,15 +2195,15 @@ Stream(len, key, nonce)
 </li>
         </ul>
 <p id="section-5.1-10">Steps:<a href="#section-5.1-10" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-5.1-11">
+<div class="lang-pseudocode sourcecode" id="section-5.1-11">
 <pre>
 if nonce is unspecified:
-    nonce = 16 zero bytes
+    nonce = Zeros(128)
 
 if len == 0:
     return {}
 else:
-    stream, tag = Encrypt(0 repeated len times, {}, key, nonce)
+    stream, tag = Encrypt(Zeros(len), {}, key, nonce)
     return stream
 </pre><a href="#section-5.1-11" class="pilcrow">¶</a>
 </div>
@@ -2212,7 +2219,7 @@ else:
         </h3>
 <p id="section-5.2-1">In MAC mode, HiAE processes input data without generating ciphertext, producing only an authentication tag. This mode is useful when data authenticity is required without confidentiality.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
 <p id="section-5.2-2">Note: Implementations of the <code>Encrypt</code> and <code>Decrypt</code> functions are not required to support MAC-only mode. This is an optional feature that can be implemented separately.<a href="#section-5.2-2" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-5.2-3">
+<div class="lang-pseudocode sourcecode" id="section-5.2-3">
 <pre>
 Mac(data, key, nonce)
 </pre><a href="#section-5.2-3" class="pilcrow">¶</a>
@@ -2248,7 +2255,7 @@ Mac(data, key, nonce)
 </li>
         </ul>
 <p id="section-5.2-10">Steps:<a href="#section-5.2-10" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-5.2-11">
+<div class="lang-pseudocode sourcecode" id="section-5.2-11">
 <pre>
 Init(key, nonce)
 
@@ -2285,7 +2292,7 @@ return tag
             <p id="section-6.1-3.2.1">A single key <span class="bcp14">MUST NOT</span> be used to protect more than 2<sup>64</sup> messages.<a href="#section-6.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-6.1-3.3">
-            <p id="section-6.1-3.3.1">For a given key, the nonce <span class="bcp14">MUST NOT</span> be reused under any circumstances (as specified in the Authenticated Encryption section).<a href="#section-6.1-3.3.1" class="pilcrow">¶</a></p>
+            <p id="section-6.1-3.3.1">When HiAE is used for encryption, a nonce <span class="bcp14">MUST</span> only be used once for a given key.<a href="#section-6.1-3.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-6.1-4">It is important to note that the encryption security assumes the attacker cannot successfully forge messages through repeated trials <span>[<a href="#HiAE-Clarification" class="cite xref">HiAE-Clarification</a>]</span>.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
@@ -2364,7 +2371,7 @@ return tag
 <a href="#section-7.1.1" class="section-number selfRef">7.1.1. </a><a href="#name-cycling-index-approach" class="section-name selfRef">Cycling Index Approach</a>
           </h4>
 <p id="section-7.1.1-1">The standard <code>Rol()</code> function requires copying all sixteen 128-bit blocks:<a href="#section-7.1.1-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.1.1-2">
+<div class="lang-pseudocode sourcecode" id="section-7.1.1-2">
 <pre>
   t = S0
  S0 = S1
@@ -2451,7 +2458,7 @@ S15 = t
 <a href="#section-7.2.1.1" class="section-number selfRef">7.2.1.1. </a><a href="#name-arm-optimized-update-functi" class="section-name selfRef">ARM-Optimized Update Function</a>
             </h5>
 <p id="section-7.2.1.1-1">Original implementation:<a href="#section-7.2.1.1-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.1.1-2">
+<div class="lang-pseudocode sourcecode" id="section-7.2.1.1-2">
 <pre>
 Update(xi)
   t = AESL(S0 ^ S1) ^ xi
@@ -2462,7 +2469,7 @@ Rol()
 </pre><a href="#section-7.2.1.1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-7.2.1.1-3">ARM-optimized implementation:<a href="#section-7.2.1.1-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.1.1-4">
+<div class="lang-pseudocode sourcecode" id="section-7.2.1.1-4">
 <pre>
 Update_ARM(xi)
   t = XAESL(S0, S1) ^ xi
@@ -2480,7 +2487,7 @@ Rol()
 <a href="#section-7.2.1.2" class="section-number selfRef">7.2.1.2. </a><a href="#name-arm-optimized-updateenc-fun" class="section-name selfRef">ARM-Optimized UpdateEnc Function</a>
             </h5>
 <p id="section-7.2.1.2-1">Original implementation:<a href="#section-7.2.1.2-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.1.2-2">
+<div class="lang-pseudocode sourcecode" id="section-7.2.1.2-2">
 <pre>
 UpdateEnc(mi)
   t = AESL(S0 ^ S1) ^ mi
@@ -2493,7 +2500,7 @@ return ci
 </pre><a href="#section-7.2.1.2-2" class="pilcrow">¶</a>
 </div>
 <p id="section-7.2.1.2-3">ARM-optimized implementation:<a href="#section-7.2.1.2-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.1.2-4">
+<div class="lang-pseudocode sourcecode" id="section-7.2.1.2-4">
 <pre>
 UpdateEnc_ARM(mi)
   t = XAESL(S0, S1) ^ mi
@@ -2513,7 +2520,7 @@ return ci
 <a href="#section-7.2.1.3" class="section-number selfRef">7.2.1.3. </a><a href="#name-arm-optimized-updatedec-fun" class="section-name selfRef">ARM-Optimized UpdateDec Function</a>
             </h5>
 <p id="section-7.2.1.3-1">Original implementation:<a href="#section-7.2.1.3-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.1.3-2">
+<div class="lang-pseudocode sourcecode" id="section-7.2.1.3-2">
 <pre>
 UpdateDec(ci)
   t = ci ^ S9
@@ -2526,7 +2533,7 @@ return mi
 </pre><a href="#section-7.2.1.3-2" class="pilcrow">¶</a>
 </div>
 <p id="section-7.2.1.3-3">ARM-optimized implementation:<a href="#section-7.2.1.3-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.1.3-4">
+<div class="lang-pseudocode sourcecode" id="section-7.2.1.3-4">
 <pre>
 UpdateDec_ARM(ci)
   t = ci ^ S9
@@ -2546,7 +2553,7 @@ return mi
 <a href="#section-7.2.1.4" class="section-number selfRef">7.2.1.4. </a><a href="#name-arm-optimized-decpartial-fu" class="section-name selfRef">ARM-Optimized DecPartial Function</a>
             </h5>
 <p id="section-7.2.1.4-1">Original implementation:<a href="#section-7.2.1.4-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.1.4-2">
+<div class="lang-pseudocode sourcecode" id="section-7.2.1.4-2">
 <pre>
 DecPartial(cn)
 ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
@@ -2557,7 +2564,7 @@ return mn
 </pre><a href="#section-7.2.1.4-2" class="pilcrow">¶</a>
 </div>
 <p id="section-7.2.1.4-3">ARM-optimized implementation:<a href="#section-7.2.1.4-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.1.4-4">
+<div class="lang-pseudocode sourcecode" id="section-7.2.1.4-4">
 <pre>
 DecPartial_ARM(cn)
 ks = XOR3(XAESL(S0, S1), ZeroPad(cn, 128), S9)
@@ -2588,7 +2595,7 @@ return mn
 <a href="#section-7.2.2.1" class="section-number selfRef">7.2.2.1. </a><a href="#name-intel-optimized-update-func" class="section-name selfRef">Intel-Optimized Update Function</a>
             </h5>
 <p id="section-7.2.2.1-1">Original implementation:<a href="#section-7.2.2.1-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.2.1-2">
+<div class="lang-pseudocode sourcecode" id="section-7.2.2.1-2">
 <pre>
 Update(xi)
   t = AESL(S0 ^ S1) ^ xi
@@ -2599,7 +2606,7 @@ Rol()
 </pre><a href="#section-7.2.2.1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-7.2.2.1-3">Intel-optimized implementation:<a href="#section-7.2.2.1-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.2.1-4">
+<div class="lang-pseudocode sourcecode" id="section-7.2.2.1-4">
 <pre>
 Update_Intel(xi)
   t = AESLX(S0 ^ S1, xi)
@@ -2617,7 +2624,7 @@ Rol()
 <a href="#section-7.2.2.2" class="section-number selfRef">7.2.2.2. </a><a href="#name-intel-optimized-updateenc-f" class="section-name selfRef">Intel-Optimized UpdateEnc Function</a>
             </h5>
 <p id="section-7.2.2.2-1">Original implementation:<a href="#section-7.2.2.2-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.2.2-2">
+<div class="lang-pseudocode sourcecode" id="section-7.2.2.2-2">
 <pre>
 UpdateEnc(mi)
   t = AESL(S0 ^ S1) ^ mi
@@ -2630,7 +2637,7 @@ return ci
 </pre><a href="#section-7.2.2.2-2" class="pilcrow">¶</a>
 </div>
 <p id="section-7.2.2.2-3">Intel-optimized implementation:<a href="#section-7.2.2.2-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.2.2-4">
+<div class="lang-pseudocode sourcecode" id="section-7.2.2.2-4">
 <pre>
 UpdateEnc_Intel(mi)
  ci = AESLX(S0 ^ S1, mi ^ S9)
@@ -2650,7 +2657,7 @@ return ci
 <a href="#section-7.2.2.3" class="section-number selfRef">7.2.2.3. </a><a href="#name-intel-optimized-updatedec-f" class="section-name selfRef">Intel-Optimized UpdateDec Function</a>
             </h5>
 <p id="section-7.2.2.3-1">Original implementation:<a href="#section-7.2.2.3-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.2.3-2">
+<div class="lang-pseudocode sourcecode" id="section-7.2.2.3-2">
 <pre>
 UpdateDec(ci)
   t = ci ^ S9
@@ -2663,7 +2670,7 @@ return mi
 </pre><a href="#section-7.2.2.3-2" class="pilcrow">¶</a>
 </div>
 <p id="section-7.2.2.3-3">Intel-optimized implementation:<a href="#section-7.2.2.3-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.2.3-4">
+<div class="lang-pseudocode sourcecode" id="section-7.2.2.3-4">
 <pre>
 UpdateDec_Intel(ci)
   t = ci ^ S9
@@ -2683,7 +2690,7 @@ return mi
 <a href="#section-7.2.2.4" class="section-number selfRef">7.2.2.4. </a><a href="#name-intel-optimized-decpartial-" class="section-name selfRef">Intel-Optimized DecPartial Function</a>
             </h5>
 <p id="section-7.2.2.4-1">Original implementation:<a href="#section-7.2.2.4-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.2.4-2">
+<div class="lang-pseudocode sourcecode" id="section-7.2.2.4-2">
 <pre>
 DecPartial(cn)
 ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
@@ -2694,7 +2701,7 @@ return mn
 </pre><a href="#section-7.2.2.4-2" class="pilcrow">¶</a>
 </div>
 <p id="section-7.2.2.4-3">Intel-optimized implementation:<a href="#section-7.2.2.4-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-7.2.2.4-4">
+<div class="lang-pseudocode sourcecode" id="section-7.2.2.4-4">
 <pre>
 DecPartial_Intel(cn)
 ks = AESLX(S0 ^ S1, ZeroPad(cn, 128) ^ S9)

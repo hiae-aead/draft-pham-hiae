@@ -5,10 +5,10 @@
 Network Working Group                                           F. Denis
 Internet-Draft                                               Fastly Inc.
 Intended status: Standards Track                                 P. Pham
-Expires: 11 November 2026                                      L. Prabel
+Expires: 18 March 2027                                         L. Prabel
                                                                   S. Sun
                                                                   Huawei
-                                                             10 May 2026
+                                                       14 September 2026
 
 
               The HiAE Authenticated Encryption Algorithm
@@ -17,8 +17,10 @@ Expires: 11 November 2026                                      L. Prabel
 Abstract
 
    This document describes HiAE, a high-throughput authenticated
-   encryption algorithm designed for next-generation wireless systems
-   (6G) and high-speed data transmission applications.
+   encryption with associated data (AEAD) algorithm.  It targets next-
+   generation wireless systems (6G) and high-speed data transmission
+   applications.  This document also specifies its use as a stream
+   cipher and a message authentication code (MAC).
 
 Discussion Venues
 
@@ -42,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 November 2026.
+   This Internet-Draft will expire on 18 March 2027.
 
 Copyright Notice
 
@@ -190,13 +192,15 @@ Table of Contents
 
    *  a || b: the concatenation of a and b.
 
-   *  a mod b: the remainder of the Euclidean division between a as the
-      dividend and b as the divisor.
+   *  a mod b: the remainder obtained when dividing a (the dividend) by
+      b (the divisor) using Euclidean division.
 
    Data manipulation:
 
    *  LE64(x): returns the little-endian encoding of unsigned 64-bit
       integer x.
+
+   *  Zeros(n): returns an n-bit array containing only zero bits.
 
    *  ZeroPad(x, n): returns x after appending zeros until its length is
       a multiple of n bits.  No padding is added if the length of x is
@@ -204,7 +208,7 @@ Table of Contents
 
    *  Truncate(x, n): returns the first n bits of x.
 
-   *  Tail(x, n): returns the last n bits of x.
+   *  Tail(x, n): returns the last n bits of x.  Tail(x, 0) returns {}.
 
    *  Split(x, n): returns x split into n-bit blocks, ignoring partial
       blocks.
@@ -242,7 +246,7 @@ Table of Contents
 
    *  Repeat(n, F): n sequential evaluations of F.
 
-   *  CtEq(a, b): compares a and b in constant-time, returning True for
+   *  CtEq(a, b): compares a and b in constant time.  Returns True for
       an exact match and False otherwise.
 
    AES blocks:
@@ -297,8 +301,8 @@ Table of Contents
    This large state size provides security margins while enabling
    efficient parallel processing on modern architectures.
 
-   The parameters for this algorithm, whose meaning is defined in
-   [RFC5116], Section 4, are:
+   The parameters for this algorithm, as defined in Section 4 of
+   [RFC5116], are:
 
    *  K_LEN (key length) is 32 bytes (256 bits).
 
@@ -311,11 +315,11 @@ Table of Contents
    *  N_MIN (minimum nonce length) = N_MAX (maximum nonce length) = 16
       bytes (128 bits).
 
-   *  C_MAX (maximum ciphertext length) = P_MAX + tag length = (2^61 -
-      1) + 16 bytes ((2^64 - 8) + 128 bits).
+   *  C_MAX (maximum ciphertext length, including the tag) is P_MAX + 16
+      bytes.  In bits, this limit is (2^64 - 8) + 128.
 
-   Distinct associated data inputs, as described in [RFC5116],
-   Section 3, MUST be unambiguously encoded as a single input.  It is up
+   Distinct associated data inputs, as described in Section 3 of
+   [RFC5116], MUST be unambiguously encoded as a single input.  It is up
    to the application to create a structure in the associated data input
    if needed.
 
@@ -722,7 +726,7 @@ Table of Contents
 
    Inputs:
 
-   *  cn: the encrypted input.
+   *  cn: a non-empty final ciphertext block shorter than 128 bits.
 
    Outputs:
 
@@ -730,20 +734,20 @@ Table of Contents
 
    Steps:
 
-# Step 1: Recover the keystream that would encrypt a full zero block
-ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
+   # Step 1: Recover the keystream that would encrypt a full zero block
+   ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
 
-# Step 2: Construct a full 128-bit ciphertext block
-# by appending the appropriate keystream bits
-ci = cn || Tail(ks, 128 - |cn|)
+   # Step 2: Construct a full 128-bit ciphertext block
+   # by appending the appropriate keystream bits
+   ci = cn || Tail(ks, 128 - |cn|)
 
-# Step 3: Decrypt the full block using standard UpdateDec
-mi = UpdateDec(ci)
+   # Step 3: Decrypt the full block using standard UpdateDec
+   mi = UpdateDec(ci)
 
-# Step 4: Extract only the decrypted bytes corresponding to the partial input
-mn = Truncate(mi, |cn|)
+   # Step 4: Extract only the decrypted bytes corresponding to the partial input
+   mn = Truncate(mi, |cn|)
 
-return mn
+   return mn
 
 3.5.6.  The Finalize Function
 
@@ -783,6 +787,8 @@ return mn
    In the latter case, the tag MUST immediately follow the ciphertext:
 
    combined_ct = ct || tag
+
+   The length of combined_ct MUST be less than or equal to C_MAX.
 
 5.  Alternative Operating Modes
 
@@ -824,12 +830,12 @@ return mn
    Steps:
 
    if nonce is unspecified:
-       nonce = 16 zero bytes
+       nonce = Zeros(128)
 
    if len == 0:
        return {}
    else:
-       stream, tag = Encrypt(0 repeated len times, {}, key, nonce)
+       stream, tag = Encrypt(Zeros(len), {}, key, nonce)
        return stream
 
    This is equivalent to encrypting a message of len zero bits without
@@ -905,9 +911,8 @@ return mn
 
    *  A single key MUST NOT be used to protect more than 2^64 messages.
 
-   *  For a given key, the nonce MUST NOT be reused under any
-      circumstances (as specified in the Authenticated Encryption
-      section).
+   *  When HiAE is used for encryption, a nonce MUST only be used once
+      for a given key.
 
    It is important to note that the encryption security assumes the
    attacker cannot successfully forge messages through repeated trials
