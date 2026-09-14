@@ -5,7 +5,11 @@ docname: draft-pham-cfrg-hiae-latest
 category: std
 
 ipr: trust200902
-keyword: Internet-Draft
+keyword:
+  - AEAD
+  - AES
+  - stream cipher
+  - Message Authentication Code (MAC)
 # workgroup: Crypto Forum
 submissionType: IETF
 
@@ -166,7 +170,9 @@ informative:
 
 --- abstract
 
-This document describes HiAE, a high-throughput authenticated encryption algorithm designed for next-generation wireless systems (6G) and high-speed data transmission applications.
+This document describes HiAE, a high-throughput authenticated encryption with associated data (AEAD) algorithm.
+It targets next-generation wireless systems (6G) and high-speed data transmission applications.
+This document also specifies its use as a stream cipher and a message authentication code (MAC).
 
 --- middle
 
@@ -195,14 +201,15 @@ Basic operations:
 - `|x|`: the length of `x` in bits.
 - `a ^ b`: the bitwise exclusive OR operation between `a` and `b`.
 - `a || b`: the concatenation of `a` and `b`.
-- `a mod b`: the remainder of the Euclidean division between `a` as the dividend and `b` as the divisor.
+- `a mod b`: the remainder obtained when dividing `a` (the dividend) by `b` (the divisor) using Euclidean division.
 
 Data manipulation:
 
 - `LE64(x)`: returns the little-endian encoding of unsigned 64-bit integer `x`.
+- `Zeros(n)`: returns an `n`-bit array containing only zero bits.
 - `ZeroPad(x, n)`: returns `x` after appending zeros until its length is a multiple of `n` bits. No padding is added if the length of `x` is already a multiple of `n`, including when `x` is empty.
 - `Truncate(x, n)`: returns the first `n` bits of `x`.
-- `Tail(x, n)`: returns the last `n` bits of `x`.
+- `Tail(x, n)`: returns the last `n` bits of `x`. `Tail(x, 0)` returns `{}`.
 - `Split(x, n)`: returns `x` split into `n`-bit blocks, ignoring partial blocks.
 
 Cryptographic operations:
@@ -221,7 +228,7 @@ Cryptographic operations:
 Control flow and comparison:
 
 - `Repeat(n, F)`: `n` sequential evaluations of `F`.
-- `CtEq(a, b)`: compares `a` and `b` in constant-time, returning `True` for an exact match and `False` otherwise.
+- `CtEq(a, b)`: compares `a` and `b` in constant time. Returns `True` for an exact match and `False` otherwise.
 
 AES blocks:
 
@@ -251,20 +258,20 @@ This section provides the complete specification of HiAE. The algorithm operates
 
 HiAE maintains a 2048-bit state organized as sixteen 128-bit blocks denoted `{S0, S1, S2, ..., S15}`. Each block Si represents a 128-bit AES state that can be processed independently by AES round functions. This large state size provides security margins while enabling efficient parallel processing on modern architectures.
 
-The parameters for this algorithm, whose meaning is defined in {{!RFC5116, Section 4}}, are:
+The parameters for this algorithm, as defined in {{Section 4 of !RFC5116}}, are:
 
 - `K_LEN` (key length) is 32 bytes (256 bits).
 - `P_MAX` (maximum length of the plaintext) is 2<sup>61</sup> - 1 bytes (2<sup>64</sup> - 8 bits).
 - `A_MAX` (maximum length of the associated data) is 2<sup>61</sup> - 1 bytes (2<sup>64</sup> - 8 bits).
 - `N_MIN` (minimum nonce length) = `N_MAX` (maximum nonce length) = 16 bytes (128 bits).
-- `C_MAX` (maximum ciphertext length) = `P_MAX` + tag length = (2<sup>61</sup> - 1) + 16 bytes ((2<sup>64</sup> - 8) + 128 bits).
+- `C_MAX` (maximum ciphertext length, including the tag) is `P_MAX` + 16 bytes. In bits, this limit is (2<sup>64</sup> - 8) + 128.
 
-Distinct associated data inputs, as described in {{!RFC5116, Section 3}}, MUST be unambiguously encoded as a single input.
+Distinct associated data inputs, as described in {{Section 3 of !RFC5116}}, MUST be unambiguously encoded as a single input.
 It is up to the application to create a structure in the associated data input if needed.
 
 ## Authenticated Encryption
 
-~~~
+~~~ pseudocode
 Encrypt(msg, ad, key, nonce)
 ~~~
 
@@ -289,7 +296,7 @@ Outputs:
 
 Steps:
 
-~~~
+~~~ pseudocode
 Init(key, nonce)
 
 ct = {}
@@ -310,7 +317,7 @@ return (ct, tag)
 
 ## Authenticated Decryption
 
-~~~
+~~~ pseudocode
 Decrypt(ct, tag, ad, key, nonce)
 ~~~
 
@@ -335,7 +342,7 @@ Outputs:
 
 Steps:
 
-~~~
+~~~ pseudocode
 Init(key, nonce)
 
 msg = {}
@@ -369,7 +376,7 @@ The following sections describe the fundamental operations that form the buildin
 
 ### The State Rotation Function
 
-~~~
+~~~ pseudocode
 Rol()
 ~~~
 
@@ -381,7 +388,7 @@ Modifies:
 
 Steps:
 
-~~~
+~~~ pseudocode
   t = S0
  S0 = S1
  S1 = S2
@@ -407,7 +414,7 @@ The state update functions form the cryptographic core of HiAE. They combine the
 
 #### The Update Function
 
-~~~
+~~~ pseudocode
 Update(xi)
 ~~~
 
@@ -424,7 +431,7 @@ Modifies:
 
 Steps:
 
-~~~
+~~~ pseudocode
   t = AESL(S0 ^ S1) ^ xi
  S0 = AESL(S13) ^ t
  S3 =  S3 ^ xi
@@ -435,7 +442,7 @@ Rol()
 
 #### The UpdateEnc Function
 
-~~~
+~~~ pseudocode
 UpdateEnc(mi)
 ~~~
 
@@ -455,7 +462,7 @@ Modifies:
 
 Steps:
 
-~~~
+~~~ pseudocode
   t = AESL(S0 ^ S1) ^ mi
  ci = t ^ S9
  S0 = AESL(S13) ^ t
@@ -469,7 +476,7 @@ return ci
 
 #### The UpdateDec Function
 
-~~~
+~~~ pseudocode
 UpdateDec(ci)
 ~~~
 
@@ -489,7 +496,7 @@ Modifies:
 
 Steps:
 
-~~~
+~~~ pseudocode
   t = ci ^ S9
  mi = AESL(S0 ^ S1) ^ t
  S0 = AESL(S13) ^ t
@@ -503,7 +510,7 @@ return mi
 
 #### The Diffuse Function
 
-~~~
+~~~ pseudocode
 Diffuse(x0, x1)
 ~~~
 
@@ -520,7 +527,7 @@ Modifies:
 
 Steps:
 
-~~~
+~~~ pseudocode
 Repeat(16,
   Update(x0)
   Update(x1)
@@ -533,7 +540,7 @@ The following functions implement the high-level operations of HiAE: initializat
 
 ### The Init Function
 
-~~~
+~~~ pseudocode
 Init(key, nonce)
 ~~~
 
@@ -550,7 +557,7 @@ Defines:
 
 Steps:
 
-~~~
+~~~ pseudocode
 k0, k1 = Split(key, 128)
 
  S0 = C0
@@ -575,7 +582,7 @@ Diffuse(k0, k1)
 
 ### The Absorb Function
 
-~~~
+~~~ pseudocode
 Absorb(ai)
 ~~~
 
@@ -587,13 +594,13 @@ Inputs:
 
 Steps:
 
-~~~
+~~~ pseudocode
 Update(ai)
 ~~~
 
 ### The Enc Function
 
-~~~
+~~~ pseudocode
 Enc(mi)
 ~~~
 
@@ -609,14 +616,14 @@ Outputs:
 
 Steps:
 
-~~~
+~~~ pseudocode
 ci = UpdateEnc(mi)
 return ci
 ~~~
 
 ### The Dec Function
 
-~~~
+~~~ pseudocode
 Dec(ci)
 ~~~
 
@@ -632,14 +639,14 @@ Outputs:
 
 Steps:
 
-~~~
+~~~ pseudocode
 mi = UpdateDec(ci)
 return mi
 ~~~
 
 ### The DecPartial Function
 
-~~~
+~~~ pseudocode
 DecPartial(cn)
 ~~~
 
@@ -647,7 +654,7 @@ The `DecPartial` function handles the special case of decrypting a partial block
 
 Inputs:
 
-- `cn`: the encrypted input.
+- `cn`: a non-empty final ciphertext block shorter than 128 bits.
 
 Outputs:
 
@@ -655,7 +662,7 @@ Outputs:
 
 Steps:
 
-~~~
+~~~ pseudocode
 # Step 1: Recover the keystream that would encrypt a full zero block
 ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
 
@@ -674,7 +681,7 @@ return mn
 
 ### The Finalize Function
 
-~~~
+~~~ pseudocode
 Finalize(ad_len_bits, msg_len_bits)
 ~~~
 
@@ -691,7 +698,7 @@ Outputs:
 
 Steps:
 
-~~~
+~~~ pseudocode
 t = LE64(ad_len_bits) || LE64(msg_len_bits)
 Diffuse(t, t)
 
@@ -707,9 +714,11 @@ Applications MAY keep the ciphertext and the authentication tag in distinct stru
 
 In the latter case, the tag MUST immediately follow the ciphertext:
 
-~~~
+~~~ pseudocode
 combined_ct = ct || tag
 ~~~
+
+The length of `combined_ct` MUST be less than or equal to `C_MAX`.
 
 # Alternative Operating Modes
 
@@ -719,7 +728,7 @@ While HiAE is primarily designed as an authenticated encryption algorithm, its f
 
 The stream cipher mode of HiAE generates a keystream by encrypting an all-zero message.
 
-~~~
+~~~ pseudocode
 Stream(len, key, nonce)
 ~~~
 
@@ -741,14 +750,14 @@ Outputs:
 
 Steps:
 
-~~~
+~~~ pseudocode
 if nonce is unspecified:
-    nonce = 16 zero bytes
+    nonce = Zeros(128)
 
 if len == 0:
     return {}
 else:
-    stream, tag = Encrypt(0 repeated len times, {}, key, nonce)
+    stream, tag = Encrypt(Zeros(len), {}, key, nonce)
     return stream
 ~~~
 
@@ -764,7 +773,7 @@ In MAC mode, HiAE processes input data without generating ciphertext, producing 
 
 Note: Implementations of the `Encrypt` and `Decrypt` functions are not required to support MAC-only mode. This is an optional feature that can be implemented separately.
 
-~~~
+~~~ pseudocode
 Mac(data, key, nonce)
 ~~~
 
@@ -787,7 +796,7 @@ Outputs:
 
 Steps:
 
-~~~
+~~~ pseudocode
 Init(key, nonce)
 
 data_blocks = Split(ZeroPad(data, 128), 128)
@@ -809,7 +818,7 @@ Usage constraints:
 
 - Tag truncation is not allowed. Implementations MUST use the full 128-bit authentication tag.
 - A single key MUST NOT be used to protect more than 2<sup>64</sup> messages.
-- For a given key, the nonce MUST NOT be reused under any circumstances (as specified in the Authenticated Encryption section).
+- When HiAE is used for encryption, a nonce MUST only be used once for a given key.
 
 It is important to note that the encryption security assumes the attacker cannot successfully forge messages through repeated trials {{HiAE-Clarification}}.
 
@@ -850,7 +859,7 @@ Instead of performing physical rotations with the `Rol()` function, implementati
 
 The standard `Rol()` function requires copying all sixteen 128-bit blocks:
 
-~~~
+~~~ pseudocode
   t = S0
  S0 = S1
  S1 = S2
@@ -899,7 +908,7 @@ ARM processors with NEON SIMD extensions can efficiently compute `AESL(x^y)` and
 
 Original implementation:
 
-~~~
+~~~ pseudocode
 Update(xi)
   t = AESL(S0 ^ S1) ^ xi
  S0 = AESL(S13) ^ t
@@ -910,7 +919,7 @@ Rol()
 
 ARM-optimized implementation:
 
-~~~
+~~~ pseudocode
 Update_ARM(xi)
   t = XAESL(S0, S1) ^ xi
  S0 = AESL(S13) ^ t
@@ -923,7 +932,7 @@ Rol()
 
 Original implementation:
 
-~~~
+~~~ pseudocode
 UpdateEnc(mi)
   t = AESL(S0 ^ S1) ^ mi
  ci = t ^ S9
@@ -936,7 +945,7 @@ return ci
 
 ARM-optimized implementation:
 
-~~~
+~~~ pseudocode
 UpdateEnc_ARM(mi)
   t = XAESL(S0, S1) ^ mi
  ci = t ^ S9
@@ -951,7 +960,7 @@ return ci
 
 Original implementation:
 
-~~~
+~~~ pseudocode
 UpdateDec(ci)
   t = ci ^ S9
  mi = AESL(S0 ^ S1) ^ t
@@ -964,7 +973,7 @@ return mi
 
 ARM-optimized implementation:
 
-~~~
+~~~ pseudocode
 UpdateDec_ARM(ci)
   t = ci ^ S9
  mi = XAESL(S0, S1) ^ t
@@ -979,7 +988,7 @@ return mi
 
 Original implementation:
 
-~~~
+~~~ pseudocode
 DecPartial(cn)
 ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
 ci = cn || Tail(ks, 128 - |cn|)
@@ -990,7 +999,7 @@ return mn
 
 ARM-optimized implementation:
 
-~~~
+~~~ pseudocode
 DecPartial_ARM(cn)
 ks = XOR3(XAESL(S0, S1), ZeroPad(cn, 128), S9)
 ci = cn || Tail(ks, 128 - |cn|)
@@ -1009,7 +1018,7 @@ Intel processors with AES-NI can efficiently compute `AESL(y)^z` patterns. We ca
 
 Original implementation:
 
-~~~
+~~~ pseudocode
 Update(xi)
   t = AESL(S0 ^ S1) ^ xi
  S0 = AESL(S13) ^ t
@@ -1020,7 +1029,7 @@ Rol()
 
 Intel-optimized implementation:
 
-~~~
+~~~ pseudocode
 Update_Intel(xi)
   t = AESLX(S0 ^ S1, xi)
  S0 = AESLX(S13, t)
@@ -1033,7 +1042,7 @@ Rol()
 
 Original implementation:
 
-~~~
+~~~ pseudocode
 UpdateEnc(mi)
   t = AESL(S0 ^ S1) ^ mi
  ci = t ^ S9
@@ -1046,7 +1055,7 @@ return ci
 
 Intel-optimized implementation:
 
-~~~
+~~~ pseudocode
 UpdateEnc_Intel(mi)
  ci = AESLX(S0 ^ S1, mi ^ S9)
   t = ci ^ S9
@@ -1061,7 +1070,7 @@ return ci
 
 Original implementation:
 
-~~~
+~~~ pseudocode
 UpdateDec(ci)
   t = ci ^ S9
  mi = AESL(S0 ^ S1) ^ t
@@ -1074,7 +1083,7 @@ return mi
 
 Intel-optimized implementation:
 
-~~~
+~~~ pseudocode
 UpdateDec_Intel(ci)
   t = ci ^ S9
  mi = AESLX(S0 ^ S1, t)
@@ -1089,7 +1098,7 @@ return mi
 
 Original implementation:
 
-~~~
+~~~ pseudocode
 DecPartial(cn)
 ks = AESL(S0 ^ S1) ^ ZeroPad(cn, 128) ^ S9
 ci = cn || Tail(ks, 128 - |cn|)
@@ -1100,7 +1109,7 @@ return mn
 
 Intel-optimized implementation:
 
-~~~
+~~~ pseudocode
 DecPartial_Intel(cn)
 ks = AESLX(S0 ^ S1, ZeroPad(cn, 128) ^ S9)
 ci = cn || Tail(ks, 128 - |cn|)
