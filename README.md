@@ -4,10 +4,10 @@
 
 This is the working area for the individual Internet-Draft, "HiAE: A High-Throughput Authenticated Encryption Algorithm for Cross-Platform Efficiency".
 
-* [Editor's Copy](https://hiae-aead.github.io/draft-pham-hiae/#go.draft-pham-hiae.html)
+* [Editor's Copy](https://hiae-aead.github.io/draft-pham-hiae/#go.draft-pham-cfrg-hiae.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-pham-cfrg-hiae)
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-pham-cfrg-hiae)
-* [Compare Editor's Copy to Individual Draft](https://hiae-aead.github.io/draft-pham-cfrg-hiae/#go.draft-pham-cfrg-hiae.diff)
+* [Compare Editor's Copy to Individual Draft](https://hiae-aead.github.io/draft-pham-hiae/#go.draft-pham-cfrg-hiae.diff)
 
 ## Overview
 

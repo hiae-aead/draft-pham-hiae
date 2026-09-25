@@ -1134,7 +1134,7 @@ When implementing the platform-specific optimizations described above, care must
 
 ## Validation
 
-A complete list of known implementations and integrations is available at https://github.com/hiae-aead/draft-pham-cfrg-hiae, including reference implementations. A comprehensive comparison of HiAE's performance with other high-throughput authenticated encryption schemes on ARM and x86 architectures is also provided, demonstrating the effectiveness of these platform-specific optimizations.
+A complete list of known implementations and integrations is available at https://github.com/hiae-aead/draft-pham-hiae, including reference implementations. A comprehensive comparison of HiAE's performance with other high-throughput authenticated encryption schemes on ARM and x86 architectures is also provided, demonstrating the effectiveness of these platform-specific optimizations.
 
 # IANA Considerations
 
