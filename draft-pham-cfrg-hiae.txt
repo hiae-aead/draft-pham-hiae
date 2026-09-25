@@ -5,10 +5,10 @@
 Network Working Group                                           F. Denis
 Internet-Draft                                               Fastly Inc.
 Intended status: Standards Track                                 P. Pham
-Expires: 18 March 2027                                         L. Prabel
+Expires: 29 March 2027                                         L. Prabel
                                                                   S. Sun
                                                                   Huawei
-                                                       14 September 2026
+                                                       25 September 2026
 
 
               The HiAE Authenticated Encryption Algorithm
@@ -44,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 18 March 2027.
+   This Internet-Draft will expire on 29 March 2027.
 
 Copyright Notice
 
@@ -1283,12 +1283,11 @@ Table of Contents
 7.5.  Validation
 
    A complete list of known implementations and integrations is
-   available at https://github.com/hiae-aead/draft-pham-cfrg-hiae,
-   including reference implementations.  A comprehensive comparison of
-   HiAE’s performance with other high-throughput authenticated
-   encryption schemes on ARM and x86 architectures is also provided,
-   demonstrating the effectiveness of these platform-specific
-   optimizations.
+   available at https://github.com/hiae-aead/draft-pham-hiae, including
+   reference implementations.  A comprehensive comparison of HiAE’s
+   performance with other high-throughput authenticated encryption
+   schemes on ARM and x86 architectures is also provided, demonstrating
+   the effectiveness of these platform-specific optimizations.
 
 8.  IANA Considerations
 
